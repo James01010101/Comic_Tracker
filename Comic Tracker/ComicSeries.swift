@@ -14,27 +14,27 @@ import SwiftData
 @Model
 class ComicSeries {
 	/// The title of this series
-	var series_title: String
+	var seriesTitle: String
 	/// The year the first comic book in this series was first published (used to help distinguish series with the same name)
-	var year_first_published: UInt16
+	var yearFirstPublished: UInt16
 	/// Total number of comic book issues read in this series
-	var issues_read: UInt16
+	var issuesRead: UInt16
 	/// Total number of comic book issues in this series
-	var total_issues: UInt16
+	var totalIssues: UInt16
 	/// The total number of pages read in all comic books in this series
-	var pages_read: UInt16
+	var pagesRead: UInt16
 	
 	
-	init(series_title: String, 
-		 year_first_published: UInt16,
-		 issues_read: UInt16,
-		 total_issues: UInt16,
-		 pages_read: UInt16) {
+	init(seriesTitle: String,
+		 yearFirstPublished: UInt16,
+		 issuesRead: UInt16,
+		 totalIssues: UInt16,
+		 pagesRead: UInt16) {
 		
-		self.series_title = series_title
-		self.year_first_published = year_first_published
-		self.issues_read = issues_read
-		self.total_issues = total_issues
-		self.pages_read = pages_read
+		self.seriesTitle = seriesTitle
+		self.yearFirstPublished = yearFirstPublished
+		self.issuesRead = issuesRead
+		self.totalIssues = totalIssues
+		self.pagesRead = pagesRead
 	}
 }

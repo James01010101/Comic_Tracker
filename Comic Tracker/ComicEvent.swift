@@ -14,23 +14,23 @@ import SwiftData
 @Model
 class ComicEvent {
 	/// The full name of this event
-	var event_name: String
+	var eventName: String
 	/// The total number of comic issues that have been read in this event (doesn't have to be in order)
-	var issues_read: UInt16
+	var issuesRead: UInt16
 	/// The total number of comic issues this event has
-	var total_issues: UInt16
+	var totalIssues: UInt16
 	/// The total number of pages read in all comic books in this event
-	var pages_read: UInt16
+	var pagesRead: UInt16
 	
 	
-	init(event_name: String, 
-		 issues_read: UInt16,
-		 total_issues: UInt16,
-		 pages_read: UInt16) {
+	init(eventName: String,
+		 issuesRead: UInt16,
+		 totalIssues: UInt16,
+		 pagesRead: UInt16) {
 		
-		self.event_name = event_name
-		self.issues_read = issues_read
-		self.total_issues = total_issues
-		self.pages_read = pages_read
+		self.eventName = eventName
+		self.issuesRead = issuesRead
+		self.totalIssues = totalIssues
+		self.pagesRead = pagesRead
 	}
 }

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		214992AC2C55EC19004CAD3B /* Comic_TrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */; };
 		214992AE2C55EC19004CAD3B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992AD2C55EC19004CAD3B /* ContentView.swift */; };
-		214992B02C55EC19004CAD3B /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992AF2C55EC19004CAD3B /* Item.swift */; };
 		214992B22C55EC1B004CAD3B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 214992B12C55EC1B004CAD3B /* Assets.xcassets */; };
 		214992B52C55EC1B004CAD3B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 214992B42C55EC1B004CAD3B /* Preview Assets.xcassets */; };
 		214992BF2C55EC1B004CAD3B /* Comic_TrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992BE2C55EC1B004CAD3B /* Comic_TrackerTests.swift */; };
@@ -42,7 +41,6 @@
 		214992A82C55EC19004CAD3B /* Comic Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Comic Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comic_TrackerApp.swift; sourceTree = "<group>"; };
 		214992AD2C55EC19004CAD3B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		214992AF2C55EC19004CAD3B /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		214992B12C55EC1B004CAD3B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		214992B42C55EC1B004CAD3B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		214992BA2C55EC1B004CAD3B /* Comic TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Comic TrackerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -110,7 +108,6 @@
 				214992D92C561681004CAD3B /* ComicEvent.swift */,
 				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
 				214992AD2C55EC19004CAD3B /* ContentView.swift */,
-				214992AF2C55EC19004CAD3B /* Item.swift */,
 				214992B12C55EC1B004CAD3B /* Assets.xcassets */,
 				214992B32C55EC1B004CAD3B /* Preview Content */,
 			);
@@ -275,7 +272,6 @@
 			files = (
 				214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */,
 				214992AE2C55EC19004CAD3B /* ContentView.swift in Sources */,
-				214992B02C55EC19004CAD3B /* Item.swift in Sources */,
 				214992DA2C561681004CAD3B /* ComicEvent.swift in Sources */,
 				214992AC2C55EC19004CAD3B /* Comic_TrackerApp.swift in Sources */,
 				214992D82C560A11004CAD3B /* ComicData.swift in Sources */,
