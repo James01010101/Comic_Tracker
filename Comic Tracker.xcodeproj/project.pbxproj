@@ -15,6 +15,10 @@
 		214992BF2C55EC1B004CAD3B /* Comic_TrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992BE2C55EC1B004CAD3B /* Comic_TrackerTests.swift */; };
 		214992C92C55EC1B004CAD3B /* Comic_TrackerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992C82C55EC1B004CAD3B /* Comic_TrackerUITests.swift */; };
 		214992CB2C55EC1B004CAD3B /* Comic_TrackerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992CA2C55EC1B004CAD3B /* Comic_TrackerUITestsLaunchTests.swift */; };
+		214992D82C560A11004CAD3B /* ComicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992D72C560A11004CAD3B /* ComicData.swift */; };
+		214992DA2C561681004CAD3B /* ComicEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992D92C561681004CAD3B /* ComicEvent.swift */; };
+		214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992DB2C561750004CAD3B /* ComicSeries.swift */; };
+		214992DE2C567415004CAD3B /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 214992DD2C567415004CAD3B /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +50,10 @@
 		214992C42C55EC1B004CAD3B /* Comic TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Comic TrackerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		214992C82C55EC1B004CAD3B /* Comic_TrackerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comic_TrackerUITests.swift; sourceTree = "<group>"; };
 		214992CA2C55EC1B004CAD3B /* Comic_TrackerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comic_TrackerUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		214992D72C560A11004CAD3B /* ComicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicData.swift; sourceTree = "<group>"; };
+		214992D92C561681004CAD3B /* ComicEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicEvent.swift; sourceTree = "<group>"; };
+		214992DB2C561750004CAD3B /* ComicSeries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicSeries.swift; sourceTree = "<group>"; };
+		214992DD2C567415004CAD3B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +84,7 @@
 		2149929F2C55EC19004CAD3B = {
 			isa = PBXGroup;
 			children = (
+				214992DD2C567415004CAD3B /* .gitignore */,
 				214992AA2C55EC19004CAD3B /* Comic Tracker */,
 				214992BD2C55EC1B004CAD3B /* Comic TrackerTests */,
 				214992C72C55EC1B004CAD3B /* Comic TrackerUITests */,
@@ -96,6 +105,9 @@
 		214992AA2C55EC19004CAD3B /* Comic Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				214992D72C560A11004CAD3B /* ComicData.swift */,
+				214992DB2C561750004CAD3B /* ComicSeries.swift */,
+				214992D92C561681004CAD3B /* ComicEvent.swift */,
 				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
 				214992AD2C55EC19004CAD3B /* ContentView.swift */,
 				214992AF2C55EC19004CAD3B /* Item.swift */,
@@ -235,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				214992B52C55EC1B004CAD3B /* Preview Assets.xcassets in Resources */,
+				214992DE2C567415004CAD3B /* .gitignore in Resources */,
 				214992B22C55EC1B004CAD3B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,9 +273,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */,
 				214992AE2C55EC19004CAD3B /* ContentView.swift in Sources */,
 				214992B02C55EC19004CAD3B /* Item.swift in Sources */,
+				214992DA2C561681004CAD3B /* ComicEvent.swift in Sources */,
 				214992AC2C55EC19004CAD3B /* Comic_TrackerApp.swift in Sources */,
+				214992D82C560A11004CAD3B /* ComicData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,9 +445,11 @@
 				DEVELOPMENT_TEAM = 8WZVS92DKJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -458,9 +476,11 @@
 				DEVELOPMENT_TEAM = 8WZVS92DKJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
