@@ -12,9 +12,9 @@ import SwiftData
 struct Comic_TrackerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            ComicData.self,
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
@@ -22,6 +22,8 @@ struct Comic_TrackerApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+	
+
 
     var body: some Scene {
         WindowGroup {
