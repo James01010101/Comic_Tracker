@@ -18,6 +18,8 @@
 		214992DA2C561681004CAD3B /* ComicEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992D92C561681004CAD3B /* ComicEvent.swift */; };
 		214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992DB2C561750004CAD3B /* ComicSeries.swift */; };
 		214992DE2C567415004CAD3B /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 214992DD2C567415004CAD3B /* .gitignore */; };
+		216F87012C575E9A008DD50F /* AddNewComicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216F87002C575E9A008DD50F /* AddNewComicView.swift */; };
+		216F87032C578CD4008DD50F /* GeneralComicStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216F87022C578CD4008DD50F /* GeneralComicStats.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +54,8 @@
 		214992D92C561681004CAD3B /* ComicEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicEvent.swift; sourceTree = "<group>"; };
 		214992DB2C561750004CAD3B /* ComicSeries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicSeries.swift; sourceTree = "<group>"; };
 		214992DD2C567415004CAD3B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		216F87002C575E9A008DD50F /* AddNewComicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewComicView.swift; sourceTree = "<group>"; };
+		216F87022C578CD4008DD50F /* GeneralComicStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralComicStats.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,12 +108,14 @@
 			isa = PBXGroup;
 			children = (
 				214992D72C560A11004CAD3B /* ComicData.swift */,
+				216F87002C575E9A008DD50F /* AddNewComicView.swift */,
 				214992DB2C561750004CAD3B /* ComicSeries.swift */,
 				214992D92C561681004CAD3B /* ComicEvent.swift */,
 				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
 				214992AD2C55EC19004CAD3B /* ContentView.swift */,
 				214992B12C55EC1B004CAD3B /* Assets.xcassets */,
 				214992B32C55EC1B004CAD3B /* Preview Content */,
+				216F87022C578CD4008DD50F /* GeneralComicStats.swift */,
 			);
 			path = "Comic Tracker";
 			sourceTree = "<group>";
@@ -271,8 +277,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */,
+				216F87032C578CD4008DD50F /* GeneralComicStats.swift in Sources */,
 				214992AE2C55EC19004CAD3B /* ContentView.swift in Sources */,
 				214992DA2C561681004CAD3B /* ComicEvent.swift in Sources */,
+				216F87012C575E9A008DD50F /* AddNewComicView.swift in Sources */,
 				214992AC2C55EC19004CAD3B /* Comic_TrackerApp.swift in Sources */,
 				214992D82C560A11004CAD3B /* ComicData.swift in Sources */,
 			);

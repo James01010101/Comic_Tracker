@@ -20,7 +20,7 @@ class ComicData {
 	/// The year the first issue was first published, not the year this current issue was published (used to help distinguish series with the same name)
 	var yearFirstPublished: UInt16
 	/// WIthin a series which issue is this
-	var issueNum: UInt16
+	var issueNumber: UInt16
 	/// The total number of pages this comic has
 	var totalPages: UInt16
 	/// What event does this comic belong to
@@ -32,7 +32,7 @@ class ComicData {
 	init(readId: UInt32,
 		 comicFullTitle: String,
 		 yearFirstPublished: UInt16,
-		 issueNum: UInt16,
+		 issueNumber: UInt16,
 		 totalPages: UInt16,
 		 eventName: String,
 		 purpose: String) {
@@ -40,7 +40,7 @@ class ComicData {
 		self.readId = readId
 		self.comicFullTitle = comicFullTitle
 		self.yearFirstPublished = yearFirstPublished
-		self.issueNum = issueNum
+		self.issueNumber = issueNumber
 		self.totalPages = totalPages
 		self.eventName = eventName
 		self.purpose = purpose

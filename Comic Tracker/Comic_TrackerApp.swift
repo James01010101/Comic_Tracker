@@ -13,6 +13,7 @@ struct Comic_TrackerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             ComicData.self,
+			GeneralComicStats.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
