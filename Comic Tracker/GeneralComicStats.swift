@@ -20,11 +20,14 @@ class GeneralComicStats {
 	}
 	
 	
-	/// Increment the read ID and return it. Used to give a new comic book a unique ID
-	public func getNextReadId() -> UInt32 {
+	/// Get  the read ID and return it. Used to give a new comic book a unique ID
+	public func getReadId() -> UInt32 {
 		// increment and return the new readId
-		self.readId = self.readId + 1
 		return self.readId
+	}
+	
+	public func incrementReadId() {
+		self.readId = self.readId + 1
 	}
 }
 

@@ -31,7 +31,12 @@ struct ContentView: View {
 		NavigationStack {
 			List {
 				ForEach(comics) { comic in
-					Text("\(comic.readId)) \(comic.comicFullTitle) #\(comic.issueNumber)")
+					HStack {
+						Text("\(comic.readId))")
+							.frame(width: 40, alignment: .leading)
+						Text("\(comic.comicFullTitle) #\(comic.issueNumber)")
+							.padding(.leading, 10)
+					}
 				}
 				.onDelete(perform: deleteItems)
 			}
@@ -83,8 +88,8 @@ struct ContentView: View {
 		if (generalComicStats.count == 0) {
 			// it does not exist so ill create it
 			
-			// first read id is 0 since itll be incremented before first use
-			let newGeneralComicStats = GeneralComicStats(readId: 0)
+			// first read id is 1 since it wont increment before first use
+			let newGeneralComicStats = GeneralComicStats(readId: 1)
 			modelContext.insert(newGeneralComicStats)
 			
 			do {

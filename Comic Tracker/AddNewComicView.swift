@@ -33,7 +33,7 @@ struct AddNewComicView: View {
 					TextField("Read ID", text: $readId)
 						.onAppear {
 							if let stats = generalComicStats.first {
-								self.readId = String(stats.getNextReadId())
+								self.readId = String(stats.getReadId())
 							} else {
 								// Handle the case where generalComicStats is empty
 								print("GeneralComicStats is empty")
@@ -131,6 +131,12 @@ struct AddNewComicView: View {
 		
 		modelContext.insert(newComic)
 		try? modelContext.save()
+		
+		
+		// increment the readID (only do this once a comic has been submitted, otherwise i can cancel it and it shouldnt increase
+		if let stats = generalComicStats.first {
+			stats.incrementReadId()
+		}
 		
 		// Dismiss the view back to the main view
 		presentationMode.wrappedValue.dismiss()
