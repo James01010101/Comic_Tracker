@@ -15,11 +15,18 @@ import SwiftData
 class ComicData {
 	/// This is the nth comic i have read
 	var readId: UInt32
-	/// The full title of the comic book
-	var comicFullTitle: String
+	/// Brand eg (Marvel, Star Wars, FNAF)
+	var brand: String
+	/// The name of the full series (This is the main comic name. if multiple books in a series can have different names then they can be specified later)
+	var seriesName: String
+	/// (Optional. If left empty, defaults to seriesName) The name of this book if books in a series can have different names instead of issues
+	/// eg normal: JJK #1, #2.
+	/// Different names: Fasbear Frights: Into The Pit, Fasbear Frights: Fetch
+	/// This allows you to specify different names for the individual books if is isnt just an issue number change. (Still use issue numbers)
+	var individualComicName: String
 	/// The year the first issue was first published, not the year this current issue was published (used to help distinguish series with the same name)
 	var yearFirstPublished: UInt16
-	/// WIthin a series which issue is this
+	/// WIthin a series which issue is this (Required even if using IndividualComicName)
 	var issueNumber: UInt16
 	/// The total number of pages this comic has
 	var totalPages: UInt16
@@ -29,8 +36,10 @@ class ComicData {
 	var purpose: String
 	
 	
-	init(readId: UInt32,
-		 comicFullTitle: String,
+	init(readId: UInt32, 
+		 brand: String,
+		 seriesName: String,
+		 individualComicName: String,
 		 yearFirstPublished: UInt16,
 		 issueNumber: UInt16,
 		 totalPages: UInt16,
@@ -38,7 +47,9 @@ class ComicData {
 		 purpose: String) {
 		
 		self.readId = readId
-		self.comicFullTitle = comicFullTitle
+		self.brand = brand
+		self.seriesName = seriesName
+		self.individualComicName = individualComicName
 		self.yearFirstPublished = yearFirstPublished
 		self.issueNumber = issueNumber
 		self.totalPages = totalPages
