@@ -60,7 +60,7 @@ struct ContentView: View {
 					// Divider
 					Rectangle()
 						.frame(height: 3)  // Adjust the height for a bolder line
-						.padding(.top, 5)  // Optional: Add some padding below the divider
+						.padding(.top, 10)  // Optional: Add some padding below the divider
 						.padding(.horizontal, 10)
 			}
 				
