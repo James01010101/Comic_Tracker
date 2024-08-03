@@ -34,104 +34,105 @@ struct ContentView: View {
 	
 	var body: some View {
 		NavigationStack {
-			// this is to allow the heading to be drawn over the top of the list to get them closer together
-			ZStack(alignment: .top) {
-				VStack {
-					// headings stack
-					VStack(spacing: 0) {
-						HStack {
-							Text("ID")
-								.frame(width: readIdWidth, alignment: .center)
-								.font(.headline)
-								.padding(.leading, 15)
-							
-							Text("Comic Name")
-								.frame(maxWidth: .infinity, alignment: .center)
-								.font(.headline)
-								.padding(.leading, 15) // to adjust for the pages text being moved in slightly more
-							
-							
-							Text("Pages")
-								.frame(width: pagesWidth + 15, alignment: .center)
-								.font(.headline)
-								.padding(.trailing, 15)
-						}
-						.padding(.top, 10)
-						.padding(.bottom, -5)
+			VStack {
+				// headings stack
+				VStack(spacing: 0) {
+					HStack {
+						Text("ID")
+							.frame(width: readIdWidth, alignment: .center)
+							.font(.headline)
+							.padding(.leading, 15)
 						
-						// Divider
-						Rectangle()
-							.frame(height: 3)  // Adjust the height for a bolder line
-							.padding(.top, 5)  // Optional: Add some padding below the divider
-							.padding(.horizontal, 10)
-				}.zIndex(1)
+						Text("Comic Name")
+							.frame(maxWidth: .infinity, alignment: .center)
+							.font(.headline)
+							.padding(.leading, 15) // to adjust for the pages text being moved in slightly more
+						
+						
+						Text("Pages")
+							.frame(width: pagesWidth + 15, alignment: .center)
+							.font(.headline)
+							.padding(.trailing, 15)
+					}
+					.padding(.top, 10)
+					.padding(.bottom, -5)
 					
-					// list stack
-					List {
-						// most recently read comics
-						ForEach(comics) { comic in
-							HStack {
-								Text(String(comic.readId))
-									.frame(width: readIdWidth, alignment: .trailing)
-									.padding(.leading, -15)
-								
-								Divider()
-								
-								Text(createDisplayedComicString(comic: comic))
-									.frame(maxWidth: .infinity, alignment: .leading)
-								
-								Divider()
-								
-								Text(String(comic.totalPages))
-									.frame(width: pagesWidth, alignment: .leading)
-									.padding(.trailing, -15)
-							}
-							.padding(.vertical, -3)  // Optional: Add some vertical padding between rows
+					// Divider
+					Rectangle()
+						.frame(height: 3)  // Adjust the height for a bolder line
+						.padding(.top, 5)  // Optional: Add some padding below the divider
+						.padding(.horizontal, 10)
+			}
+				
+				// list stack
+				List {
+					// most recently read comics
+					ForEach(comics) { comic in
+						HStack {
+							Text(String(comic.readId))
+								.frame(width: readIdWidth, alignment: .trailing)
+								.padding(.leading, -15)
 							
+							Divider()
+							
+							Text(createDisplayedComicString(comic: comic))
+								.frame(maxWidth: .infinity, alignment: .leading)
+							
+							Divider()
+							
+							Text(String(comic.totalPages))
+								.frame(width: pagesWidth, alignment: .leading)
+								.padding(.trailing, -15)
 						}
-						.onDelete(perform: deleteItems)
+						.padding(.vertical, -3)  // Optional: Add some vertical padding between rows
+						
 					}
-					// less padding either side of the list
-					.padding(.leading, -10)
-					.padding(.trailing, -10)
-					
-					
-					// toolbar for the buttons
-					.toolbar {
-						ToolbarItem(placement: .navigationBarTrailing) {
-							EditButton()
+					.onDelete(perform: deleteItems)
+				}
+				// this shrinks the gap at the top of the list so it sits under the headers nicely
+				.onAppear(perform: {
+					UICollectionView.appearance().contentInset.top = -35
+				})
+				// less padding either side of the list
+				.padding(.leading, -10)
+				.padding(.trailing, -10)
+				
+				
+				// toolbar for the buttons
+				.toolbar {
+					ToolbarItem(placement: .navigationBarTrailing) {
+						EditButton()
+					}
+					ToolbarItem {
+						Button(action: addItem) {
+							Label("Add Comic", systemImage: "plus")
 						}
-						ToolbarItem {
-							Button(action: addItem) {
-								Label("Add Comic", systemImage: "plus")
-							}
-						}
 					}
-					
-					// when the add button is clicked show an action menu so you know to create a new or continuing series
-					.actionSheet(isPresented: $showingAddNewActionSheet) {
-						ActionSheet(
-							title: Text("Add New Comic"),
-							//message: Text("Choose an option"),
-							buttons: [
-								
-								.default(Text("New Series")) {
-									print("Adding New Series Comic")
-									// Handle new item creation
-									addNewComic()
-								},
-								.default(Text("Continuing Series")) {
-									print("Adding Continuing Series Comic")
-									// Handle continuing series
-									addContinuingSeriesComic()
-								},
-								.cancel()
-							]
-						)
-					}
-					.navigationDestination(isPresented: $navigateToAddNewComicView) {
-						AddNewComicView()
-					}
+				}
+				
+				// when the add button is clicked show an action menu so you know to create a new or continuing series
+				.actionSheet(isPresented: $showingAddNewActionSheet) {
+					ActionSheet(
+						title: Text("Add New Comic"),
+						//message: Text("Choose an option"),
+						buttons: [
+							
+							.default(Text("New Series")) {
+								print("Adding New Series Comic")
+								// Handle new item creation
+								addNewComic()
+							},
+							.default(Text("Continuing Series")) {
+								print("Adding Continuing Series Comic")
+								// Handle continuing series
+								addContinuingSeriesComic()
+							},
+							.cancel()
+						]
+					)
+				}
+				.navigationDestination(isPresented: $navigateToAddNewComicView) {
+					AddNewComicView()
 				}
 			}
 			.navigationTitle("Recent Comics")

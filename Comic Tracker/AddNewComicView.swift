@@ -22,7 +22,7 @@ struct AddNewComicView: View {
 	@State private var brandName: String = ""
 	@State private var seriesName: String = ""
 	@State private var individualComicName: String = ""
-	@State private var yearFirstPublished: Int = 0
+	@State private var yearFirstPublished: Int = 2000 // need something in range so it doesnt throw a warning in the picker on load
 	@State private var issueNumber: String = ""
 	@State private var totalPages: String = ""
 	@State private var eventName: String = ""
@@ -124,9 +124,10 @@ struct AddNewComicView: View {
 				}
 			}
 			.navigationTitle("Save New Comics")
+			.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
 			.scrollDismissesKeyboard(.interactively)
 		}
-		.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
+		
 	}
 
 	
