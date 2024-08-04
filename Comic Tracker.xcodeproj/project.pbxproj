@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		21255F112C5F569500349694 /* GlobalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21255F102C5F569500349694 /* GlobalState.swift */; };
 		214992AC2C55EC19004CAD3B /* Comic_TrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */; };
 		214992AE2C55EC19004CAD3B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992AD2C55EC19004CAD3B /* ContentView.swift */; };
 		214992B22C55EC1B004CAD3B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 214992B12C55EC1B004CAD3B /* Assets.xcassets */; };
@@ -19,7 +20,7 @@
 		214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214992DB2C561750004CAD3B /* ComicSeries.swift */; };
 		214992DE2C567415004CAD3B /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 214992DD2C567415004CAD3B /* .gitignore */; };
 		216F87012C575E9A008DD50F /* AddNewComicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216F87002C575E9A008DD50F /* AddNewComicView.swift */; };
-		216F87032C578CD4008DD50F /* GeneralComicStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216F87022C578CD4008DD50F /* GeneralComicStats.swift */; };
+		21D1B3FA2C5EFDB4001FE360 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		21255F102C5F569500349694 /* GlobalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalState.swift; sourceTree = "<group>"; };
 		214992A82C55EC19004CAD3B /* Comic Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Comic Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comic_TrackerApp.swift; sourceTree = "<group>"; };
 		214992AD2C55EC19004CAD3B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -55,7 +57,8 @@
 		214992DB2C561750004CAD3B /* ComicSeries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicSeries.swift; sourceTree = "<group>"; };
 		214992DD2C567415004CAD3B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		216F87002C575E9A008DD50F /* AddNewComicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewComicView.swift; sourceTree = "<group>"; };
-		216F87022C578CD4008DD50F /* GeneralComicStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralComicStats.swift; sourceTree = "<group>"; };
+		21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Comic-Tracker-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,15 +110,17 @@
 		214992AA2C55EC19004CAD3B /* Comic Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */,
+				21255F102C5F569500349694 /* GlobalState.swift */,
 				214992D72C560A11004CAD3B /* ComicData.swift */,
 				216F87002C575E9A008DD50F /* AddNewComicView.swift */,
 				214992DB2C561750004CAD3B /* ComicSeries.swift */,
 				214992D92C561681004CAD3B /* ComicEvent.swift */,
 				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
 				214992AD2C55EC19004CAD3B /* ContentView.swift */,
+				21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */,
 				214992B12C55EC1B004CAD3B /* Assets.xcassets */,
 				214992B32C55EC1B004CAD3B /* Preview Content */,
-				216F87022C578CD4008DD50F /* GeneralComicStats.swift */,
 			);
 			path = "Comic Tracker";
 			sourceTree = "<group>";
@@ -277,12 +282,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */,
-				216F87032C578CD4008DD50F /* GeneralComicStats.swift in Sources */,
+				21255F112C5F569500349694 /* GlobalState.swift in Sources */,
 				214992AE2C55EC19004CAD3B /* ContentView.swift in Sources */,
 				214992DA2C561681004CAD3B /* ComicEvent.swift in Sources */,
 				216F87012C575E9A008DD50F /* AddNewComicView.swift in Sources */,
 				214992AC2C55EC19004CAD3B /* Comic_TrackerApp.swift in Sources */,
 				214992D82C560A11004CAD3B /* ComicData.swift in Sources */,
+				21D1B3FA2C5EFDB4001FE360 /* PersistenceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,16 +449,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Comic Tracker/Preview Content\"";
 				DEVELOPMENT_TEAM = 8WZVS92DKJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Comic-Tracker-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -463,6 +472,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "James.Comic-Tracker";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -474,16 +484,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Comic Tracker/Preview Content\"";
 				DEVELOPMENT_TEAM = 8WZVS92DKJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Comic-Tracker-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -494,6 +507,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "James.Comic-Tracker";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

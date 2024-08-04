@@ -10,27 +10,14 @@ import SwiftData
 
 @main
 struct Comic_TrackerApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            ComicData.self,
-			GeneralComicStats.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-	
+	@StateObject private var persistenceController = PersistenceController.shared
 
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+				.environment(\.modelContext, persistenceController.context)
         }
-        .modelContainer(sharedModelContainer)
     }
 }
 

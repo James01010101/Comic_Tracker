@@ -13,8 +13,12 @@ struct AddNewComicView: View {
 	@Environment(\.modelContext) private var modelContext: ModelContext
 	@Environment(\.presentationMode) var presentationMode
 	
+	// this is used for all saving
+	@StateObject private var persistenceController = PersistenceController.shared
+	@StateObject private var globalState = GlobalState.shared
+
+	
 	// query variables
-	@Query private var generalComicStats: [GeneralComicStats]
 	@Query private var comics: [ComicData]
 	
 	
@@ -27,6 +31,7 @@ struct AddNewComicView: View {
 	@State private var totalPages: String = ""
 	@State private var eventName: String = ""
 	@State private var purpose: String = ""
+	@State private var dateRead: Date = Date()
 	
 
 	
@@ -39,7 +44,7 @@ struct AddNewComicView: View {
 							Image(systemName: "barcode")
 							TextField("Read ID", text: $readId)
 								.onAppear {
-									self.readId = String(self.comics.count)
+									self.readId = String(self.comics.count + 1)
 								}
 								.keyboardType(.phonePad)
 						}
@@ -111,6 +116,15 @@ struct AddNewComicView: View {
 						}
 					}
 					
+					Section(header: Text("Date Read")) {
+						HStack {
+							Image(systemName: "calendar")
+							DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
+								.datePickerStyle(GraphicalDatePickerStyle())
+							
+						}
+					}
+					
 					Section {
 						Button(action: saveComic) {
 							HStack {
@@ -126,6 +140,7 @@ struct AddNewComicView: View {
 			.navigationTitle("Save New Comics")
 			.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
 			.scrollDismissesKeyboard(.interactively)
+			//.padding(.top, 10)
 		}
 		
 	}
@@ -149,16 +164,21 @@ struct AddNewComicView: View {
 			issueNumber: UInt16(issueNumber) ?? 0,
 			totalPages: UInt16(totalPages) ?? 0,
 			eventName: eventName,
-			purpose: purpose
+			purpose: purpose,
+			dateRead: Date()
 		)
 		
+		// insert into and save the model context
 		modelContext.insert(newComic)
 		try? modelContext.save()
 		
 		
-		// increment the readID (only do this once a comic has been submitted, otherwise i can cancel it and it shouldnt increase
-		if let stats = generalComicStats.first {
-			stats.incrementReadId()
+		// autosave
+		if (globalState.autoSave) {
+			globalState.saveDataIcon = persistenceController.saveAllData()
+		} else {
+			// need to manually save because there have been changes
+			globalState.saveDataIcon = nil
 		}
 		
 		// Dismiss the view back to the main view
@@ -170,7 +190,7 @@ struct AddNewComicView: View {
 struct AddComicView_Previews: PreviewProvider {
 	static var previews: some View {
 		AddNewComicView()
-			.modelContainer(for: [ComicData.self, GeneralComicStats.self], inMemory: true)
+			.modelContainer(for: ComicData.self, inMemory: true)
 	}
 }
 
