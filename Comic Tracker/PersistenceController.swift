@@ -40,7 +40,12 @@ class PersistenceController: ObservableObject {
 		}
 		
 		// lastly load my saved backup data from disc
-		loadData()
+		let loadResult = loadAllData()
+		if (loadResult == false) {
+			fatalError("Could not load all data files")
+		}
+		// else if nil or true continue on nil will already print messages to debug
+				
 	}
 	
 	/// This is not the backup function. This should only be used internally in the Persistance Conteoller to save the context if needed. Ill be writing to my own backup file myself
@@ -53,52 +58,7 @@ class PersistenceController: ObservableObject {
 		}
 	}
 	
-	func saveAllData() -> Bool {
-		let fetchRequestComicData = FetchDescriptor<ComicData>()
-		let fetchRequestComicSeries = FetchDescriptor<ComicSeries>()
-		let fetchRequestComicEvent = FetchDescriptor<ComicEvent>()
-		
-		// backup ComicData
-		do {
-			let comics = try context.fetch(fetchRequestComicData)
-			let encoder = JSONEncoder()
-			let data = try encoder.encode(comics)
-			let url = getBackupDirectory().appendingPathComponent(comicDataBackupFilename)
-			try data.write(to: url)
-		} catch {
-			print("Failed to back up comic data data: \(error)")
-			return false
-		}
-		
-		// backup ComicSeries
-		do {
-			let comicsSeries = try context.fetch(fetchRequestComicSeries)
-			let encoder = JSONEncoder()
-			let data = try encoder.encode(comicsSeries)
-			let url = getBackupDirectory().appendingPathComponent(comicSeriesBackupFilename)
-			try data.write(to: url)
-		} catch {
-			print("Failed to back up comic series data: \(error)")
-			return false
-		}
-		
-		// backup ComicEvent
-		do {
-			let comicsEvents = try context.fetch(fetchRequestComicEvent)
-			let encoder = JSONEncoder()
-			let data = try encoder.encode(comicsEvents)
-			let url = getBackupDirectory().appendingPathComponent(comicEventBackupFilename)
-			try data.write(to: url)
-		} catch {
-			print("Failed to back up comic event data: \(error)")
-			return false
-		}
-		
-		print("Backup Successful")
-		return true
-	}
-	
-	
+	// get the directory for the back up
 	private func getBackupDirectory() -> URL {
 		let fileManager = FileManager.default
 		guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -116,21 +76,35 @@ class PersistenceController: ObservableObject {
 			}
 		}
 		
-		print(backupDirectory.absoluteString)
-		
+		//print(backupDirectory.absoluteString)
 		return backupDirectory
 	}
 	
+	// this just saves the comic data file
+	func saveComicData() -> Bool {
+		let fetchRequestComicData = FetchDescriptor<ComicData>()
+
+		do {
+			let comics = try context.fetch(fetchRequestComicData)
+			let encoder = JSONEncoder()
+			let data = try encoder.encode(comics)
+			let url = getBackupDirectory().appendingPathComponent(comicDataBackupFilename)
+			try data.write(to: url)
+		} catch {
+			print("Failed to back up comic data data: \(error)")
+			return false
+		}
+		return true
+	}
 	
-	func loadData() {
-		
-		// load comic data
+	// load the comic data file
+	func loadComicData() -> Bool? {
 		do {
 			// load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicDataBackupFilename)
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic data")
-				return
+				return nil
 			}
 			let decoder = JSONDecoder()
 			let comics = try decoder.decode([ComicData].self, from: data)
@@ -154,15 +128,37 @@ class PersistenceController: ObservableObject {
 			print("Successfully loaded " + String(comics.count) + " comics")
 		} catch {
 			print("Failed to decode comic data: \(error)")
+			return false
 		}
+		return true
+	}
+	
+	
+	// this just saves the comic series file
+	func saveComicSeries() -> Bool {
+		let fetchRequestComicSeries = FetchDescriptor<ComicSeries>()
 		
-		// load comic series
+		do {
+			let comicsSeries = try context.fetch(fetchRequestComicSeries)
+			let encoder = JSONEncoder()
+			let data = try encoder.encode(comicsSeries)
+			let url = getBackupDirectory().appendingPathComponent(comicSeriesBackupFilename)
+			try data.write(to: url)
+		} catch {
+			print("Failed to back up comic series data: \(error)")
+			return false
+		}
+		return true
+	}
+	
+	// load the comic series file
+	func loadComicSeries() -> Bool? {
 		do {
 			// load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicSeriesBackupFilename)
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic series")
-				return
+				return nil // not failed but the file doesnt exist
 			}
 			let decoder = JSONDecoder()
 			let comicSeries = try decoder.decode([ComicSeries].self, from: data)
@@ -182,15 +178,37 @@ class PersistenceController: ObservableObject {
 			print("Successfully loaded " + String(comicSeries.count) + " series")
 		} catch {
 			print("Failed to decode comic series data: \(error)")
+			return false
 		}
+		return true
+	}
+	
+	
+	// this just saves the comic event file
+	func saveComicEvent() -> Bool {
+		let fetchRequestComicEvent = FetchDescriptor<ComicEvent>()
 		
-		// load comic events
+		do {
+			let comicsEvents = try context.fetch(fetchRequestComicEvent)
+			let encoder = JSONEncoder()
+			let data = try encoder.encode(comicsEvents)
+			let url = getBackupDirectory().appendingPathComponent(comicEventBackupFilename)
+			try data.write(to: url)
+		} catch {
+			print("Failed to back up comic event data: \(error)")
+			return false
+		}
+		return true
+	}
+	
+	// load the comic series file
+	func loadComicEvent() -> Bool? {
 		do {
 			// load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicEventBackupFilename)
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic event")
-				return
+				return nil
 			}
 			let decoder = JSONDecoder()
 			let comicEvent = try decoder.decode([ComicEvent].self, from: data)
@@ -206,9 +224,58 @@ class PersistenceController: ObservableObject {
 			}
 			
 			self.saveContext()
-			print("Successfully loaded " + String(comicEvent.count) + " event")
+			print("Successfully loaded " + String(comicEvent.count) + " events")
 		} catch {
 			print("Failed to decode comic event data: \(error)")
+			return false
 		}
+		return true
+	}
+	
+	
+	/// runs through and saves each file seperatly
+	/// returns:
+	/// true: if all files were successfully saved
+	/// false: if any files failed to save
+	func saveAllData() -> Bool {
+		
+		// save each file
+		let saveComicDataSuccess: Bool = saveComicData()
+		let saveComicSeriesSuccess: Bool = saveComicSeries()
+		let saveComicEventSuccess: Bool = saveComicEvent()
+		
+		
+		// check that they were all successful
+		if (saveComicDataSuccess && saveComicSeriesSuccess && saveComicEventSuccess) {
+			print("Backup Successful")
+			return true
+		} else {
+			return false
+		}
+	}
+	
+	
+	/// runs through and loads each file seperatly
+	/// returns:
+	/// false: if any files failed to load
+	/// nil: if no files failed to load but some couldnt be found or were new
+	/// true: if all files were successfully loaded
+	func loadAllData() -> Bool? {
+		
+		// load each file
+		let loadComicDataSuccess: Bool? = loadComicData()
+		let loadComicSeriesSuccess: Bool? = loadComicSeries()
+		let loadComicEventSuccess: Bool? = loadComicEvent()
+		
+		// check for any false values first
+		if loadComicDataSuccess == false || loadComicSeriesSuccess == false || loadComicEventSuccess == false {
+			return false
+		}
+		// then check for any nil values next
+		else if loadComicDataSuccess == nil || loadComicSeriesSuccess == nil || loadComicEventSuccess == nil {
+			return nil
+		}
+		// If none are false or nil, all must be true
+		return true
 	}
 }
