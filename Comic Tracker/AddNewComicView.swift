@@ -20,6 +20,8 @@ struct AddNewComicView: View {
 	
 	// query variables
 	@Query private var comics: [ComicData]
+	@Query private var series: [ComicSeries]
+	@Query private var events: [ComicEvent]
 	
 	
 	@State private var readId: String = ""
@@ -71,6 +73,14 @@ struct AddNewComicView: View {
 						}
 					}
 					
+					Section(header: Text("Issue Number")) {
+						HStack {
+							Image(systemName: "number.circle")
+							TextField("Issue Number", text: $issueNumber)
+								.keyboardType(.numberPad)
+						}
+					}
+					
 					Section(header: Text("Year First Published")) {
 						HStack {
 							Image(systemName: "calendar")
@@ -83,14 +93,6 @@ struct AddNewComicView: View {
 							.onAppear {
 								self.yearFirstPublished = Calendar.current.component(.year, from: Date())
 							}
-						}
-					}
-					
-					Section(header: Text("Issue Number")) {
-						HStack {
-							Image(systemName: "number.circle")
-							TextField("Issue Number", text: $issueNumber)
-								.keyboardType(.numberPad)
 						}
 					}
 					
@@ -156,7 +158,6 @@ struct AddNewComicView: View {
 	// save the newly created comic to the modelContext
 	private func saveComic() {
 		let newComic = ComicData(
-			readId: UInt32(readId) ?? 0,
 			brand: brandName,
 			seriesName: seriesName,
 			individualComicName: individualComicName,
@@ -168,8 +169,71 @@ struct AddNewComicView: View {
 			dateRead: Date()
 		)
 		
-		// insert into and save the model context
+		// insert into the model context
 		modelContext.insert(newComic)
+		
+		// create a new series object for it if it doesnt exist
+		if (seriesName != "") { // should always have a series
+			// see if i already have a series with the name
+			var foundSeries = false
+			for s in series {
+				if (seriesName == s.seriesTitle) {
+					// the series exists so add to it
+					s.issuesRead += 1
+					s.pagesRead += newComic.totalPages
+					
+					// dont want to continue searching
+					foundSeries = true
+					break
+				}
+			}
+			
+			// if i didn't find the series then i need to create it
+			if (!foundSeries) {
+				let newSeries = ComicSeries(
+					seriesTitle: newComic.seriesName,
+					yearFirstPublished: newComic.yearFirstPublished,
+					issuesRead: 1, // since this is the first comic in this series
+					totalIssues: 0, // should never be 0 so this is default until set later
+					pagesRead: newComic.totalPages
+				)
+				// insert into the model context
+				modelContext.insert(newSeries)
+			}
+		}
+		
+		
+		// create a new event object for it if it doesnt exist
+		if (eventName != "") { // dont need a event
+			// see if i already have a event with the name
+			var foundEvent = false
+			for e in events {
+				if (eventName == e.eventName) {
+					// the event exists so add to it
+					e.issuesRead += 1
+					e.pagesRead += newComic.totalPages
+					
+					// dont want to continue searching
+					foundEvent = true
+					break
+				}
+			}
+			
+			// if i didn't find the event then i need to create it
+			if (!foundEvent) {
+				let newEvent = ComicEvent(
+					eventName: newComic.eventName,
+					issuesRead: 1,
+					totalIssues: 0,
+					pagesRead: newComic.totalPages
+				)
+				// insert into the model context
+				modelContext.insert(newEvent)
+			}
+		}
+		
+		
+		// finally save the model
 		try? modelContext.save()
 		
 		
