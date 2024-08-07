@@ -22,7 +22,9 @@ struct ContentView: View {
 	
 	// query variables (these are stored in the modelContext and are persistant)
 	/// This will store all of my individual comic books data and should persist
-	@Query(sort: \ComicData.readId, order: .reverse) private var comics: [ComicData]
+	@Query(sort: \ComicData.comicId, order: .reverse) private var comics: [ComicData]
+	@Query private var series: [ComicSeries]
+	@Query private var events: [ComicEvent]
 	
 	
 	/// This is used to trigger the add new comic action sheet with options of new or continuing series
@@ -72,7 +74,7 @@ struct ContentView: View {
 					// most recently read comics
 					ForEach(comics) { comic in
 						HStack {
-							Text(String(comic.readId))
+							Text(String(comic.comicId))
 								.frame(width: readIdWidth, alignment: .trailing)
 								.padding(.leading, -10)
 							
@@ -212,7 +214,6 @@ struct ContentView: View {
 	private func addSomeTestingData() {
 		// add some testing comics
 		var newComic = ComicData(
-			readId: 1,
 			brand: "Marvel",
 			seriesName: "Infinity Gauntlet",
 			individualComicName: "",
@@ -226,7 +227,6 @@ struct ContentView: View {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 2,
 			brand: "Marvel",
 			seriesName: "Infinity Gauntlet",
 			individualComicName: "",
@@ -240,7 +240,6 @@ struct ContentView: View {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 3,
 			brand: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
@@ -254,7 +253,6 @@ struct ContentView: View {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 14,
 			brand: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
@@ -268,7 +266,6 @@ struct ContentView: View {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 85,
 			brand: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
@@ -282,7 +279,6 @@ struct ContentView: View {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 106,
 			brand: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Silver Eyes",
@@ -296,7 +292,6 @@ struct ContentView: View {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 507,
 			brand: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Twisted Ones",
@@ -310,7 +305,6 @@ struct ContentView: View {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 708,
 			brand: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Fourth Closet",
@@ -324,7 +318,6 @@ struct ContentView: View {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 9999,
 			brand: "Marvel",
 			seriesName: "Deadpool & Wolverine: WWIII",
 			individualComicName: "",
@@ -356,7 +349,6 @@ struct ContentView_Previews: PreviewProvider {
 		
 		// add some testing comics
 		var newComic = ComicData(
-			readId: 1,
 			brand: "Marvel",
 			seriesName: "Infinity Gauntlet",
 			individualComicName: "",
@@ -370,7 +362,6 @@ struct ContentView_Previews: PreviewProvider {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 2,
 			brand: "Marvel",
 			seriesName: "Infinity Gauntlet",
 			individualComicName: "",
@@ -384,7 +375,6 @@ struct ContentView_Previews: PreviewProvider {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 3,
 			brand: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
@@ -398,7 +388,6 @@ struct ContentView_Previews: PreviewProvider {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 14,
 			brand: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
@@ -412,7 +401,6 @@ struct ContentView_Previews: PreviewProvider {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 85,
 			brand: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
@@ -426,7 +414,6 @@ struct ContentView_Previews: PreviewProvider {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 106,
 			brand: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Silver Eyes",
@@ -440,7 +427,6 @@ struct ContentView_Previews: PreviewProvider {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 507,
 			brand: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Twisted Ones",
@@ -454,7 +440,6 @@ struct ContentView_Previews: PreviewProvider {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 708,
 			brand: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Fourth Closet",
@@ -468,7 +453,6 @@ struct ContentView_Previews: PreviewProvider {
 		modelContext.insert(newComic)
 		
 		newComic = ComicData(
-			readId: 9999,
 			brand: "Marvel",
 			seriesName: "Deadpool & Wolverine: WWIII",
 			individualComicName: "",

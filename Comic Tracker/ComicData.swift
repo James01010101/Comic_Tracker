@@ -13,8 +13,11 @@ import SwiftData
  */
 @Model
 class ComicData: Codable {
-	/// This is the nth comic i have read
-	var readId: UInt32
+	/// this is used as a static id, so everytime i create a new comic it gets incremented and given to that comic so they each get a unique id
+	static var staticComicId: UInt32 = 0
+	
+	/// This is the nth comic i have read, it is an id which mainly shows the order of comics i have read but is alsy used to uniquely id each comic
+	var comicId: UInt32
 	/// Brand eg (Marvel, Star Wars, FNAF)
 	var brand: String
 	/// The name of the full series (This is the main comic name. if multiple books in a series can have different names then they can be specified later)
@@ -39,8 +42,7 @@ class ComicData: Codable {
 	//var test: Int
 	
 	
-	init(readId: UInt32,
-		 brand: String,
+	init(brand: String,
 		 seriesName: String,
 		 individualComicName: String,
 		 yearFirstPublished: UInt16,
@@ -50,7 +52,8 @@ class ComicData: Codable {
 		 purpose: String,
 		 dateRead: Date) {
 		
-		self.readId = readId
+		ComicData.staticComicId += 1
+		self.comicId = ComicData.staticComicId
 		self.brand = brand
 		self.seriesName = seriesName
 		self.individualComicName = individualComicName
@@ -65,7 +68,7 @@ class ComicData: Codable {
 	
 	// Conformance to Codable
 	enum CodingKeys: String, CodingKey {
-		case readId
+		case comicId
 		case brand
 		case seriesName
 		case individualComicName
@@ -80,7 +83,13 @@ class ComicData: Codable {
 	
 	required init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
-		readId = try container.decode(UInt32.self, forKey: .readId)
+		
+		// the id is saved in the files to keep the order so i need to update the static id everytime so if i add a new comic it is at the right value
+		let tmpComicId = try container.decode(UInt32.self, forKey: .comicId)
+		comicId = tmpComicId
+		ComicData.staticComicId = tmpComicId
+		
+		comicId = try container.decode(UInt32.self, forKey: .comicId)
 		brand = try container.decode(String.self, forKey: .brand)
 		seriesName = try container.decode(String.self, forKey: .seriesName)
 		individualComicName = try container.decode(String.self, forKey: .individualComicName)
@@ -95,7 +104,8 @@ class ComicData: Codable {
 	
 	func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
-		try container.encode(readId, forKey: .readId)
+		
+		try container.encode(comicId, forKey: .comicId)
 		try container.encode(brand, forKey: .brand)
 		try container.encode(seriesName, forKey: .seriesName)
 		try container.encode(individualComicName, forKey: .individualComicName)
