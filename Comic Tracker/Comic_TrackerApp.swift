@@ -8,44 +8,17 @@
 import SwiftUI
 import SwiftData
 
+/// Main function to start my program
 @main
 struct Comic_TrackerApp: App {
+	/// Store the static instance of the ``PersistenceController``
 	@StateObject private var persistenceController = PersistenceController.shared
-
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
+	
+	
+	var body: some Scene {
+		WindowGroup {
+			ContentView()
 				.environment(\.modelContext, persistenceController.context)
-        }
-    }
+		}
+	}
 }
-
-/*
- OLD EXAMPLE CODE
- import SwiftUI
- import SwiftData
-
- @main
- struct Comic_TrackerApp: App {
-	 var sharedModelContainer: ModelContainer = {
-		 let schema = Schema([
-			 Item.self,
-		 ])
-		 let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-		 do {
-			 return try ModelContainer(for: schema, configurations: [modelConfiguration])
-		 } catch {
-			 fatalError("Could not create ModelContainer: \(error)")
-		 }
-	 }()
-
-	 var body: some Scene {
-		 WindowGroup {
-			 ContentView()
-		 }
-		 .modelContainer(sharedModelContainer)
-	 }
- }
- */

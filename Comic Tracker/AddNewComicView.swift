@@ -9,33 +9,56 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+/// View used for adding new comics to the ``ComicData`` array.
+///
+/// Part of this data can be auto filled if I am creating a new comic from an existing series.
 struct AddNewComicView: View {
+	/// Stores all of the data this view uses.
+	/// > Important: Should be removed later and all data modifications should go through the ``PersistenceController``
 	@Environment(\.modelContext) private var modelContext: ModelContext
+	/// Enables me to return back to the calling view once i submit or cancel creating my new comic.
 	@Environment(\.presentationMode) var presentationMode
 	
-	// this is used for all saving
+	/// Controls all persistent data this view uses.
 	@StateObject private var persistenceController = PersistenceController.shared
+	/// Controls all global variables this view uses.
 	@StateObject private var globalState = GlobalState.shared
-
 	
-	// query variables
+	
+	// query variables (these are stored in the modelContext and are persistant)
+	/// Stores an array of ``ComicData`` which contains all of the individual comic books, which are stored in the ``PersistenceController``.
 	@Query private var comics: [ComicData]
+	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
 	@Query private var series: [ComicSeries]
+	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
 	@Query private var events: [ComicEvent]
 	
-	
+	// Values used by the form to store the input fields for the new comic being added.
+	/// New unique id for this comic amongst the others in the ``ComicData`` array.
+	///
+	/// This will be the previous `comicId` + 1. This is not user given.
 	@State private var readId: String = ""
+	/// The brand of the comic, example "Marvel".
 	@State private var brandName: String = ""
+	/// The name of the series this comic is apart of.
 	@State private var seriesName: String = ""
+	/// The name of this specific comic, if it's different for every book in the series (Optional).
 	@State private var individualComicName: String = ""
-	@State private var yearFirstPublished: Int = 2000 // need something in range so it doesnt throw a warning in the picker on load
+	/// The year the first book in this series was first published.
+	///
+	/// Needs a default value in the range as to not throw errors when initially loading the picker.
+	@State private var yearFirstPublished: Int = 2000
+	/// The issue number of this specific comic book.
 	@State private var issueNumber: String = ""
+	/// The total number of pages this comic book has.
 	@State private var totalPages: String = ""
+	/// The name of the event this comic is apart of (Optional).
 	@State private var eventName: String = ""
+	/// The reason I read this comic, could be for a character or story or event.
 	@State private var purpose: String = ""
+	/// The date I read this comic.
 	@State private var dateRead: Date = Date()
 	
-
 	
 	var body: some View {
 		NavigationView {
@@ -86,7 +109,7 @@ struct AddNewComicView: View {
 							Image(systemName: "calendar")
 							Picker("Year First Published", selection: $yearFirstPublished) {
 								ForEach(1800...2100, id: \.self) { year in
-									Text(formattedNumber(year)).tag(year)
+									Text(formattedNumber(number: year)).tag(year)
 								}
 							}
 							.pickerStyle(MenuPickerStyle())
@@ -123,7 +146,6 @@ struct AddNewComicView: View {
 							Image(systemName: "calendar")
 							DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
 								.datePickerStyle(GraphicalDatePickerStyle())
-							
 						}
 					}
 					
@@ -142,20 +164,27 @@ struct AddNewComicView: View {
 			.navigationTitle("Save New Comics")
 			.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
 			.scrollDismissesKeyboard(.interactively)
-			//.padding(.top, 10)
 		}
-		
 	}
-
 	
-	// format the numbers without commas
-	private func formattedNumber(_ number: Int) -> String {
+	
+	/// Used to format the numbers without commas in the year picker.
+	/// 
+	/// - Parameter number: input `Int` to format without comma's.
+	/// - Returns: Formated `String` of an `Int` without comma's.
+	private func formattedNumber(number: Int) -> String {
 		let numberFormatter = NumberFormatter()
 		numberFormatter.usesGroupingSeparator = false
 		return numberFormatter.string(from: NSNumber(value: number)) ?? "\(number)"
 	}
 	
-	// save the newly created comic to the modelContext
+	
+	/// Save the newly created comic to the modelContext.
+	///
+	/// This will also create a new ``ComicSeries`` and/or ``ComicEvent`` if it didnt exist before.
+	/// It will add to the ``ComicSeries`` and/or ``ComicEvent`` if they exist.
+	///
+	/// Once successfully saved or canceled this will return back to the calling view, usually the main ``ContentView``.
 	private func saveComic() {
 		let newComic = ComicData(
 			brand: brandName,
@@ -169,12 +198,12 @@ struct AddNewComicView: View {
 			dateRead: Date()
 		)
 		
-		// insert into the model context
+		// Insert into the model context
 		modelContext.insert(newComic)
 		
-		// create a new series object for it if it doesnt exist
+		// Create a new series object for it if it doesnt exist
 		if (seriesName != "") { // should always have a series
-			// see if i already have a series with the name
+			// See if i already have a series with the name
 			var foundSeries = false
 			for s in series {
 				if (seriesName == s.seriesTitle) {
@@ -188,7 +217,7 @@ struct AddNewComicView: View {
 				}
 			}
 			
-			// if i didn't find the series then i need to create it
+			// If I didn't find the series then i need to create it
 			if (!foundSeries) {
 				let newSeries = ComicSeries(
 					seriesTitle: newComic.seriesName,
@@ -203,7 +232,7 @@ struct AddNewComicView: View {
 		}
 		
 		
-		// create a new event object for it if it doesnt exist
+		// Create a new event object for it if it doesnt exist
 		if (eventName != "") { // dont need a event
 			// see if i already have a event with the name
 			var foundEvent = false
@@ -219,7 +248,7 @@ struct AddNewComicView: View {
 				}
 			}
 			
-			// if i didn't find the event then i need to create it
+			// If I didn't find the event then i need to create it
 			if (!foundEvent) {
 				let newEvent = ComicEvent(
 					eventName: newComic.eventName,
@@ -237,7 +266,7 @@ struct AddNewComicView: View {
 		try? modelContext.save()
 		
 		
-		// autosave
+		// Autosave
 		if (globalState.autoSave) {
 			globalState.saveDataIcon = persistenceController.saveAllData()
 		} else {
@@ -248,13 +277,13 @@ struct AddNewComicView: View {
 		// Dismiss the view back to the main view
 		presentationMode.wrappedValue.dismiss()
 	}
-	
 }
 
+
+/// The preview for the ``AddNewComicView``.
 struct AddComicView_Previews: PreviewProvider {
 	static var previews: some View {
 		AddNewComicView()
 			.modelContainer(for: ComicData.self, inMemory: true)
 	}
 }
-

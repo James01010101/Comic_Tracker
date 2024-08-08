@@ -8,40 +8,63 @@
 import Foundation
 import SwiftData
 
-/**
- Stores all necessary data for an individual comic book and how it related to events and series
- */
+/// Stores all necessary data for an individual comic book and how it relates to events and series.
+///
+/// It must conform to `Codable` because this enables it to be converted to and from `JSON`, which is used for writing and reading from the backup files.
 @Model
 class ComicData: Codable {
-	/// this is used as a static id, so everytime i create a new comic it gets incremented and given to that comic so they each get a unique id
+	/// This is used as a static unique id for each comic.
+	///
+	/// Everytime I create a new comic it gets incremented and given to the new comic so they each get a unique id. This is also used to know the order that I read the comics.
 	static var staticComicId: UInt32 = 0
 	
-	/// This is the nth comic i have read, it is an id which mainly shows the order of comics i have read but is alsy used to uniquely id each comic
+	/// This is the n'th comic I have read, it is an id which mainly shows the order of comics I have read, but is also used to uniquely identify each comic.
 	var comicId: UInt32
-	/// Brand eg (Marvel, Star Wars, FNAF)
+	/// Brand this comic is from, example: (Marvel, Star Wars, FNAF).
 	var brand: String
-	/// The name of the full series (This is the main comic name. if multiple books in a series can have different names then they can be specified later)
+	/// The name of the series this comic is part of.
+	///
+	/// This is the main comic's name. If multiple books in a series can have different names then they can be specified later in the ``individualComicName``.
 	var seriesName: String
-	/// (Optional. If left empty, defaults to seriesName) The name of this book if books in a series can have different names instead of issues
-	/// eg normal: JJK #1, #2.
-	/// Different names: Fasbear Frights: Into The Pit, Fasbear Frights: Fetch
-	/// This allows you to specify different names for the individual books if is isnt just an issue number change. (Still use issue numbers)
+	/// The name of this book if books in a series can have different names, instead of, or including, issues (Optional).
+	///
+	/// - Examples:
+	///   - Normal case:
+	///     - JJK #1
+	///     - JJK #2
+	///   - Different case: 
+	///     - Fasbear Frights: Into The Pit
+	///     - Fasbear Frights: Fetch
+	///
+	/// This allows you to specify different names for the individual books, if it isn't just an issue number change (Still use issue numbers).
 	var individualComicName: String
-	/// The year the first issue was first published, not the year this current issue was published (used to help distinguish series with the same name)
+	/// Year the first issue of this series was first published.
+	/// 
+	/// Used to help distinguish series with the same name, but that were released in different years.
+	/// 
+	/// > Important: Not the year this current issue was published.
 	var yearFirstPublished: UInt16
-	/// WIthin a series which issue is this (Required even if using IndividualComicName)
+	/// WIthin a series which issue is this.
+	///
+	/// Required even if using ``individualComicName``.
 	var issueNumber: UInt16
-	/// The total number of pages this comic has
+	/// The total number of pages this comic has.
 	var totalPages: UInt16
-	/// What event does this comic belong to
+	/// What event does this comic belong to (Optional).
 	var eventName: String
-	/// Give the comic a purpose as to why it was read
+	/// Give the comic a purpose as to why it was read.
+	///
+	/// Did I read it for a specific character or group of event?
 	var purpose: String
-	/// The date this comic was read (Automatically filled in when a comic is added) Old comics will just be none because i dont have the exact date
+	/// The date this comic was read.
+	///
+	/// Automatically filled in when a comic is added, but can be manually set.
 	var dateRead: Date
-	//var test: Int
 	
 	
+	/// Creates a new ``ComicData``.
+	///
+	/// This will also give it it's new unique id.
 	init(brand: String,
 		 seriesName: String,
 		 individualComicName: String,
@@ -63,10 +86,9 @@ class ComicData: Codable {
 		self.eventName = eventName
 		self.purpose = purpose
 		self.dateRead = dateRead
-		//self.test = 0
 	}
 	
-	// Conformance to Codable
+	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
 		case comicId
 		case brand
@@ -78,13 +100,14 @@ class ComicData: Codable {
 		case eventName
 		case purpose
 		case dateRead
-		//case test
 	}
 	
+	/// Conformance to Codable,  a decoder function to take a `JSON` decoder object read in from my backup file and create a new ``ComicData`` from it.
+	/// - Parameter decoder: Takes a ``Decoder`` and creates a new ``ComicData`` from it.
 	required init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		
-		// the id is saved in the files to keep the order so i need to update the static id everytime so if i add a new comic it is at the right value
+		// The id is saved in the files to keep the order so i need to update the static id everytime so if i add a new comic it is at the right value
 		let tmpComicId = try container.decode(UInt32.self, forKey: .comicId)
 		comicId = tmpComicId
 		ComicData.staticComicId = tmpComicId
@@ -99,9 +122,10 @@ class ComicData: Codable {
 		eventName = try container.decode(String.self, forKey: .eventName)
 		purpose = try container.decode(String.self, forKey: .purpose)
 		dateRead = try container.decode(Date.self, forKey: .dateRead)
-		//test = try container.decode(Int.self, forKey: .test)
 	}
 	
+	/// Conformance to Codable,  a encoder function to encode my ``ComicData`` into `JSON` to be written to a file.
+	/// - Parameter encoder: Takes an ``Encoder`` and encoders `this` into it.
 	func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		
@@ -115,6 +139,5 @@ class ComicData: Codable {
 		try container.encode(eventName, forKey: .eventName)
 		try container.encode(purpose, forKey: .purpose)
 		try container.encode(dateRead, forKey: .dateRead)
-		//try container.encode(test, forKey: .test)
 	}
 }

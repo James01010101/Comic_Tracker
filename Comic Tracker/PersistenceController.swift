@@ -4,24 +4,42 @@
 //
 //  Created by James Coldwell on 4/8/2024.
 //
-// This class will be used for loading/unloading and backing up and restoring my data from icloud
-// In the case where i change the Data Structures that are saved to disc they wont be able to be
-// correctly loaded so ill need to restore from a backed up json file instead
 
 import SwiftUI
 import SwiftData
 import CloudKit
 
+/// This class will be used for storing/loading/backing up all persistant data
+/// 
+/// This data is saved to the file system (not currently icloud). This makes sure that I have saved back-up data so if I change the underlying data structures it wont be currupted when loading in the old data.
+///
+/// All data structures that are saved are saved into the `JSON` file format, which requires each class to be `Codable`
+///
+/// Currently there are backup files for: ``ComicData``, ``ComicSeries``, ``ComicEvent``
+///
+/// > Important: If I change the underlying data structures which are loaded by this class, some conversion function will need to be created to convert the old data from the file into the new format. Most likely using `nil` values for new fields that didn't exist before.
+///
+/// > Note: If the free 3 month trial of the app runs out, having your data saved to a backup file means you won't lose any data when you go to load the app again the next time.
 class PersistenceController: ObservableObject {
+	/// This is the static instance of this class, there should only ever be once instance of this class that should be used across the project
 	static let shared = PersistenceController()
 	
+	/// Is the container that defines how the data is stored in the ``context``
 	let container: ModelContainer
+	/// Contains all os the main data the project uses, data is loaded from files into this, and backed up from this into files
 	@Published var context: ModelContext
 	
+	/// The filename for the ``ComicData`` backup file
 	let comicDataBackupFilename: String = "backup_comic_data.json"
+	/// The filename for the ``ComicSeries`` backup file
 	let comicSeriesBackupFilename: String = "backup_comic_series.json"
+	/// The filename for the ``ComicEvent`` backup file
 	let comicEventBackupFilename: String = "backup_comic_event.json"
 	
+	
+	/// Initialises all data the app needs
+	///
+	/// It will read in all files into there corresponding data structures in the ``context``
 	init() {
 		let schema = Schema([
 			ComicData.self,
@@ -34,21 +52,27 @@ class PersistenceController: ObservableObject {
 			self.container = try ModelContainer(for: schema, configurations: [modelConfiguration])
 			self.context = ModelContext(self.container)
 		} catch {
-			// this shouldnt run since itll never load data from the disc since im only storing it in memory
-			// itll load the data from my backup file everytime
+			// This shouldnt run since itll never load data from the disc since im only storing it in memory
+			// It'll load the data from my backup file everytime
 			fatalError("Could not create ModelContainer: \(error)")
 		}
 		
-		// lastly load my saved backup data from disc
+		// Lastly load my saved backup data from disc
 		let loadResult = loadAllData()
 		if (loadResult == false) {
 			fatalError("Could not load all data files")
 		}
-		// else if nil or true continue on nil will already print messages to debug
-				
+		// Else if nil or true continue on nil will already print messages to debug
+		
 	}
 	
-	/// This is not the backup function. This should only be used internally in the Persistance Conteoller to save the context if needed. Ill be writing to my own backup file myself
+	/// This is used to save the context data although ModelContext only exists in memory so this isnt used,
+	///
+	/// This should only be used internally in the ``PersistenceController`` to save the context if needed. I'll be writing to my own backup file myself
+	///
+	/// > Important: This is not the backup function, and does not write files to disc since data is stored in memory only, it just saves what is in the model context
+	///
+	/// > Note: To save files to disc call the ``saveAllData()`` function, which will save all data to their files on disc
 	func saveContext() {
 		do {
 			try context.save()
@@ -58,7 +82,9 @@ class PersistenceController: ObservableObject {
 		}
 	}
 	
-	// get the directory for the back up
+	/// Get the directory to save the backup files to
+	///
+	/// - Returns: ``URL`` - Which contains a directory object to the backup files directory
 	private func getBackupDirectory() -> URL {
 		let fileManager = FileManager.default
 		guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -76,14 +102,15 @@ class PersistenceController: ObservableObject {
 			}
 		}
 		
-		//print(backupDirectory.absoluteString)
 		return backupDirectory
 	}
 	
-	// this just saves the comic data file
+	/// Saves the ``ComicData`` from the ``context`` to its own backup file at ``comicDataBackupFilename`` in `JSON` format
+	///
+	/// - Returns: ``Bool`` - Letting the user know if the save was successful or not
 	func saveComicData() -> Bool {
 		let fetchRequestComicData = FetchDescriptor<ComicData>()
-
+		
 		do {
 			let comics = try context.fetch(fetchRequestComicData)
 			let encoder = JSONEncoder()
@@ -97,10 +124,20 @@ class PersistenceController: ObservableObject {
 		return true
 	}
 	
-	// load the comic data file
+	
+	/// Loads the ``ComicData`` `JSON` file into the ``context`` from its backup file at ``comicDataBackupFilename``
+	///
+	///	- Return values:
+	///	  - `true`: Successfully loaded.
+	///   - `false`: Failed to load.
+	///   - `nil`: The file doesn't exist.
+	///
+	///   Return value of `nil` isn't bad it might just mean that this is a new data structure which is empty so the file doesn't exist yet.
+	///
+	/// - Returns: `Bool?` - Showing the status of the load, whether it loaded the file correctly or not
 	func loadComicData() -> Bool? {
 		do {
-			// load the most recent backup file and get all of the elements from that file
+			// Load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicDataBackupFilename)
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic data")
@@ -134,7 +171,9 @@ class PersistenceController: ObservableObject {
 	}
 	
 	
-	// this just saves the comic series file
+	/// Saves the ``ComicSeries`` from the ``context`` to its own backup file at ``comicDataBackupFilename`` in `JSON` format
+	///
+	/// - Returns: ``Bool`` - Letting the user know if the save was successful or not
 	func saveComicSeries() -> Bool {
 		let fetchRequestComicSeries = FetchDescriptor<ComicSeries>()
 		
@@ -151,14 +190,24 @@ class PersistenceController: ObservableObject {
 		return true
 	}
 	
-	// load the comic series file
+	
+	/// Loads the ``ComicSeries`` `JSON` file into the ``context`` from its backup file at ``comicDataBackupFilename``
+	///
+	///	- Return values:
+	///	  - `true`: Successfully loaded.
+	///   - `false`: Failed to load.
+	///   - `nil`: The file doesn't exist.
+	///
+	/// > Note: Return value of `nil` isn't bad it might just mean that this is a new data structure which is empty so the file doesn't exist yet.
+	///
+	/// - Returns: `Bool?` - Showing the status of the load, whether it loaded the file correctly or not
 	func loadComicSeries() -> Bool? {
 		do {
-			// load the most recent backup file and get all of the elements from that file
+			// Load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicSeriesBackupFilename)
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic series")
-				return nil // not failed but the file doesnt exist
+				return nil // Not failed but the file doesnt exist
 			}
 			let decoder = JSONDecoder()
 			let comicSeries = try decoder.decode([ComicSeries].self, from: data)
@@ -184,7 +233,9 @@ class PersistenceController: ObservableObject {
 	}
 	
 	
-	// this just saves the comic event file
+	/// Saves the ``ComicEvent`` from the ``context`` to its own backup file at ``comicDataBackupFilename`` in `JSON` format
+	///
+	/// - Returns: ``Bool`` - Letting the user know if the save was successful or not
 	func saveComicEvent() -> Bool {
 		let fetchRequestComicEvent = FetchDescriptor<ComicEvent>()
 		
@@ -201,10 +252,20 @@ class PersistenceController: ObservableObject {
 		return true
 	}
 	
-	// load the comic series file
+	
+	/// Loads the ``ComicEvent`` `JSON` file into the ``context`` from its backup file at ``comicDataBackupFilename``
+	///
+	///	- Return values:
+	///	  - `true`: Successfully loaded.
+	///   - `false`: Failed to load.
+	///   - `nil`: The file doesn't exist.
+	///
+	/// > Note: Return value of `nil` isn't bad it might just mean that this is a new data structure which is empty so the file doesn't exist yet.
+	///
+	/// - Returns: `Bool?` - Showing the status of the load, whether it loaded the file correctly or not
 	func loadComicEvent() -> Bool? {
 		do {
-			// load the most recent backup file and get all of the elements from that file
+			// Load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicEventBackupFilename)
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic event")
@@ -233,19 +294,17 @@ class PersistenceController: ObservableObject {
 	}
 	
 	
-	/// runs through and saves each file seperatly
-	/// returns:
-	/// true: if all files were successfully saved
-	/// false: if any files failed to save
+	/// Saves each type of data in the ``context`` to its own file
+	///
+	///  - Returns:`Bool` - `true`: If all files were successfully saved or else `false`: if any files failed to save
 	func saveAllData() -> Bool {
-		
-		// save each file
+		// Save each file
 		let saveComicDataSuccess: Bool = saveComicData()
 		let saveComicSeriesSuccess: Bool = saveComicSeries()
 		let saveComicEventSuccess: Bool = saveComicEvent()
 		
 		
-		// check that they were all successful
+		// Check that all saves were successful
 		if (saveComicDataSuccess && saveComicSeriesSuccess && saveComicEventSuccess) {
 			print("Backup Successful")
 			return true
@@ -255,23 +314,28 @@ class PersistenceController: ObservableObject {
 	}
 	
 	
-	/// runs through and loads each file seperatly
-	/// returns:
-	/// false: if any files failed to load
-	/// nil: if no files failed to load but some couldnt be found or were new
-	/// true: if all files were successfully loaded
+	/// Loads each file individually into the ``context``
+	///
+	/// - Return Values:
+	///   - `true`: All files were successfully loaded
+	///   - `false`: Any file failed to be loaded
+	///   - `nil`: If no files failed to load but some couldn't be found or were new
+	///
+	/// > Note: Return value of `nil` isn't bad it might just mean that this is a new data structure which is empty so the file doesn't exist yet.
+	///
+	/// - Returns: `Bool?` - Which is lets the user know the status after loading all files
 	func loadAllData() -> Bool? {
 		
-		// load each file
+		// Load each file
 		let loadComicDataSuccess: Bool? = loadComicData()
 		let loadComicSeriesSuccess: Bool? = loadComicSeries()
 		let loadComicEventSuccess: Bool? = loadComicEvent()
 		
-		// check for any false values first
+		// Check for any false values first
 		if loadComicDataSuccess == false || loadComicSeriesSuccess == false || loadComicEventSuccess == false {
 			return false
 		}
-		// then check for any nil values next
+		// Then check for any nil values next
 		else if loadComicDataSuccess == nil || loadComicSeriesSuccess == nil || loadComicEventSuccess == nil {
 			return nil
 		}

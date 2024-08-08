@@ -8,26 +8,34 @@
 import Foundation
 import SwiftData
 
-/**
- Stores all necessary data for a comic event
- */
+/// Stores all necessary data for a comic book event.
+///
+/// It must conform to `Codable` because this enables it to be converted to and from `JSON`, which is used for writing and reading from the backup files.
 @Model
 class ComicEvent: Codable {
-	/// this is used as a static id, so everytime i create a new event it gets incremented and given to that comic so they each get a unique id
+	/// This is used as a static unique id for each event.
+	///
+	/// Everytime I create a new event it gets incremented and given to the new event so they each get a unique id. This is also used to know the order that I read the events.
 	static var staticEventId: UInt32 = 0
 	
-	/// unique id for this event, mainly used internally, most likely wont be shown to the user
+	/// Unique id for this event.
+	///
+	/// > Note: Mainly used internally, most likely wont be shown to the user.
 	var eventId: UInt32
-	/// The full name of this event
+	/// The full name of this event.
 	var eventName: String
-	/// The total number of comic issues that have been read in this event (doesn't have to be in order)
+	/// The total number of comic issues that have been read in this event.
+	/// > Note: I don't have to have read the comics in this event in order.
 	var issuesRead: UInt16
-	/// The total number of comic issues this event has
+	/// The total number of comic issues in this event.
 	var totalIssues: UInt16
-	/// The total number of pages read in all comic books in this event
+	/// The total number of pages read in all comic books in this event.
 	var pagesRead: UInt16
 	
 	
+	/// Creates a new ``ComicEvent``.
+	///
+	/// This will also give it it's new unique id.
 	init(eventName: String,
 		 issuesRead: UInt16,
 		 totalIssues: UInt16,
@@ -41,7 +49,7 @@ class ComicEvent: Codable {
 		self.pagesRead = pagesRead
 	}
 	
-	// needed to be able to encode this as json
+	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
 		case eventId
 		case eventName
@@ -50,6 +58,8 @@ class ComicEvent: Codable {
 		case pagesRead
 	}
 	
+	/// Conformance to Codable,  a decoder function to take a `JSON` decoder object read in from my backup file and create a new ``ComicEvent`` from it.
+	/// - Parameter decoder: Takes a ``Decoder`` and creates a new ``ComicEvent`` from it.
 	required init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		
@@ -62,9 +72,10 @@ class ComicEvent: Codable {
 		issuesRead = try container.decode(UInt16.self, forKey: .issuesRead)
 		totalIssues = try container.decode(UInt16.self, forKey: .totalIssues)
 		pagesRead = try container.decode(UInt16.self, forKey: .pagesRead)
-
 	}
 	
+	/// Conformance to Codable,  a encoder function to encode my ``ComicEvent`` into `JSON` to be written to a file.
+	/// - Parameter encoder: Takes an ``Encoder`` and encoders `this` into it.
 	func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		
