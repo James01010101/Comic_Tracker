@@ -150,7 +150,7 @@ struct AddNewComicView: View {
 					}
 					
 					Section {
-						Button(action: saveComic) {
+						Button(action: saveNewComic) {
 							HStack {
 								Spacer() // to center the save word in the middle of the HStack
 								Text("Save")
@@ -185,9 +185,10 @@ struct AddNewComicView: View {
 	/// It will add to the ``ComicSeries`` and/or ``ComicEvent`` if they exist.
 	///
 	/// Once successfully saved or canceled this will return back to the calling view, usually the main ``ContentView``.
-	private func saveComic() {
-		let newComic = ComicData(
-			brand: brandName,
+	private func saveNewComic() {
+		// call the saveComic function to save the new comic
+		saveComic(
+			brandName: brandName,
 			seriesName: seriesName,
 			individualComicName: individualComicName,
 			yearFirstPublished: UInt16(self.yearFirstPublished),
@@ -195,76 +196,9 @@ struct AddNewComicView: View {
 			totalPages: UInt16(totalPages) ?? 0,
 			eventName: eventName,
 			purpose: purpose,
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: modelContext
 		)
-		
-		// Insert into the model context
-		modelContext.insert(newComic)
-		
-		// Create a new series object for it if it doesnt exist
-		if (seriesName != "") { // should always have a series
-			// See if i already have a series with the name
-			var foundSeries = false
-			for s in series {
-				if (seriesName == s.seriesTitle) {
-					// the series exists so add to it
-					s.issuesRead += 1
-					s.pagesRead += newComic.totalPages
-					
-					// dont want to continue searching
-					foundSeries = true
-					break
-				}
-			}
-			
-			// If I didn't find the series then i need to create it
-			if (!foundSeries) {
-				let newSeries = ComicSeries(
-					seriesTitle: newComic.seriesName,
-					yearFirstPublished: newComic.yearFirstPublished,
-					issuesRead: 1, // since this is the first comic in this series
-					totalIssues: 0, // should never be 0 so this is default until set later
-					pagesRead: newComic.totalPages
-				)
-				// insert into the model context
-				modelContext.insert(newSeries)
-			}
-		}
-		
-		
-		// Create a new event object for it if it doesnt exist
-		if (eventName != "") { // dont need a event
-			// see if i already have a event with the name
-			var foundEvent = false
-			for e in events {
-				if (eventName == e.eventName) {
-					// the event exists so add to it
-					e.issuesRead += 1
-					e.pagesRead += newComic.totalPages
-					
-					// dont want to continue searching
-					foundEvent = true
-					break
-				}
-			}
-			
-			// If I didn't find the event then i need to create it
-			if (!foundEvent) {
-				let newEvent = ComicEvent(
-					eventName: newComic.eventName,
-					issuesRead: 1,
-					totalIssues: 0,
-					pagesRead: newComic.totalPages
-				)
-				// insert into the model context
-				modelContext.insert(newEvent)
-			}
-		}
-		
-		
-		// finally save the model
-		try? modelContext.save()
-		
 		
 		// Autosave
 		if (globalState.autoSave) {
@@ -284,6 +218,6 @@ struct AddNewComicView: View {
 struct AddComicView_Previews: PreviewProvider {
 	static var previews: some View {
 		AddNewComicView()
-			.modelContainer(for: ComicData.self, inMemory: true)
+			.modelContainer(for: [ComicData.self, ComicSeries.self, ComicEvent.self], inMemory: true)
 	}
 }

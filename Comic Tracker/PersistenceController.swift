@@ -214,6 +214,7 @@ class PersistenceController: ObservableObject {
 			
 			for series in comicSeries {
 				let newSeries = ComicSeries(
+					seriesBrand: series.seriesBrand,
 					seriesTitle: series.seriesTitle,
 					yearFirstPublished: series.yearFirstPublished,
 					issuesRead: series.issuesRead,

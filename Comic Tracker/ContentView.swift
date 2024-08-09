@@ -271,7 +271,7 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
 		let container = try! ModelContainer(
-			for: ComicData.self,
+			for: ComicData.self, ComicSeries.self, ComicEvent.self,
 			configurations: ModelConfiguration(isStoredInMemoryOnly: true)
 		)
 		

@@ -22,6 +22,8 @@ class ComicSeries: Codable {
 	///
 	/// > Note: Mainly used internally, most likely won't be shown to the user.
 	var seriesId: UInt32
+	/// Brand of the series
+	var seriesBrand: String
 	/// The title of this series.
 	var seriesTitle: String
 	/// The year the first comic book in this series was first published
@@ -41,7 +43,8 @@ class ComicSeries: Codable {
 	/// Create a new ``ComicSeries``
 	///
 	/// This will also give it it's new unique id.
-	init(seriesTitle: String,
+	init(seriesBrand: String,
+		 seriesTitle: String,
 		 yearFirstPublished: UInt16,
 		 issuesRead: UInt16,
 		 totalIssues: UInt16,
@@ -49,6 +52,7 @@ class ComicSeries: Codable {
 		
 		ComicSeries.staticSeriesId += 1
 		self.seriesId = ComicSeries.staticSeriesId
+		self.seriesBrand = seriesBrand
 		self.seriesTitle = seriesTitle
 		self.yearFirstPublished = yearFirstPublished
 		self.issuesRead = issuesRead
@@ -59,6 +63,7 @@ class ComicSeries: Codable {
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
 		case seriesId
+		case seriesBrand
 		case seriesTitle
 		case yearFirstPublished
 		case issuesRead
@@ -76,6 +81,7 @@ class ComicSeries: Codable {
 		seriesId = tmpSeriesId
 		ComicSeries.staticSeriesId = tmpSeriesId
 		
+		seriesBrand = try container.decode(String.self, forKey: .seriesBrand)
 		seriesTitle = try container.decode(String.self, forKey: .seriesTitle)
 		yearFirstPublished = try container.decode(UInt16.self, forKey: .yearFirstPublished)
 		issuesRead = try container.decode(UInt16.self, forKey: .issuesRead)
@@ -89,6 +95,7 @@ class ComicSeries: Codable {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		
 		try container.encode(seriesId, forKey: .seriesId)
+		try container.encode(seriesBrand, forKey: .seriesBrand)
 		try container.encode(seriesTitle, forKey: .seriesTitle)
 		try container.encode(yearFirstPublished, forKey: .yearFirstPublished)
 		try container.encode(issuesRead, forKey: .issuesRead)
