@@ -58,10 +58,12 @@ struct AddNewComicView: View {
 	@State private var purpose: String = ""
 	/// The date I read this comic.
 	@State private var dateRead: Date = Date()
+	/// Known or unknown date, if false then date will be set to nil
+	@State private var dateKnown: Bool = true
 	
 	
 	var body: some View {
-		NavigationView {
+		NavigationStack {
 			VStack {
 				Form {
 					Section(header: Text("Read ID")) {
@@ -147,6 +149,9 @@ struct AddNewComicView: View {
 							DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
 								.datePickerStyle(GraphicalDatePickerStyle())
 						}
+						Toggle(isOn: $dateKnown) {
+							Text("Is Date Known")
+						}
 					}
 					
 					Section {
@@ -162,7 +167,7 @@ struct AddNewComicView: View {
 				}
 			}
 			.navigationTitle("Save New Comics")
-			.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
+			//.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
 			.scrollDismissesKeyboard(.interactively)
 		}
 	}
@@ -186,6 +191,15 @@ struct AddNewComicView: View {
 	///
 	/// Once successfully saved or canceled this will return back to the calling view, usually the main ``ContentView``.
 	private func saveNewComic() {
+		
+		// work out the date if it is nil or not
+		let date: Date?
+		if (!dateKnown) {
+			date = nil
+		} else {
+			date = dateRead
+		}
+		
 		// call the saveComic function to save the new comic
 		saveComic(
 			brandName: brandName,
@@ -196,7 +210,7 @@ struct AddNewComicView: View {
 			totalPages: UInt16(totalPages) ?? 0,
 			eventName: eventName,
 			purpose: purpose,
-			dateRead: Date(),
+			dateRead: date,
 			modelContext: modelContext
 		)
 		

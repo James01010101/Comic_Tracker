@@ -59,7 +59,7 @@ class ComicData: Codable {
 	/// The date this comic was read.
 	///
 	/// Automatically filled in when a comic is added, but can be manually set.
-	var dateRead: Date
+	var dateRead: Date?
 	
 	
 	/// Creates a new ``ComicData``.
@@ -73,7 +73,7 @@ class ComicData: Codable {
 		 totalPages: UInt16,
 		 eventName: String,
 		 purpose: String,
-		 dateRead: Date) {
+		 dateRead: Date?) {
 		
 		ComicData.staticComicId += 1
 		self.comicId = ComicData.staticComicId
@@ -121,7 +121,7 @@ class ComicData: Codable {
 		totalPages = try container.decode(UInt16.self, forKey: .totalPages)
 		eventName = try container.decode(String.self, forKey: .eventName)
 		purpose = try container.decode(String.self, forKey: .purpose)
-		dateRead = try container.decode(Date.self, forKey: .dateRead)
+		dateRead = try container.decode(Date?.self, forKey: .dateRead)
 	}
 	
 	/// Conformance to Codable,  a encoder function to encode my ``ComicData`` into `JSON` to be written to a file.

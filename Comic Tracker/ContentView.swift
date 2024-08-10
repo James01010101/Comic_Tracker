@@ -23,6 +23,10 @@ struct ContentView: View {
 	// all of my apps views
 	/// Used to toggle between this main view and the ``AddNewComicView``
 	@State private var navigateToAddNewComicView: Bool = false
+	/// Used to toggle between this main view and the ``SeriesStatsView``
+	@State private var navigateToSeriesStatsView: Bool = false
+	/// Used to toggle between this main view and the ``EventsStatsView``
+	@State private var 	navigateToEventsStatsView: Bool = false
 	
 	
 	// query variables (these are stored in the modelContext and are persistant)
@@ -89,7 +93,7 @@ struct ContentView: View {
 					ForEach(comics) { comic in
 						HStack {
 							Text(String(comic.comicId))
-								.frame(width: readIdWidth, alignment: .trailing)
+								.frame(width: readIdWidth, alignment: .center)
 								.padding(.leading, -10)
 							
 							Divider()
@@ -100,7 +104,7 @@ struct ContentView: View {
 							Divider()
 							
 							Text(String(comic.totalPages))
-								.frame(width: pagesWidth, alignment: .leading)
+								.frame(width: pagesWidth, alignment: .center)
 								.padding(.trailing, -10)
 						}
 						.padding(.vertical, -3)  // Optional: Add some vertical padding between rows
@@ -118,7 +122,8 @@ struct ContentView: View {
 				
 				// toolbar for the buttons
 				.toolbar {
-					ToolbarItem(placement: .navigation) {
+					// left side
+					ToolbarItem(placement: .topBarLeading) {
 						// saved all data to their files, shows a different icon depending on the success of the save
 						Button(action: {
 							globalState.saveDataIcon = persistenceController.saveAllData()
@@ -137,7 +142,19 @@ struct ContentView: View {
 							}
 						}
 					}
-					ToolbarItem(placement: .navigationBarTrailing) {
+					ToolbarItem(placement: .topBarLeading) {
+						Button(action: goToSeriesView) {
+							Label("Go To Series View", systemImage: "s.circle")
+						}
+					}
+					ToolbarItem(placement: .topBarLeading) {
+						Button(action: goToEventsView) {
+							Label("Go To Events View", systemImage: "e.circle")
+						}
+					}
+					
+					// right side
+					ToolbarItem(placement: .topBarTrailing) {
 						EditButton()
 					}
 					ToolbarItem {
@@ -169,10 +186,16 @@ struct ContentView: View {
 				}
 			}
 			.navigationTitle("Recent Comics")
-			.navigationBarTitleDisplayMode(.inline)
+			//.navigationBarTitleDisplayMode(.inline)
 			// rules to navigating to other views
 			.navigationDestination(isPresented: $navigateToAddNewComicView) {
 				AddNewComicView()
+			}
+			.navigationDestination(isPresented: $navigateToSeriesStatsView) {
+				SeriesStatsView()
+			}
+			.navigationDestination(isPresented: $navigateToEventsStatsView) {
+				EventsStatsView()
 			}
 		}
 	}
@@ -214,6 +237,20 @@ struct ContentView: View {
 	/// This is ran when selecting 'New Series' in the action sheet. This will create a new ``ComicSeries`` and/or a new ``ComicEvent`` if needed. Otherwise will add to them if they already exist.
 	private func addNewComic() {
 		navigateToAddNewComicView = true
+	}
+	
+	/// Send the user to ``SeriesStatsView`` to view all series and stats.
+	///
+	/// This is ran when selecting 'S' in the nav bar. This will show a list of all of the series and their stats.
+	private func goToSeriesView() {
+		navigateToSeriesStatsView = true
+	}
+	
+	/// Send the user to ``EventsStatsView`` to view all events and stats.
+	///
+	/// This is ran when selecting 'E' in the nav bar. This will show a list of all of the events and their stats.
+	private func goToEventsView() {
+		navigateToEventsStatsView = true
 	}
 	
 	/// Send the user to a partially auto filled ``AddNewComicView`` to add a new comic book to an already existing series.
@@ -270,16 +307,32 @@ struct ContentView: View {
 /// Main view preview settings
 struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
-		let container = try! ModelContainer(
-			for: ComicData.self, ComicSeries.self, ComicEvent.self,
-			configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-		)
+		// create the model context
+		let schema = Schema([
+			ComicData.self,
+			ComicSeries.self,
+			ComicEvent.self,
+		])
+		let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+		var container: ModelContainer
+		var context: ModelContext
+		do {
+			container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+			context = ModelContext(container)
+		} catch {
+			fatalError("Could not create ModelContainer: \(error)")
+		}
 		
-		let modelContext = ModelContext(container)
+		// reset to 0 since the preview can be loaded multiple times and this will keep incrementing
+		ComicData.staticComicId = 0
+		ComicSeries.staticSeriesId = 0
+		ComicEvent.staticEventId = 0
 		
+		
+				
 		// add some testing comics
-		var newComic = ComicData(
-			brand: "Marvel",
+		saveComic(
+			brandName: "Marvel",
 			seriesName: "Infinity Gauntlet",
 			individualComicName: "",
 			yearFirstPublished: 1977,
@@ -287,12 +340,12 @@ struct ContentView_Previews: PreviewProvider {
 			totalPages: 30,
 			eventName: "Infinity Gauntlet",
 			purpose: "Thanos",
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: context
 		)
-		modelContext.insert(newComic)
 		
-		newComic = ComicData(
-			brand: "Marvel",
+		saveComic(
+			brandName: "Marvel",
 			seriesName: "Infinity Gauntlet",
 			individualComicName: "",
 			yearFirstPublished: 1977,
@@ -300,12 +353,12 @@ struct ContentView_Previews: PreviewProvider {
 			totalPages: 31,
 			eventName: "Infinity Gauntlet",
 			purpose: "Thanos",
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: context
 		)
-		modelContext.insert(newComic)
 		
-		newComic = ComicData(
-			brand: "Star Wars",
+		saveComic(
+			brandName: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
 			yearFirstPublished: 2015,
@@ -313,12 +366,12 @@ struct ContentView_Previews: PreviewProvider {
 			totalPages: 23,
 			eventName: "Darth Vader",
 			purpose: "Darth Vader",
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: context
 		)
-		modelContext.insert(newComic)
 		
-		newComic = ComicData(
-			brand: "Star Wars",
+		saveComic(
+			brandName: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
 			yearFirstPublished: 2015,
@@ -326,12 +379,12 @@ struct ContentView_Previews: PreviewProvider {
 			totalPages: 22,
 			eventName: "Darth Vader",
 			purpose: "Darth Vader",
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: context
 		)
-		modelContext.insert(newComic)
 		
-		newComic = ComicData(
-			brand: "Star Wars",
+		saveComic(
+			brandName: "Star Wars",
 			seriesName: "Darth Vader",
 			individualComicName: "",
 			yearFirstPublished: 2020,
@@ -339,12 +392,12 @@ struct ContentView_Previews: PreviewProvider {
 			totalPages: 22,
 			eventName: "Darth Vader",
 			purpose: "Darth Vader",
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: context
 		)
-		modelContext.insert(newComic)
 		
-		newComic = ComicData(
-			brand: "FNAF",
+		saveComic(
+			brandName: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Silver Eyes",
 			yearFirstPublished: 2014,
@@ -352,38 +405,38 @@ struct ContentView_Previews: PreviewProvider {
 			totalPages: 356,
 			eventName: "FNAF",
 			purpose: "FNAF",
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: context
 		)
-		modelContext.insert(newComic)
 		
-		newComic = ComicData(
-			brand: "FNAF",
+		saveComic(
+			brandName: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Twisted Ones",
-			yearFirstPublished: 2016,
+			yearFirstPublished: 2014,
 			issueNumber: 2,
 			totalPages: 301,
 			eventName: "FNAF",
 			purpose: "FNAF",
-			dateRead: Date()
+			dateRead: nil,
+			modelContext: context
 		)
-		modelContext.insert(newComic)
 		
-		newComic = ComicData(
-			brand: "FNAF",
+		saveComic(
+			brandName: "FNAF",
 			seriesName: "The Silver Eyes",
 			individualComicName: "The Fourth Closet",
-			yearFirstPublished: 2017,
+			yearFirstPublished: 2014,
 			issueNumber: 3,
 			totalPages: 362,
 			eventName: "FNAF",
 			purpose: "FNAF",
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: context
 		)
-		modelContext.insert(newComic)
 		
-		newComic = ComicData(
-			brand: "Marvel",
+		saveComic(
+			brandName: "Marvel",
 			seriesName: "Deadpool & Wolverine: WWIII",
 			individualComicName: "",
 			yearFirstPublished: 2024,
@@ -391,16 +444,42 @@ struct ContentView_Previews: PreviewProvider {
 			totalPages: 29,
 			eventName: "",
 			purpose: "Deadpool",
-			dateRead: Date()
+			dateRead: Date(),
+			modelContext: context
 		)
-		modelContext.insert(newComic)
+		
+		saveComic(
+			brandName: "The Walking Dead",
+			seriesName: "The Walking Dead",
+			individualComicName: "",
+			yearFirstPublished: 2020,
+			issueNumber: 1,
+			totalPages: 30,
+			eventName: "",
+			purpose: "The Walking Dead",
+			dateRead: nil,
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "The Walking Dead",
+			seriesName: "The Walking Dead",
+			individualComicName: "",
+			yearFirstPublished: 2020,
+			issueNumber: 2,
+			totalPages: 31,
+			eventName: "",
+			purpose: "The Walking Dead",
+			dateRead: Date(),
+			modelContext: context
+		)
 		
 		// lastly save it
-		try? modelContext.save()
+		try? context.save()
 		
 		
 		return ContentView()
-			.environment(\.modelContext, modelContext)
+			.environment(\.modelContext, context)
 			.environmentObject(GlobalState.shared)
 	}
 }

@@ -25,7 +25,7 @@ func saveComic(
 	totalPages: UInt16,
 	eventName: String,
 	purpose: String,
-	dateRead: Date,
+	dateRead: Date?,
 	modelContext: ModelContext
 ) {
 	

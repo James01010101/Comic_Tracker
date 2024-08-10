@@ -1,24 +1,25 @@
 //
-//  SeriesStatsView.swift
+//  EventsStatsView.swift
 //  Comic Tracker
 //
-//  Created by James Coldwell on 9/8/2024.
+//  Created by James Coldwell on 10/8/2024.
 //
 
 import Foundation
 import SwiftUI
 import SwiftData
 
-/// This contains a list of all of the series I have with a bunch of statistics for each series
-struct SeriesStatsView: View {
+/// This contains a list of all of the events I have with a bunch of statistics for each event
+struct EventsStatsView: View {
 	
 	/// Controls all persistent data this view uses.
 	@StateObject private var persistenceController = PersistenceController.shared
 	/// Controls all global variables this view uses.
 	@StateObject private var globalState = GlobalState.shared
 	
-	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
-	@Query private var series: [ComicSeries]
+	
+	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
+	@Query private var events: [ComicEvent]
 	
 	
 	/// Width of the `readId` element in the list
@@ -27,7 +28,7 @@ struct SeriesStatsView: View {
 	private let readIdWidth: CGFloat = 45
 	
 	// top section
-	private let seriesIdLeadingPadding : CGFloat = -12
+	private let eventsIdLeadingPadding : CGFloat = -12
 	
 	// bottom section
 	private let statMajorWidth: CGFloat = 75
@@ -38,8 +39,7 @@ struct SeriesStatsView: View {
 	private let minorIssuesVerticalDividerPaddingBottom: CGFloat = 10
 	
 	
-	
-	// main views body
+	// main view body
 	var body: some View {
 		NavigationStack {
 			VStack {
@@ -71,20 +71,20 @@ struct SeriesStatsView: View {
 				// the series will take up to lines each
 				// one for the series, and one for stats
 				List {
-					ForEach(series) { series in
+					ForEach(events) { event in
 						// this row
 						VStack {
 
 							// top row name
 							HStack {
-								Text(String(series.seriesId))
+								Text(String(event.eventId))
 									.frame(width: 25, alignment: .center)
-									.padding(.leading, seriesIdLeadingPadding)
+									.padding(.leading, eventsIdLeadingPadding)
 								
 								Divider()
 									.padding(.top, 1)
 								
-								Text(getSeriesFormattedName(series: series))
+								Text(getEventsFormattedName(event: event))
 									.font(.headline)
 									// force it to take up all the space so the id gets forced to the left
 									.frame(maxWidth: .infinity)
@@ -100,12 +100,6 @@ struct SeriesStatsView: View {
 							
 							// bottom row stats
 							HStack {
-								VStack {
-									Text("Year")
-									Text(String(series.yearFirstPublished))
-										.frame(width: statMajorWidth)
-								}
-								.padding(.top, statMajorTopPadding)
 								
 								Divider()
 									.padding(.bottom, majorDividerBottomPadding)
@@ -119,7 +113,7 @@ struct SeriesStatsView: View {
 									HStack {
 										VStack {
 											Text("Total")
-											Text(String(series.totalIssues))
+											Text(String(event.totalIssues))
 												.frame(maxWidth: .infinity)
 										}
 										.padding(.top, issuesStatsTopPadding)
@@ -130,7 +124,7 @@ struct SeriesStatsView: View {
 										
 										VStack {
 											Text("Read")
-											Text(String(series.issuesRead))
+											Text(String(event.issuesRead))
 												.frame(maxWidth: .infinity)
 										}
 										.padding(.top, issuesStatsTopPadding)
@@ -141,7 +135,7 @@ struct SeriesStatsView: View {
 										
 										VStack {
 											Text("Left")
-											Text(getIssuesLeft(series: series))
+											Text(getIssuesLeft(event: event))
 												.frame(maxWidth: .infinity)
 										}
 										.padding(.top, issuesStatsTopPadding)
@@ -154,7 +148,7 @@ struct SeriesStatsView: View {
 								
 								VStack {
 									Text("Pages")
-									Text(String(series.pagesRead))
+									Text(String(event.pagesRead))
 										.frame(width: statMajorWidth)
 								}
 								.padding(.top, statMajorTopPadding)
@@ -173,38 +167,36 @@ struct SeriesStatsView: View {
 				.padding(.leading, -10)
 				.padding(.trailing, -10)
 				.listRowSpacing(8)
+				
+				
 			}
-			.navigationTitle("Comic Series")
+			.navigationTitle("Comic Events")
 			//.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
 		}
 	}
 	
 	
-	
-	
-	/// Takes a series and returns a nicely formatted string to represent it.
-	/// - Parameter series: ``ComicSeries`` which contains all the information about the series.
-	/// - Returns: Formatted `String` representing the series.
-	private func getSeriesFormattedName(series: ComicSeries) -> String {
+	/// Takes a event and returns a nicely formatted string to represent it.
+	/// - Parameter series: ``ComicEvent`` which contains all the information about the event.
+	/// - Returns: Formatted `String` representing the event.
+	private func getEventsFormattedName(event: ComicEvent) -> String {
 		var formattedString: String = ""
-		formattedString = series.seriesBrand
+		formattedString = event.eventName
 		
-		if (series.seriesBrand != series.seriesTitle) {
-			formattedString += ": " + series.seriesTitle
-		}
 		return formattedString
 	}
 	
 	
-	/// Get the number of issues left to read in this series.
+	
+	/// Get the number of issues left to read in this event.
 	///
 	/// This is done as a function because the values are UInt and i am subtracting it the app can crash if i underflow without catching that.
 	///
-	/// - Parameter series: A ``ComicSeries`` containing all the information about the series.
+	/// - Parameter series: A ``ComicEvent`` containing all the information about the event.
 	/// - Returns: `String` which is the number of issues left to read, or 0 if failed.
-	private func getIssuesLeft(series: ComicSeries) -> String {
-		let read: UInt16 = series.issuesRead
-		let total: UInt16 = series.totalIssues
+	private func getIssuesLeft(event: ComicEvent) -> String {
+		let read: UInt16 = event.issuesRead
+		let total: UInt16 = event.totalIssues
 		var left: Int = 0
 		
 		// I haven't set the total yet
@@ -221,8 +213,11 @@ struct SeriesStatsView: View {
 	}
 }
 
+
+
+
 /// Main view preview settings
-struct SeriesStatsView_Previews: PreviewProvider {
+struct EventsStatsView_Previews: PreviewProvider {
 	static var previews: some View {
 		// create the model context
 		let schema = Schema([
@@ -244,7 +239,6 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		ComicData.staticComicId = 0
 		ComicSeries.staticSeriesId = 0
 		ComicEvent.staticEventId = 0
-		
 		
 				
 		// add some testing comics
@@ -372,7 +366,7 @@ struct SeriesStatsView_Previews: PreviewProvider {
 			yearFirstPublished: 2020,
 			issueNumber: 1,
 			totalPages: 30,
-			eventName: "",
+			eventName: "The Walking Dead",
 			purpose: "The Walking Dead",
 			dateRead: Date(),
 			modelContext: context
@@ -385,7 +379,7 @@ struct SeriesStatsView_Previews: PreviewProvider {
 			yearFirstPublished: 2020,
 			issueNumber: 2,
 			totalPages: 31,
-			eventName: "",
+			eventName: "The Walking Dead",
 			purpose: "The Walking Dead",
 			dateRead: Date(),
 			modelContext: context
@@ -394,7 +388,8 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		// lastly save it
 		try? context.save()
 		
-		return SeriesStatsView()
+		return EventsStatsView()
 			.environment(\.modelContext, context)
 	}
 }
+
