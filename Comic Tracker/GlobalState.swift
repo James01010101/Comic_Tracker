@@ -21,7 +21,6 @@ class GlobalState: ObservableObject {
 	@Published var saveDataIcon: Bool?
 	
 	
-	
 	// part of the settings the user can change
 	/// Automatically call the save function everytime data is changed.
 	///

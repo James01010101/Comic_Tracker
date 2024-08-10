@@ -167,11 +167,8 @@ struct EventsStatsView: View {
 				.padding(.leading, -10)
 				.padding(.trailing, -10)
 				.listRowSpacing(8)
-				
-				
 			}
 			.navigationTitle("Comic Events")
-			//.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
 		}
 	}
 	

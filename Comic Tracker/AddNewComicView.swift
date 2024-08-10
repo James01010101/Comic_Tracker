@@ -34,141 +34,276 @@ struct AddNewComicView: View {
 	@Query private var events: [ComicEvent]
 	
 	// Values used by the form to store the input fields for the new comic being added.
-	/// New unique id for this comic amongst the others in the ``ComicData`` array.
-	///
-	/// This will be the previous `comicId` + 1. This is not user given.
-	@State private var readId: String = ""
 	/// The brand of the comic, example "Marvel".
-	@State private var brandName: String = ""
+	@State private var brandName: String
 	/// The name of the series this comic is apart of.
-	@State private var seriesName: String = ""
+	@State private var seriesName: String
 	/// The name of this specific comic, if it's different for every book in the series (Optional).
-	@State private var individualComicName: String = ""
+	@State private var individualComicName: String
 	/// The year the first book in this series was first published.
-	///
-	/// Needs a default value in the range as to not throw errors when initially loading the picker.
-	@State private var yearFirstPublished: Int = 2000
+	@State private var yearFirstPublished: Int
 	/// The issue number of this specific comic book.
-	@State private var issueNumber: String = ""
+	@State private var issueNumber: String
 	/// The total number of pages this comic book has.
-	@State private var totalPages: String = ""
+	@State private var totalPages: String
 	/// The name of the event this comic is apart of (Optional).
-	@State private var eventName: String = ""
+	@State private var eventName: String
 	/// The reason I read this comic, could be for a character or story or event.
-	@State private var purpose: String = ""
+	@State private var purpose: String
 	/// The date I read this comic.
-	@State private var dateRead: Date = Date()
-	/// Known or unknown date, if false then date will be set to nil
-	@State private var dateKnown: Bool = true
+	@State private var dateRead: Date
+	/// Known or unknown date, if false then date will be set to nil.
+	@State private var dateKnown: Bool
+	
+	/// Is the form valid and able to be submitted (start blue, then if i click itll turn red if invalid).
+	@State private var validForm: Bool = false
+	
+	
+	/// The amount of spacing the icons get to keep it consistant
+	private let iconWidth: CGFloat = 25
+	private let leadingPadding: CGFloat = -10
+	private let trailingTextPadding: CGFloat = 0
+	
+	
+	
+	
+	// empty constructor for creating an empty view here
+	init() {
+		print("Running empty init")
+		
+		self.brandName = ""
+		self.seriesName = ""
+		self.individualComicName = ""
+		self.yearFirstPublished = 2000 // Needs a default value in the range as to not throw errors when initially loading the picker.
+		self.issueNumber = ""
+		self.totalPages = ""
+		self.eventName = ""
+		self.purpose = ""
+		self.dateRead = Date()
+		self.dateKnown = false // so the date section is hidden by default
+	}
+	
+	
+	
+	// constructor which takes in a series to auto fill information from
+	init(series: ComicSeries) {
+		print("Running param init")
+		
+		
+		
+		self.brandName = series.seriesBrand
+		self.seriesName = series.seriesTitle
+		self.individualComicName = ""
+		self.yearFirstPublished = Int(series.yearFirstPublished)
+		self.issueNumber = String(series.issuesRead + 1) // TODO: This isnt right should be last issue +1 not total since i might be out of order
+		self.totalPages = "" // TODO: wrong aswell should be last comics pages as an estimate
+		self.eventName = ""
+		self.purpose = ""
+		self.dateRead = Date()
+		self.dateKnown = false // so the date section is hidden by default
+		
+		print("Brand: " + series.seriesBrand)
+		print("Title: " + series.seriesTitle)
+		print("Year: " + String(series.yearFirstPublished))
+		print("Issue: " + String(series.totalIssues + 1))
+	}
+	
 	
 	
 	var body: some View {
 		NavigationStack {
-			VStack {
-				Form {
-					Section(header: Text("Read ID")) {
-						HStack {
-							Image(systemName: "barcode")
-							TextField("Read ID", text: $readId)
-								.onAppear {
-									self.readId = String(self.comics.count + 1)
-								}
-								.keyboardType(.phonePad)
-						}
+			VStack {// headings stack
+				VStack(spacing: 0) {
+					HStack {
+						Text("ID")
+							.frame(width: 45, alignment: .center)
+							.font(.headline)
+							.padding(.leading, 10)
+						
+						Text("Series Name")
+							.frame(maxWidth: .infinity, alignment: .center)
+							.font(.headline)
+							.padding(.leading, -10 - 45) // to adjust for the pages text being moved in slightly more
+							.padding(.trailing, 10)
 					}
+					.padding(.top, 10)
+					.padding(.bottom, -5)
 					
-					Section(header: Text("Books Brand")) {
-						HStack {
-							Image(systemName: "person.text.rectangle")
-							TextField("Brand", text: $brandName)
-						}
+					// Divider
+					Rectangle()
+						.frame(height: 3)  // Adjust the height for a bolder line
+						.padding(.top, 10)  // Optional: Add some padding below the divider
+						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
+				}
+				
+				List {
+					HStack {
+						Image(systemName: "person.text.rectangle")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Brand")
+							.font(.headline)
+						
+						TextEditor(text: $brandName)
+							.multilineTextAlignment(.trailing)
+							.padding(.bottom, -5)
+							.padding(.trailing, trailingTextPadding)
+						
 					}
+					.padding(.leading, leadingPadding)
 					
-					Section(header: Text("Series Name")) {
-						HStack {
-							Image(systemName: "books.vertical")
-							TextField("Series Name", text: $seriesName)
-						}
+					HStack {
+						Image(systemName: "books.vertical")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Series")
+							.font(.headline)
+						
+						TextEditor(text: $seriesName)
+							.multilineTextAlignment(.trailing)
+							.padding(.bottom, -5)
+							.padding(.trailing, trailingTextPadding)
+						
 					}
+					.padding(.leading, leadingPadding)
 					
-					Section(header: Text("Individual Book Name (Optional)")) {
-						HStack {
-							Image(systemName: "text.book.closed")
-							TextField("Individual Book's Name", text: $individualComicName)
-						}
+					HStack {
+						Image(systemName: "text.book.closed")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Book?")
+							.font(.headline)
+						
+						TextEditor(text: $individualComicName)
+							.multilineTextAlignment(.trailing)
+							.padding(.bottom, -5)
+							.padding(.trailing, trailingTextPadding)
+						
 					}
+					.padding(.leading, leadingPadding)
 					
-					Section(header: Text("Issue Number")) {
-						HStack {
-							Image(systemName: "number.circle")
-							TextField("Issue Number", text: $issueNumber)
-								.keyboardType(.numberPad)
-						}
+					HStack {
+						Image(systemName: "number.circle")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Issue")
+							.font(.headline)
+						
+						TextField("", text: $issueNumber)
+							.keyboardType(.numberPad)
+							.multilineTextAlignment(.trailing)
+							.padding(.trailing, trailingTextPadding)
+						
 					}
+					.padding(.leading, leadingPadding)
 					
-					Section(header: Text("Year First Published")) {
-						HStack {
-							Image(systemName: "calendar")
-							Picker("Year First Published", selection: $yearFirstPublished) {
-								ForEach(1800...2100, id: \.self) { year in
-									Text(formattedNumber(number: year)).tag(year)
-								}
+					HStack {
+						Image(systemName: "calendar")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Year First Published")
+							.font(.headline)
+						
+						Picker("", selection: $yearFirstPublished) {
+							ForEach(1800...2100, id: \.self) { year in
+								Text(formattedNumber(number: year)).tag(year)
 							}
-							.pickerStyle(MenuPickerStyle())
-							.onAppear {
-								self.yearFirstPublished = Calendar.current.component(.year, from: Date())
-							}
+						}
+						.pickerStyle(MenuPickerStyle())
+						.onAppear {
+							self.yearFirstPublished = Calendar.current.component(.year, from: Date())
 						}
 					}
+					.padding(.leading, leadingPadding)
 					
-					Section(header: Text("Total Pages")) {
-						HStack {
-							Image(systemName: "doc.plaintext")
-							TextField("Total Pages", text: $totalPages)
-								.keyboardType(.numberPad)
-						}
+					HStack {
+						Image(systemName: "doc.plaintext")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Pages")
+							.font(.headline)
+						
+						TextField("", text: $totalPages)
+							.keyboardType(.numberPad)
+							.multilineTextAlignment(.trailing)
+							.padding(.trailing, trailingTextPadding)
+						
 					}
+					.padding(.leading, leadingPadding)
 					
-					Section(header: Text("Event Name")) {
-						HStack {
-							Image(systemName: "tag")
-							TextField("Event Name", text: $eventName)
-						}
+					HStack {
+						Image(systemName: "tag")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Event?")
+							.font(.headline)
+						
+						TextEditor(text: $eventName)
+							.multilineTextAlignment(.trailing)
+							.padding(.bottom, -5)
+							.padding(.trailing, trailingTextPadding)
 					}
+					.padding(.leading, leadingPadding)
 					
-					Section(header: Text("Purpose")) {
-						HStack {
-							Image(systemName: "pencil")
-							TextField("Purpose", text: $purpose)
-						}
+					HStack {
+						Image(systemName: "pencil")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Purpose?")
+							.font(.headline)
+						
+						TextEditor(text: $purpose)
+							.multilineTextAlignment(.trailing)
+							.padding(.bottom, -5)
+							.padding(.trailing, trailingTextPadding)
 					}
+					.padding(.leading, leadingPadding)
 					
-					Section(header: Text("Date Read")) {
+					HStack {
+						Image(systemName: "calendar")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Date Read")
+							.font(.headline)
+						
+						Toggle(isOn: $dateKnown) {}
+					}
+					.padding(.leading, leadingPadding)
+					
+					if (dateKnown) {
 						HStack {
-							Image(systemName: "calendar")
 							DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
 								.datePickerStyle(GraphicalDatePickerStyle())
 						}
-						Toggle(isOn: $dateKnown) {
-							Text("Is Date Known")
-						}
+						.padding(.leading, leadingPadding)
 					}
-					
-					Section {
-						Button(action: saveNewComic) {
-							HStack {
-								Spacer() // to center the save word in the middle of the HStack
-								Text("Save")
-									.bold()
-								Spacer()
-							}
+				}
+				.padding([.leading, .trailing], -10)
+				.listRowSpacing(8)
+			}
+			.navigationTitle("Save New Comics")
+			.scrollDismissesKeyboard(.interactively)
+			.toolbar {
+				ToolbarItem {
+					Button(action: {
+						// check that the inputs are valid and if so save
+						validForm = saveNewComicCheck()
+						if (validForm) {
+							saveNewComic()
+						}
+					}) {
+						if (validForm) {
+							Text("Save")
+								.bold()
+								.tint(.blue)
+						} else {
+							Text("Save")
+								.bold()
+								.tint(.red)
 						}
 					}
 				}
 			}
-			.navigationTitle("Save New Comics")
-			//.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
-			.scrollDismissesKeyboard(.interactively)
 		}
 	}
 	
@@ -181,6 +316,52 @@ struct AddNewComicView: View {
 		let numberFormatter = NumberFormatter()
 		numberFormatter.usesGroupingSeparator = false
 		return numberFormatter.string(from: NSNumber(value: number)) ?? "\(number)"
+	}
+	
+	
+	/// before actually saving the new comic check that all required input fields are valid
+	private func saveNewComicCheck() -> Bool {
+		// check brand
+		var brandCheck = false
+		var seriesCheck = false
+		var issueCheck = false
+		var pagesCheck = false
+		
+		// brand is not empty
+		if (!brandName.isEmpty) {
+			brandCheck = true
+		}
+		
+		// series is not empty
+		if (!seriesName.isEmpty) {
+			seriesCheck = true
+		}
+		
+		// issue is not empty and is >= 0 (not negative)
+		if (!issueNumber.isEmpty) {
+			if let issue = Int(issueNumber) {
+				if (issue >= 0) {
+					issueCheck = true
+				}
+			}
+		}
+		
+		// total pages is not empty and is >= 0 (not negative)
+		if (!totalPages.isEmpty) {
+			if let pages = Int(totalPages) {
+				if (pages >= 0) {
+					pagesCheck = true
+				}
+			}
+		}
+		
+		
+		// return true only if all checks are true
+		if (brandCheck && seriesCheck && issueCheck && pagesCheck) {
+			return true
+		} else {
+			return false
+		}
 	}
 	
 	
@@ -222,6 +403,8 @@ struct AddNewComicView: View {
 			globalState.saveDataIcon = nil
 		}
 		
+		// lastly set the saved comic to
+		
 		// Dismiss the view back to the main view
 		presentationMode.wrappedValue.dismiss()
 	}
@@ -231,7 +414,179 @@ struct AddNewComicView: View {
 /// The preview for the ``AddNewComicView``.
 struct AddComicView_Previews: PreviewProvider {
 	static var previews: some View {
-		AddNewComicView()
-			.modelContainer(for: [ComicData.self, ComicSeries.self, ComicEvent.self], inMemory: true)
+		// create the model context
+		let schema = Schema([
+			ComicData.self,
+			ComicSeries.self,
+			ComicEvent.self,
+		])
+		let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+		var container: ModelContainer
+		var context: ModelContext
+		do {
+			container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+			context = ModelContext(container)
+		} catch {
+			fatalError("Could not create ModelContainer: \(error)")
+		}
+		
+		// reset to 0 since the preview can be loaded multiple times and this will keep incrementing
+		ComicData.staticComicId = 0
+		ComicSeries.staticSeriesId = 0
+		ComicEvent.staticEventId = 0
+		
+		
+		
+		// add some testing comics
+		saveComic(
+			brandName: "Marvel",
+			seriesName: "Infinity Gauntlet",
+			individualComicName: "",
+			yearFirstPublished: 1977,
+			issueNumber: 1,
+			totalPages: 30,
+			eventName: "Infinity Gauntlet",
+			purpose: "Thanos",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "Marvel",
+			seriesName: "Infinity Gauntlet",
+			individualComicName: "",
+			yearFirstPublished: 1977,
+			issueNumber: 2,
+			totalPages: 31,
+			eventName: "Infinity Gauntlet",
+			purpose: "Thanos",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "Star Wars",
+			seriesName: "Darth Vader",
+			individualComicName: "",
+			yearFirstPublished: 2015,
+			issueNumber: 1,
+			totalPages: 23,
+			eventName: "Darth Vader",
+			purpose: "Darth Vader",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "Star Wars",
+			seriesName: "Darth Vader",
+			individualComicName: "",
+			yearFirstPublished: 2015,
+			issueNumber: 2,
+			totalPages: 22,
+			eventName: "Darth Vader",
+			purpose: "Darth Vader",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "Star Wars",
+			seriesName: "Darth Vader",
+			individualComicName: "",
+			yearFirstPublished: 2020,
+			issueNumber: 1,
+			totalPages: 22,
+			eventName: "Darth Vader",
+			purpose: "Darth Vader",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "FNAF",
+			seriesName: "The Silver Eyes",
+			individualComicName: "The Silver Eyes",
+			yearFirstPublished: 2014,
+			issueNumber: 1,
+			totalPages: 356,
+			eventName: "FNAF",
+			purpose: "FNAF",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "FNAF",
+			seriesName: "The Silver Eyes",
+			individualComicName: "The Twisted Ones",
+			yearFirstPublished: 2014,
+			issueNumber: 2,
+			totalPages: 301,
+			eventName: "FNAF",
+			purpose: "FNAF",
+			dateRead: nil,
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "FNAF",
+			seriesName: "The Silver Eyes",
+			individualComicName: "The Fourth Closet",
+			yearFirstPublished: 2014,
+			issueNumber: 3,
+			totalPages: 362,
+			eventName: "FNAF",
+			purpose: "FNAF",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "Marvel",
+			seriesName: "Deadpool & Wolverine: WWIII",
+			individualComicName: "",
+			yearFirstPublished: 2024,
+			issueNumber: 1,
+			totalPages: 29,
+			eventName: "",
+			purpose: "Deadpool",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "The Walking Dead",
+			seriesName: "The Walking Dead",
+			individualComicName: "",
+			yearFirstPublished: 2020,
+			issueNumber: 1,
+			totalPages: 30,
+			eventName: "",
+			purpose: "The Walking Dead",
+			dateRead: nil,
+			modelContext: context
+		)
+		
+		saveComic(
+			brandName: "The Walking Dead",
+			seriesName: "The Walking Dead",
+			individualComicName: "",
+			yearFirstPublished: 2020,
+			issueNumber: 2,
+			totalPages: 31,
+			eventName: "",
+			purpose: "The Walking Dead",
+			dateRead: Date(),
+			modelContext: context
+		)
+		
+		// lastly save it
+		try? context.save()
+		
+		
+		return AddNewComicView()
+			.environment(\.modelContext, context)
+			.environmentObject(GlobalState.shared)
 	}
 }

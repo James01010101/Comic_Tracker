@@ -5,15 +5,12 @@
 //  Created by James Coldwell on 28/7/2024.
 //
 
+import Foundation
 import SwiftUI
 import SwiftData
 
 /// The main view in my project.
 struct ContentView: View {
-	/// Stores all of the data this view uses.
-	/// > Important: Should be removed later and all data modifications should go through the ``PersistenceController``
-	@Environment(\.modelContext) private var modelContext: ModelContext
-	
 	/// Controls all persistent data this view uses.
 	@StateObject private var persistenceController = PersistenceController.shared
 	/// Controls all global variables thie view uses.
@@ -26,7 +23,7 @@ struct ContentView: View {
 	/// Used to toggle between this main view and the ``SeriesStatsView``
 	@State private var navigateToSeriesStatsView: Bool = false
 	/// Used to toggle between this main view and the ``EventsStatsView``
-	@State private var 	navigateToEventsStatsView: Bool = false
+	@State private var navigateToEventsStatsView: Bool = false
 	
 	
 	// query variables (these are stored in the modelContext and are persistant)
@@ -38,11 +35,6 @@ struct ContentView: View {
 	@Query private var series: [ComicSeries]
 	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
 	@Query private var events: [ComicEvent]
-	
-	
-	/// Used to trigger the add new comic action sheet with options of new or continuing series.
-	@State private var showingAddNewActionSheet: Bool = false
-	
 	
 	
 	/// Width of the `readId` element in the list
@@ -58,9 +50,9 @@ struct ContentView: View {
 	/// Main body of the main view.
 	var body: some View {
 		NavigationStack {
-			VStack {
+			VStack() {
 				// headings stack
-				VStack(spacing: 0) {
+				VStack() {
 					HStack {
 						Text("ID")
 							.frame(width: readIdWidth, alignment: .center)
@@ -77,7 +69,6 @@ struct ContentView: View {
 							.font(.headline)
 							.padding(.trailing, 15)
 					}
-					.padding(.top, 10)
 					.padding(.bottom, -5)
 					
 					// Divider
@@ -88,105 +79,82 @@ struct ContentView: View {
 				}
 				
 				// list of comics stack
-				List {
-					// most recently read comics
-					ForEach(comics) { comic in
-						HStack {
-							Text(String(comic.comicId))
-								.frame(width: readIdWidth, alignment: .center)
-								.padding(.leading, -10)
-							
-							Divider()
-							
-							Text(createDisplayedComicString(comic: comic))
-								.frame(maxWidth: .infinity, alignment: .leading)
-							
-							Divider()
-							
-							Text(String(comic.totalPages))
-								.frame(width: pagesWidth, alignment: .center)
-								.padding(.trailing, -10)
-						}
-						.padding(.vertical, -3)  // Optional: Add some vertical padding between rows
-					}
-					.onDelete(perform: deleteItems)
-				}
-				// this shrinks the gap at the top of the list so it sits under the headers nicely
-				.onAppear(perform: {
-					UICollectionView.appearance().contentInset.top = -35
-				})
-				// less padding either side of the list
-				.padding(.leading, -10)
-				.padding(.trailing, -10)
-				
-				
-				// toolbar for the buttons
-				.toolbar {
-					// left side
-					ToolbarItem(placement: .topBarLeading) {
-						// saved all data to their files, shows a different icon depending on the success of the save
-						Button(action: {
-							globalState.saveDataIcon = persistenceController.saveAllData()
-						}) {
-							if let saveDataIcon = globalState.saveDataIcon {
-								if (saveDataIcon) {
-									// successful backup
-									Label("Backup Data", systemImage: "checkmark")
-								} else {
-									// failed backup
-									Label("Backup Data", systemImage: "xmark")
-								}
-							} else { // returned nil
-								// default
-								Label("Backup Data", systemImage: "square.and.arrow.down")
+				VStack {
+					List {
+						// most recently read comics
+						ForEach(comics) { comic in
+							HStack {
+								Text(String(comic.comicId))
+									.frame(width: readIdWidth, alignment: .center)
+									.padding(.leading, -10)
+								
+								Divider()
+								
+								
+								Text(createDisplayedComicString(comic: comic))
+									.frame(maxWidth: .infinity, alignment: .leading)
+								
+								Divider()
+								
+								Text(String(comic.totalPages))
+									.frame(width: pagesWidth, alignment: .center)
+									.padding(.trailing, -10)
 							}
+							.padding(.vertical, -3)  // Optional: Add some vertical padding between row
+
 						}
+						.onDelete(perform: deleteItems)
 					}
-					ToolbarItem(placement: .topBarLeading) {
-						Button(action: goToSeriesView) {
-							Label("Go To Series View", systemImage: "s.circle")
-						}
-					}
-					ToolbarItem(placement: .topBarLeading) {
-						Button(action: goToEventsView) {
-							Label("Go To Events View", systemImage: "e.circle")
-						}
-					}
-					
-					// right side
-					ToolbarItem(placement: .topBarTrailing) {
-						EditButton()
-					}
-					ToolbarItem {
-						// add new comic button
-						Button(action: addItem) {
-							Label("Add Comic", systemImage: "plus")
+					.padding(.leading, -10)
+					.padding(.trailing, -10)
+					.listRowSpacing(8)
+				}
+			}
+			// toolbar for the buttons
+			.toolbar {
+				// left side
+				ToolbarItem(placement: .topBarLeading) {
+					// saved all data to their files, shows a different icon depending on the success of the save
+					Button(action: {
+						globalState.saveDataIcon = persistenceController.saveAllData()
+					}) {
+						if let saveDataIcon = globalState.saveDataIcon {
+							if (saveDataIcon) {
+								// successful backup
+								Label("Backup Data", systemImage: "checkmark")
+							} else {
+								// failed backup
+								Label("Backup Data", systemImage: "xmark")
+							}
+						} else { // returned nil
+							// default
+							Label("Backup Data", systemImage: "square.and.arrow.down")
 						}
 					}
 				}
+				ToolbarItem(placement: .topBarLeading) {
+					Button(action: goToSeriesView) {
+						Label("Go To Series View", systemImage: "s.circle")
+					}
+				}
+				ToolbarItem(placement: .topBarLeading) {
+					Button(action: goToEventsView) {
+						Label("Go To Events View", systemImage: "e.circle")
+					}
+				}
 				
-				// when the add button is clicked show an action menu so you know to create a new or continuing series
-				.actionSheet(isPresented: $showingAddNewActionSheet) {
-					ActionSheet(
-						title: Text("Add New Comic"),
-						buttons: [
-							.default(Text("New Series")) {
-								print("Adding New Series Comic")
-								// Handle new item creation
-								addNewComic()
-							},
-							.default(Text("Continuing Series")) {
-								print("Adding Continuing Series Comic")
-								// Handle continuing series
-								addContinuingSeriesComic()
-							},
-							.cancel()
-						]
-					)
+				// right side
+				ToolbarItem(placement: .topBarTrailing) {
+					// add new comic button
+					Button(action: goToAddNewComicView) {
+						Label("Add Comic", systemImage: "plus")
+					}
+				}
+				ToolbarItem(placement: .topBarTrailing) {
+					EditButton()
 				}
 			}
 			.navigationTitle("Recent Comics")
-			//.navigationBarTitleDisplayMode(.inline)
 			// rules to navigating to other views
 			.navigationDestination(isPresented: $navigateToAddNewComicView) {
 				AddNewComicView()
@@ -235,7 +203,7 @@ struct ContentView: View {
 	/// Send the user to an empty ``AddNewComicView`` to add a brand new comic book from a new series.
 	///
 	/// This is ran when selecting 'New Series' in the action sheet. This will create a new ``ComicSeries`` and/or a new ``ComicEvent`` if needed. Otherwise will add to them if they already exist.
-	private func addNewComic() {
+	private func goToAddNewComicView() {
 		navigateToAddNewComicView = true
 	}
 	
@@ -274,12 +242,6 @@ struct ContentView: View {
 	}
 	
 	
-	/// Will show the 'Add New Comic' action sheet when the add button is pressed.
-	private func addItem() {
-		showingAddNewActionSheet = true
-	}
-	
-	
 	/// Called when an item is deleted from the ``ComicData`` list.
 	/// 
 	/// Will delete an instance of ``ComicData`` from the ``modelContext`` given by the index.
@@ -289,7 +251,7 @@ struct ContentView: View {
 	private func deleteItems(offsets: IndexSet) {
 		withAnimation {
 			for index in offsets {
-				modelContext.delete(comics[index])
+				persistenceController.context.delete(comics[index])
 			}
 		}
 		

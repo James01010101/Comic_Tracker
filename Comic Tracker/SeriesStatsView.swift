@@ -20,6 +20,12 @@ struct SeriesStatsView: View {
 	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
 	@Query private var series: [ComicSeries]
 	
+	/// Used to toggle between this main view and the ``AddNewComicView``
+	@State private var navigateToAddNewComicView: Bool = false
+	
+	/// currently selected series, saved so i can send it to the add new comic view when needed
+	@State private var selectedSeries: ComicSeries?
+	
 	
 	/// Width of the `readId` element in the list
 	///
@@ -36,6 +42,9 @@ struct SeriesStatsView: View {
 	private let issuesStatsTopPadding: CGFloat = -5
 	private let minorIssuesVerticalDividerPaddingTop: CGFloat = 8
 	private let minorIssuesVerticalDividerPaddingBottom: CGFloat = 10
+	
+	// alert page it trying to create new comic from series fails to unwrap series
+	@State private var showAlert: Bool = false
 	
 	
 	
@@ -163,6 +172,15 @@ struct SeriesStatsView: View {
 							.padding([.leading, .trailing], -15)
 							.padding(.bottom, -8)
 						}
+						.swipeActions(edge: .leading) {
+							Button(action: {
+								selectedSeries = series
+								addContinuingComic()
+							}) {
+								Label("Add Comic From Series", systemImage: "plus")
+							}
+							.tint(.green)
+						}
 					}
 				}
 				// this shrinks the gap at the top of the list so it sits under the headers nicely
@@ -175,11 +193,40 @@ struct SeriesStatsView: View {
 				.listRowSpacing(8)
 			}
 			.navigationTitle("Comic Series")
-			//.navigationBarTitleDisplayMode(.inline) // Use inline display mode to reduce vertical space
+			.navigationDestination(isPresented: $navigateToAddNewComicView) {
+				
+				// try to go to comic data with data from the series
+				if let s = selectedSeries {
+					AddNewComicView(series: s)
+					
+				// if it fails go to a empty alert page
+				} else {
+					EmptyView()
+						.alert(isPresented: $showAlert) {
+							Alert(
+								title: Text("Error"),
+								message: Text("Failed to unwrap series in SeriesStatsView to send to AddNewComicView"),
+								dismissButton: .default(Text("OK")) {
+									navigateToAddNewComicView = false
+								}
+							)
+						}
+						.onAppear {
+							showAlert = true
+						}
+					
+				}
+			}
 		}
 	}
 	
 	
+	
+	/// Goes to the add new comic page with most informtion auto filled from this series
+	/// - Parameter series: A ``ComicSeries`` which is the series to add the next comic from
+	private func addContinuingComic() {
+		navigateToAddNewComicView = true
+	}
 	
 	
 	/// Takes a series and returns a nicely formatted string to represent it.
