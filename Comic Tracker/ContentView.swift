@@ -36,6 +36,9 @@ struct ContentView: View {
 	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
 	@Query private var events: [ComicEvent]
 	
+	/// currently selected comic, saved so i can send it to the add new comic view when needed
+	@State private var selectedComic: ComicData?
+	
 	
 	/// Width of the `readId` element in the list
 	///
@@ -101,6 +104,15 @@ struct ContentView: View {
 									.padding(.trailing, -10)
 							}
 							.padding(.vertical, -3)  // Optional: Add some vertical padding between row
+							.swipeActions(edge: .leading) {
+								Button(action: {
+									selectedComic = comic
+									goToAddNewComicView()
+								}) {
+									Label("Add Comic From Series", systemImage: "plus")
+								}
+								.tint(.green)
+							}
 
 						}
 						.onDelete(perform: deleteItems)
@@ -146,7 +158,10 @@ struct ContentView: View {
 				// right side
 				ToolbarItem(placement: .topBarTrailing) {
 					// add new comic button
-					Button(action: goToAddNewComicView) {
+					Button(action: {
+						selectedComic = nil
+						goToAddNewComicView()
+					}) {
 						Label("Add Comic", systemImage: "plus")
 					}
 				}
@@ -157,7 +172,14 @@ struct ContentView: View {
 			.navigationTitle("Recent Comics")
 			// rules to navigating to other views
 			.navigationDestination(isPresented: $navigateToAddNewComicView) {
-				AddNewComicView()
+				if let c = selectedComic {
+					// set it back to nil so i can click the plus and have an empty new comic view. otherwise once i create from a recent comic i wont be able to create a new empty comic
+					AddNewComicView(comic: c)
+				
+				// if it fails just dont auto fill
+				} else {
+					AddNewComicView()
+				}
 			}
 			.navigationDestination(isPresented: $navigateToSeriesStatsView) {
 				SeriesStatsView()

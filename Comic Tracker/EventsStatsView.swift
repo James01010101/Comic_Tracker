@@ -101,9 +101,6 @@ struct EventsStatsView: View {
 							// bottom row stats
 							HStack {
 								
-								Divider()
-									.padding(.bottom, majorDividerBottomPadding)
-								
 								VStack {
 									Text("Issues")
 										.padding([.top, .bottom], -6)

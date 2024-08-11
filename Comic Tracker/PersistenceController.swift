@@ -219,7 +219,11 @@ class PersistenceController: ObservableObject {
 					yearFirstPublished: series.yearFirstPublished,
 					issuesRead: series.issuesRead,
 					totalIssues: series.totalIssues,
-					pagesRead: series.pagesRead
+					pagesRead: series.pagesRead,
+					recentComicIssueNumber: series.recentComicIssueNumber,
+					recentComicTotalPages: series.recentComicTotalPages,
+					recentComicEventName: series.recentComicEventName,
+					recentComicPurpose: series.recentComicPurpose
 				)
 				self.context.insert(newSeries)
 			}
