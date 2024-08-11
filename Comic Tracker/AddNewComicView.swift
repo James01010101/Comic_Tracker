@@ -27,7 +27,9 @@ struct AddNewComicView: View {
 	
 	// query variables (these are stored in the modelContext and are persistant)
 	/// Stores an array of ``ComicData`` which contains all of the individual comic books, which are stored in the ``PersistenceController``.
-	@Query private var comics: [ComicData]
+	///
+	/// This is sorted in decending order on the `comicId` to correctly be shown in  order in the list.
+	@Query(sort: \ComicData.comicId, order: .reverse) private var comics: [ComicData]
 	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
 	@Query private var series: [ComicSeries]
 	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
@@ -69,12 +71,10 @@ struct AddNewComicView: View {
 	
 	// empty constructor for creating an empty view here
 	init() {
-		print("Running empty init")
-		
 		self.brandName = ""
 		self.seriesName = ""
 		self.individualComicName = ""
-		self.yearFirstPublished = 2000 // Needs a default value in the range as to not throw errors when initially loading the picker.
+		self.yearFirstPublished = Calendar.current.component(.year, from: Date())
 		self.issueNumber = ""
 		self.totalPages = ""
 		self.eventName = ""
@@ -85,27 +85,36 @@ struct AddNewComicView: View {
 	
 	
 	
-	// constructor which takes in a series to auto fill information from
+	/// constructor which takes in a series to auto fill information from
 	init(series: ComicSeries) {
-		print("Running param init")
-		
-		
-		
 		self.brandName = series.seriesBrand
 		self.seriesName = series.seriesTitle
 		self.individualComicName = ""
 		self.yearFirstPublished = Int(series.yearFirstPublished)
-		self.issueNumber = String(series.issuesRead + 1) // TODO: This isnt right should be last issue +1 not total since i might be out of order
-		self.totalPages = "" // TODO: wrong aswell should be last comics pages as an estimate
-		self.eventName = ""
-		self.purpose = ""
 		self.dateRead = Date()
 		self.dateKnown = false // so the date section is hidden by default
 		
-		print("Brand: " + series.seriesBrand)
-		print("Title: " + series.seriesTitle)
-		print("Year: " + String(series.yearFirstPublished))
-		print("Issue: " + String(series.totalIssues + 1))
+		// stats from recent comis
+		self.issueNumber = String(series.recentComicIssueNumber + 1)
+		self.totalPages = String(series.recentComicTotalPages)
+		self.eventName = String(series.recentComicEventName)
+		self.purpose = String(series.recentComicPurpose)
+	}
+	
+	/// constructor which takes in a comic to auto fill information from
+	init(comic: ComicData) {
+		self.brandName = comic.brand
+		self.seriesName = comic.seriesName
+		self.individualComicName = ""
+		self.yearFirstPublished = Int(comic.yearFirstPublished)
+		self.dateRead = Date()
+		self.dateKnown = false // so the date section is hidden by default
+		
+		// stats from recent comis
+		self.issueNumber = String(comic.issueNumber + 1)
+		self.totalPages = String(comic.totalPages)
+		self.eventName = String(comic.eventName)
+		self.purpose = String(comic.purpose)
 	}
 	
 	
@@ -210,9 +219,6 @@ struct AddNewComicView: View {
 							}
 						}
 						.pickerStyle(MenuPickerStyle())
-						.onAppear {
-							self.yearFirstPublished = Calendar.current.component(.year, from: Date())
-						}
 					}
 					.padding(.leading, leadingPadding)
 					
@@ -386,7 +392,7 @@ struct AddNewComicView: View {
 			brandName: brandName,
 			seriesName: seriesName,
 			individualComicName: individualComicName,
-			yearFirstPublished: UInt16(self.yearFirstPublished),
+			yearFirstPublished: UInt16(yearFirstPublished),
 			issueNumber: UInt16(issueNumber) ?? 0,
 			totalPages: UInt16(totalPages) ?? 0,
 			eventName: eventName,
@@ -394,7 +400,8 @@ struct AddNewComicView: View {
 			dateRead: date,
 			modelContext: modelContext
 		)
-		
+
+
 		// Autosave
 		if (globalState.autoSave) {
 			globalState.saveDataIcon = persistenceController.saveAllData()

@@ -125,9 +125,9 @@
 				214992D72C560A11004CAD3B /* ComicData.swift */,
 				214992DB2C561750004CAD3B /* ComicSeries.swift */,
 				214992D92C561681004CAD3B /* ComicEvent.swift */,
-				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
 				214992AD2C55EC19004CAD3B /* ContentView.swift */,
 				21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */,
+				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
 				214992B12C55EC1B004CAD3B /* Assets.xcassets */,
 				214992B32C55EC1B004CAD3B /* Preview Content */,
 			);

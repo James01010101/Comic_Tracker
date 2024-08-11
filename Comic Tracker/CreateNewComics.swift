@@ -72,6 +72,8 @@ func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 				s.issuesRead += 1
 				s.pagesRead += comic.totalPages
 				
+				s.updateRecentComicStats(comic: comic)
+				
 				// dont want to continue searching
 				foundSeries = true
 				//print("Found series: " + String(s.seriesTitle))
@@ -87,12 +89,15 @@ func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 				yearFirstPublished: comic.yearFirstPublished,
 				issuesRead: 1, // since this is the first comic in this series
 				totalIssues: 0, // should never be 0 so this is default until set later
-				pagesRead: comic.totalPages
+				pagesRead: comic.totalPages,
+				recentComicIssueNumber: comic.issueNumber,
+				recentComicTotalPages: comic.totalPages,
+				recentComicEventName: comic.eventName,
+				recentComicPurpose: comic.purpose
 			)
+			
 			// insert into the model context
 			modelContext.insert(newSeries)
-			
-			//print("Created new series: " + String(newSeries.seriesTitle))
 		}
 	}
 }
