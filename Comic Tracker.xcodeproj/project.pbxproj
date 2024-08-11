@@ -23,6 +23,7 @@
 		215E5C122C66285400D0818A /* CreateNewComics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215E5C112C66285400D0818A /* CreateNewComics.swift */; };
 		216F87012C575E9A008DD50F /* AddNewComicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216F87002C575E9A008DD50F /* AddNewComicView.swift */; };
 		2174E3F62C670C6700E4372F /* EventsStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2174E3F52C670C6700E4372F /* EventsStatsView.swift */; };
+		2174E3F82C6792EE00E4372F /* HelperComicFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */; };
 		21D1B3FA2C5EFDB4001FE360 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */; };
 /* End PBXBuildFile section */
 
@@ -63,6 +64,7 @@
 		215E5C112C66285400D0818A /* CreateNewComics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewComics.swift; sourceTree = "<group>"; };
 		216F87002C575E9A008DD50F /* AddNewComicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewComicView.swift; sourceTree = "<group>"; };
 		2174E3F52C670C6700E4372F /* EventsStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsStatsView.swift; sourceTree = "<group>"; };
+		2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperComicFunctions.swift; sourceTree = "<group>"; };
 		21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Comic-Tracker-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -118,6 +120,7 @@
 			children = (
 				21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */,
 				21255F102C5F569500349694 /* GlobalState.swift */,
+				2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */,
 				215E5C112C66285400D0818A /* CreateNewComics.swift */,
 				215E5C0F2C661E4800D0818A /* SeriesStatsView.swift */,
 				2174E3F52C670C6700E4372F /* EventsStatsView.swift */,
@@ -299,6 +302,7 @@
 				216F87012C575E9A008DD50F /* AddNewComicView.swift in Sources */,
 				214992AC2C55EC19004CAD3B /* Comic_TrackerApp.swift in Sources */,
 				214992D82C560A11004CAD3B /* ComicData.swift in Sources */,
+				2174E3F82C6792EE00E4372F /* HelperComicFunctions.swift in Sources */,
 				215E5C102C661E4800D0818A /* SeriesStatsView.swift in Sources */,
 				21D1B3FA2C5EFDB4001FE360 /* PersistenceController.swift in Sources */,
 			);
