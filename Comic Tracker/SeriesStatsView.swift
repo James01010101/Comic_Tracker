@@ -17,6 +17,10 @@ struct SeriesStatsView: View {
 	/// Controls all global variables this view uses.
 	@StateObject private var globalState = GlobalState.shared
 	
+	/// Stores an array of ``ComicData`` which contains all of the individual comic books, which are stored in the ``PersistenceController``.
+	///
+	/// This is sorted in decending order on the `comicId` to correctly be shown in  order in the list.
+	@Query(sort: \ComicData.comicId, order: .reverse) private var comics: [ComicData]
 	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
 	@Query private var series: [ComicSeries]
 	
@@ -199,22 +203,9 @@ struct SeriesStatsView: View {
 				if let s = selectedSeries {
 					AddNewComicView(series: s)
 					
-				// if it fails go to a empty alert page
+				// if it fails just dont auto fill
 				} else {
-					EmptyView()
-						.alert(isPresented: $showAlert) {
-							Alert(
-								title: Text("Error"),
-								message: Text("Failed to unwrap series in SeriesStatsView to send to AddNewComicView"),
-								dismissButton: .default(Text("OK")) {
-									navigateToAddNewComicView = false
-								}
-							)
-						}
-						.onAppear {
-							showAlert = true
-						}
-					
+					AddNewComicView()
 				}
 			}
 		}
@@ -223,7 +214,6 @@ struct SeriesStatsView: View {
 	
 	
 	/// Goes to the add new comic page with most informtion auto filled from this series
-	/// - Parameter series: A ``ComicSeries`` which is the series to add the next comic from
 	private func addContinuingComic() {
 		navigateToAddNewComicView = true
 	}

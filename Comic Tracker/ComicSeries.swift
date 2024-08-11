@@ -39,6 +39,16 @@ class ComicSeries: Codable {
 	/// The total number of pages read in all comic books in this series.
 	var pagesRead: UInt16
 	
+	// theses are variables of the most recent comic added so i can easily add a continuing series from these stats
+	/// Recent comics issue
+	var recentComicIssueNumber: UInt16
+	/// Recent comics total pages
+	var recentComicTotalPages: UInt16
+	/// Recent comics event name
+	var recentComicEventName: String
+	/// Recent comics purpose
+	var recentComicPurpose: String
+	
 	
 	/// Create a new ``ComicSeries``
 	///
@@ -48,7 +58,12 @@ class ComicSeries: Codable {
 		 yearFirstPublished: UInt16,
 		 issuesRead: UInt16,
 		 totalIssues: UInt16,
-		 pagesRead: UInt16) {
+		 pagesRead: UInt16,
+		 recentComicIssueNumber: UInt16,
+		 recentComicTotalPages: UInt16,
+		 recentComicEventName: String,
+		 recentComicPurpose: String
+	) {
 		
 		ComicSeries.staticSeriesId += 1
 		self.seriesId = ComicSeries.staticSeriesId
@@ -58,7 +73,24 @@ class ComicSeries: Codable {
 		self.issuesRead = issuesRead
 		self.totalIssues = totalIssues
 		self.pagesRead = pagesRead
+		self.recentComicIssueNumber = recentComicIssueNumber
+		self.recentComicTotalPages = recentComicTotalPages
+		self.recentComicEventName = recentComicEventName
+		self.recentComicPurpose = recentComicPurpose
 	}
+	
+	
+	
+	/// Updated the most recent comic stats of this series with a newly added comic
+	/// - Parameter comic: Takes a ``ComicData`` containing the most recent comic added to this series
+	func updateRecentComicStats(comic: ComicData) {
+		self.recentComicIssueNumber = comic.issueNumber
+		self.recentComicTotalPages = comic.totalPages
+		self.recentComicEventName = comic.eventName
+		self.recentComicPurpose = comic.purpose
+	}
+	
+	
 	
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
@@ -69,6 +101,10 @@ class ComicSeries: Codable {
 		case issuesRead
 		case totalIssues
 		case pagesRead
+		case recentComicIssueNumber
+		case recentComicTotalPages
+		case recentComicEventName
+		case recentComicPurpose
 	}
 	
 	/// Conformance to Codable,  a decoder function to take a `JSON` decoder object read in from my backup file and create a new ``ComicSeries`` from it.
@@ -87,6 +123,12 @@ class ComicSeries: Codable {
 		issuesRead = try container.decode(UInt16.self, forKey: .issuesRead)
 		totalIssues = try container.decode(UInt16.self, forKey: .totalIssues)
 		pagesRead = try container.decode(UInt16.self, forKey: .pagesRead)
+		
+		// recent comic stats
+		recentComicIssueNumber = try container.decode(UInt16.self, forKey: .recentComicIssueNumber)
+		recentComicTotalPages = try container.decode(UInt16.self, forKey: .recentComicTotalPages)
+		recentComicEventName = try container.decode(String.self, forKey: .recentComicEventName)
+		recentComicPurpose = try container.decode(String.self, forKey: .recentComicPurpose)
 	}
 	
 	/// Conformance to Codable,  a encoder function to encode my ``ComicSeries`` into `JSON` to be written to a file.
@@ -101,5 +143,11 @@ class ComicSeries: Codable {
 		try container.encode(issuesRead, forKey: .issuesRead)
 		try container.encode(totalIssues, forKey: .totalIssues)
 		try container.encode(pagesRead, forKey: .pagesRead)
+		
+		// recent comic stats
+		try container.encode(recentComicIssueNumber, forKey: .recentComicIssueNumber)
+		try container.encode(recentComicTotalPages, forKey: .recentComicTotalPages)
+		try container.encode(recentComicEventName, forKey: .recentComicEventName)
+		try container.encode(recentComicPurpose, forKey: .recentComicPurpose)
 	}
 }
