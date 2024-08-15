@@ -18,8 +18,17 @@ import SwiftData
 /// Once successfully saved or canceled this will return back to the calling view, usually the main ``ContentView``.
 func saveComic(
 	brandName: String,
+	shortBrandName: String,
+	prioritizeShortBrandName: Bool,
+	
 	seriesName: String,
-	individualComicName: String,
+	shortSeriesName: String,
+	prioritizeShortSeriesName: Bool,
+	
+	comicName: String,
+	shortComicName: String,
+	prioritizeShortComicName: Bool,
+	
 	yearFirstPublished: UInt16,
 	issueNumber: UInt16,
 	totalPages: UInt16,
@@ -30,9 +39,18 @@ func saveComic(
 ) {
 	
 	let newComic = ComicData(
-		brand: brandName,
+		brandName: brandName,
+		shortBrandName: shortBrandName,
+		prioritizeShortBrandName: prioritizeShortBrandName,
+		
 		seriesName: seriesName,
-		individualComicName: individualComicName,
+		shortSeriesName: shortSeriesName,
+		prioritizeShortSeriesName: prioritizeShortSeriesName,
+		
+		comicName: comicName,
+		shortComicName: shortComicName,
+		prioritizeShortComicName: prioritizeShortComicName,
+		
 		yearFirstPublished: yearFirstPublished,
 		issueNumber: issueNumber,
 		totalPages: totalPages,
@@ -60,14 +78,15 @@ func saveComic(
 /// - Parameter comic: The new ``ComicData`` which contains the informations about the new comic
 func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 	let series: [ComicSeries] = try! modelContext.fetch(FetchDescriptor<ComicSeries>())
-	//print("Trying to create new series: " + String(comic.seriesName))
+	let globalState = GlobalState.shared
+
 	// Create a new series object for it if it doesnt exist
 	if (comic.seriesName != "") { // should always have a series
 		// See if i already have a series with the name
 		var foundSeries = false
 		for s in series {
 			// for a series to be the same it needs the same title and same year
-			if (comic.seriesName == s.seriesTitle && comic.yearFirstPublished == s.yearFirstPublished) {
+			if (comic.seriesName == s.seriesName && comic.yearFirstPublished == s.yearFirstPublished) {
 				// the series exists so add to it
 				s.issuesRead += 1
 				s.pagesRead += comic.totalPages
@@ -84,8 +103,14 @@ func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 		// If I didn't find the series then i need to create it
 		if (!foundSeries) {
 			let newSeries = ComicSeries(
-				seriesBrand: comic.brand,
-				seriesTitle: comic.seriesName,
+				brandName: comic.brandName,
+				shortBrandName: comic.shortBrandName,
+				prioritizeShortBrandName: comic.prioritizeShortBrandName,
+				
+				seriesName: comic.seriesName,
+				shortSeriesName: comic.shortSeriesName,
+				prioritizeShortSeriesName: comic.prioritizeShortSeriesName,
+				
 				yearFirstPublished: comic.yearFirstPublished,
 				issuesRead: 1, // since this is the first comic in this series
 				totalIssues: 0, // should never be 0 so this is default until set later
@@ -96,6 +121,15 @@ func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 				recentComicPurpose: comic.purpose
 			)
 			
+			// check if it exists in the dict, if so add one, else add it
+			if let count = globalState.seriesNamesUsages[comic.seriesName] {
+				// if it exists
+				globalState.seriesNamesUsages[comic.seriesName] = count + 1
+			} else {
+				globalState.seriesNamesUsages[comic.seriesName] = 1
+			}
+			print(String(comic.seriesName) + ": " + String(globalState.seriesNamesUsages[comic.seriesName]!))
+
 			// insert into the model context
 			modelContext.insert(newSeries)
 		}

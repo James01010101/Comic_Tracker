@@ -195,10 +195,11 @@ struct ContentView: View {
 	///
 	/// Used in the recent comic list
 	///
-	/// Default format is: {brand}: {series}\n {individualComicName} #{issueNumber}
+	/// Default format is: {brand}: {series} {year}\n {individualComicName} #{issueNumber}
+	///
 	///
 	/// - There are some unique cases which need to be taken into account:
-	///   - If the comic has an `individualComicName` it will be shown. Otherwise, if it is empty, or the same as the `seriesName`, it will be omitted.
+	///   - If the comic has an `comicName` it will be shown.
 	///   - If the comic has the same `seriesName` as another series, the `yearFirstPublished` will be added after the series to uniquely identify it.
 	///   - If the `seriesName` is the same as the `brand` then it will also be omitted, as to not have duplicated phrases.
 	///
@@ -208,14 +209,21 @@ struct ContentView: View {
 	/// - Returns: Nicely formatted `String` to be displayed to the user in the comic list.
 	private func createDisplayedComicString(comic: ComicData) -> String {
 		var displayedString: String = ""
-		displayedString += comic.brand + ": "
+		
+		displayedString += comic.brandName + ":\n"
 		displayedString += comic.seriesName
 		
-		if (!comic.individualComicName.isEmpty) {
-			displayedString += "\n" + comic.individualComicName
-		} else {
-			displayedString += " #" + String(comic.issueNumber)
-			
+		// do series collision checks and add year on if needed
+		if let count = globalState.seriesNamesUsages[comic.seriesName] {
+			if (count > 1) {
+				displayedString += " (" + String(comic.yearFirstPublished) + ")"
+			}
+		}
+		
+		displayedString += " #" + String(comic.issueNumber)
+		
+		if (!comic.comicName.isEmpty) {
+			displayedString += "\n" + comic.comicName
 		}
 		
 		return displayedString
@@ -290,7 +298,8 @@ struct ContentView: View {
 
 /// Main view preview settings
 struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
+	
+	static let initializeData: ModelContext = {
 		// create the model context
 		let schema = Schema([
 			ComicData.self,
@@ -307,18 +316,30 @@ struct ContentView_Previews: PreviewProvider {
 			fatalError("Could not create ModelContainer: \(error)")
 		}
 		
+		print("Loading ContentView_Previews")
+		
 		// reset to 0 since the preview can be loaded multiple times and this will keep incrementing
 		ComicData.staticComicId = 0
 		ComicSeries.staticSeriesId = 0
 		ComicEvent.staticEventId = 0
 		
+		let globalState = GlobalState.shared
+		globalState.resetSeriesNamesUsages()
 		
-				
 		// add some testing comics
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Infinity Gauntlet",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 1977,
 			issueNumber: 1,
 			totalPages: 30,
@@ -330,8 +351,17 @@ struct ContentView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Infinity Gauntlet",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 1977,
 			issueNumber: 2,
 			totalPages: 31,
@@ -343,8 +373,17 @@ struct ContentView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2015,
 			issueNumber: 1,
 			totalPages: 23,
@@ -356,8 +395,17 @@ struct ContentView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2015,
 			issueNumber: 2,
 			totalPages: 22,
@@ -369,8 +417,17 @@ struct ContentView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 1,
 			totalPages: 22,
@@ -381,9 +438,18 @@ struct ContentView_Previews: PreviewProvider {
 		)
 		
 		saveComic(
-			brandName: "FNAF",
+			brandName: "Five Nights At Freddy's",
+			shortBrandName: "FNAF",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Silver Eyes",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Silver Eyes",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 1,
 			totalPages: 356,
@@ -394,22 +460,40 @@ struct ContentView_Previews: PreviewProvider {
 		)
 		
 		saveComic(
-			brandName: "FNAF",
+			brandName: "Five Nights At Freddy's",
+			shortBrandName: "FNAF",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Twisted Ones",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Twisted Ones",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 2,
 			totalPages: 301,
 			eventName: "FNAF",
 			purpose: "FNAF",
-			dateRead: nil,
+			dateRead: Date(),
 			modelContext: context
 		)
 		
 		saveComic(
-			brandName: "FNAF",
+			brandName: "Five Nights At Freddy's",
+			shortBrandName: "FNAF",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Fourth Closet",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Fourth Closet",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 3,
 			totalPages: 362,
@@ -421,8 +505,17 @@ struct ContentView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Deadpool & Wolverine: WWIII",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2024,
 			issueNumber: 1,
 			totalPages: 29,
@@ -434,21 +527,39 @@ struct ContentView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "The Walking Dead",
-			seriesName: "The Walking Dead",
-			individualComicName: "",
+			shortBrandName: "TWD",
+			prioritizeShortBrandName: false,
+			
+			seriesName: "The Walking Dead Deluxe",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 1,
 			totalPages: 30,
 			eventName: "",
 			purpose: "The Walking Dead",
-			dateRead: nil,
+			dateRead: Date(),
 			modelContext: context
 		)
 		
 		saveComic(
 			brandName: "The Walking Dead",
-			seriesName: "The Walking Dead",
-			individualComicName: "",
+			shortBrandName: "TWD",
+			prioritizeShortBrandName: false,
+			
+			seriesName: "The Walking Dead Deluxe",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 2,
 			totalPages: 31,
@@ -460,10 +571,12 @@ struct ContentView_Previews: PreviewProvider {
 		
 		// lastly save it
 		try? context.save()
-		
-		
+		return context
+	}()
+	
+	static var previews: some View {
 		return ContentView()
-			.environment(\.modelContext, context)
+			.environment(\.modelContext, initializeData)
 			.environmentObject(GlobalState.shared)
 	}
 }

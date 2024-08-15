@@ -29,6 +29,9 @@ class PersistenceController: ObservableObject {
 	/// Contains all os the main data the project uses, data is loaded from files into this, and backed up from this into files
 	@Published var context: ModelContext
 	
+	/// Controls all global variables
+	var globalState = GlobalState.shared
+	
 	/// The filename for the ``ComicData`` backup file
 	let comicDataBackupFilename: String = "backup_comic_data.json"
 	/// The filename for the ``ComicSeries`` backup file
@@ -63,6 +66,8 @@ class PersistenceController: ObservableObject {
 			fatalError("Could not load all data files")
 		}
 		// Else if nil or true continue on nil will already print messages to debug
+		
+		// load the
 		
 	}
 	
@@ -148,9 +153,18 @@ class PersistenceController: ObservableObject {
 			
 			for comic in comics {
 				let newComic = ComicData(
-					brand: comic.brand,
+					brandName: comic.brandName,
+					shortBrandName: comic.shortBrandName,
+					prioritizeShortBrandName: comic.prioritizeShortBrandName,
+					
 					seriesName: comic.seriesName,
-					individualComicName: comic.individualComicName,
+					shortSeriesName: comic.shortSeriesName,
+					prioritizeShortSeriesName: comic.prioritizeShortSeriesName,
+					
+					comicName: comic.comicName,
+					shortComicName: comic.shortComicName,
+					prioritizeShortComicName: comic.prioritizeShortComicName,
+					
 					yearFirstPublished: comic.yearFirstPublished,
 					issueNumber: comic.issueNumber,
 					totalPages: comic.totalPages,
@@ -214,8 +228,14 @@ class PersistenceController: ObservableObject {
 			
 			for series in comicSeries {
 				let newSeries = ComicSeries(
-					seriesBrand: series.seriesBrand,
-					seriesTitle: series.seriesTitle,
+					brandName: series.brandName,
+					shortBrandName: series.shortBrandName,
+					prioritizeShortBrandName: series.prioritizeShortBrandName,
+					
+					seriesName: series.seriesName,
+					shortSeriesName: series.shortSeriesName,
+					prioritizeShortSeriesName: series.prioritizeShortSeriesName,
+					
 					yearFirstPublished: series.yearFirstPublished,
 					issuesRead: series.issuesRead,
 					totalIssues: series.totalIssues,
@@ -226,6 +246,16 @@ class PersistenceController: ObservableObject {
 					recentComicPurpose: series.recentComicPurpose
 				)
 				self.context.insert(newSeries)
+				
+				// check if it exists in the dict, if so add one, else add it
+				if let count = globalState.seriesNamesUsages[newSeries.seriesName] {
+					// if it exists
+					globalState.seriesNamesUsages[newSeries.seriesName] = count + 1
+				} else {
+					globalState.seriesNamesUsages[newSeries.seriesName] = 1
+				}
+				
+				print(String(newSeries.seriesName) + ": " + String(globalState.seriesNamesUsages[newSeries.seriesName]!))
 			}
 			
 			self.saveContext()

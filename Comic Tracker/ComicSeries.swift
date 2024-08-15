@@ -22,10 +22,21 @@ class ComicSeries: Codable {
 	///
 	/// > Note: Mainly used internally, most likely won't be shown to the user.
 	var seriesId: UInt32
+	
 	/// Brand of the series
-	var seriesBrand: String
+	var brandName: String
+	/// The shorthand brand of the brand, example "TWD".
+	var shortBrandName: String
+	/// The prioties shorthand even if it isnt needed
+	var prioritizeShortBrandName: Bool
+	
 	/// The title of this series.
-	var seriesTitle: String
+	var seriesName: String
+	/// The shorthand brand of the series name, example "TWD".
+	var shortSeriesName: String
+	/// The prioties shorthand even if it isnt needed
+	var prioritizeShortSeriesName: Bool
+	
 	/// The year the first comic book in this series was first published
 	///
 	/// Used to help distinguish series with the same name.
@@ -50,11 +61,18 @@ class ComicSeries: Codable {
 	var recentComicPurpose: String
 	
 	
+	
 	/// Create a new ``ComicSeries``
 	///
 	/// This will also give it it's new unique id.
-	init(seriesBrand: String,
-		 seriesTitle: String,
+	init(brandName: String,
+		 shortBrandName: String,
+		 prioritizeShortBrandName: Bool,
+		 
+		 seriesName: String,
+		 shortSeriesName: String,
+		 prioritizeShortSeriesName: Bool,
+		 
 		 yearFirstPublished: UInt16,
 		 issuesRead: UInt16,
 		 totalIssues: UInt16,
@@ -67,12 +85,20 @@ class ComicSeries: Codable {
 		
 		ComicSeries.staticSeriesId += 1
 		self.seriesId = ComicSeries.staticSeriesId
-		self.seriesBrand = seriesBrand
-		self.seriesTitle = seriesTitle
+		
+		self.brandName = brandName
+		self.shortBrandName = shortBrandName
+		self.prioritizeShortBrandName = prioritizeShortBrandName
+		
+		self.seriesName = seriesName
+		self.shortSeriesName = shortSeriesName
+		self.prioritizeShortSeriesName = prioritizeShortSeriesName
+		
 		self.yearFirstPublished = yearFirstPublished
 		self.issuesRead = issuesRead
 		self.totalIssues = totalIssues
 		self.pagesRead = pagesRead
+		
 		self.recentComicIssueNumber = recentComicIssueNumber
 		self.recentComicTotalPages = recentComicTotalPages
 		self.recentComicEventName = recentComicEventName
@@ -95,8 +121,15 @@ class ComicSeries: Codable {
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
 		case seriesId
-		case seriesBrand
+		
+		case brandName
+		case shortBrandName
+		case prioritizeShortBrandName
+		
 		case seriesTitle
+		case shortSeriesName
+		case prioritizeShortSeriesName
+		
 		case yearFirstPublished
 		case issuesRead
 		case totalIssues
@@ -117,8 +150,14 @@ class ComicSeries: Codable {
 		seriesId = tmpSeriesId
 		ComicSeries.staticSeriesId = tmpSeriesId
 		
-		seriesBrand = try container.decode(String.self, forKey: .seriesBrand)
-		seriesTitle = try container.decode(String.self, forKey: .seriesTitle)
+		brandName = try container.decode(String.self, forKey: .brandName)
+		shortBrandName = try container.decode(String.self, forKey: .shortBrandName)
+		prioritizeShortBrandName = try container.decode(Bool.self, forKey: .prioritizeShortBrandName)
+		
+		seriesName = try container.decode(String.self, forKey: .seriesTitle)
+		shortSeriesName = try container.decode(String.self, forKey: .shortSeriesName)
+		prioritizeShortSeriesName = try container.decode(Bool.self, forKey: .prioritizeShortSeriesName)
+		
 		yearFirstPublished = try container.decode(UInt16.self, forKey: .yearFirstPublished)
 		issuesRead = try container.decode(UInt16.self, forKey: .issuesRead)
 		totalIssues = try container.decode(UInt16.self, forKey: .totalIssues)
@@ -137,8 +176,15 @@ class ComicSeries: Codable {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		
 		try container.encode(seriesId, forKey: .seriesId)
-		try container.encode(seriesBrand, forKey: .seriesBrand)
-		try container.encode(seriesTitle, forKey: .seriesTitle)
+		
+		try container.encode(brandName, forKey: .brandName)
+		try container.encode(shortBrandName, forKey: .shortBrandName)
+		try container.encode(prioritizeShortBrandName, forKey: .prioritizeShortBrandName)
+
+		try container.encode(seriesName, forKey: .seriesTitle)
+		try container.encode(shortSeriesName, forKey: .shortSeriesName)
+		try container.encode(prioritizeShortSeriesName, forKey: .prioritizeShortSeriesName)
+
 		try container.encode(yearFirstPublished, forKey: .yearFirstPublished)
 		try container.encode(issuesRead, forKey: .issuesRead)
 		try container.encode(totalIssues, forKey: .totalIssues)

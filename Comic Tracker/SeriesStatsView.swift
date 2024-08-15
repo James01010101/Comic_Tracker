@@ -224,10 +224,10 @@ struct SeriesStatsView: View {
 	/// - Returns: Formatted `String` representing the series.
 	private func getSeriesFormattedName(series: ComicSeries) -> String {
 		var formattedString: String = ""
-		formattedString = series.seriesBrand
+		formattedString = series.brandName
 		
-		if (series.seriesBrand != series.seriesTitle) {
-			formattedString += ": " + series.seriesTitle
+		if (series.brandName != series.seriesName) {
+			formattedString += ": " + series.seriesName
 		}
 		return formattedString
 	}
@@ -287,8 +287,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		// add some testing comics
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Infinity Gauntlet",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 1977,
 			issueNumber: 1,
 			totalPages: 30,
@@ -300,8 +309,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Infinity Gauntlet",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 1977,
 			issueNumber: 2,
 			totalPages: 31,
@@ -313,8 +331,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2015,
 			issueNumber: 1,
 			totalPages: 23,
@@ -326,8 +353,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2015,
 			issueNumber: 2,
 			totalPages: 22,
@@ -339,8 +375,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 1,
 			totalPages: 22,
@@ -352,8 +397,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "FNAF",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Silver Eyes",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Silver Eyes",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 1,
 			totalPages: 356,
@@ -365,8 +419,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "FNAF",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Twisted Ones",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Twisted Ones",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 2,
 			totalPages: 301,
@@ -378,8 +441,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "FNAF",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Fourth Closet",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Fourth Closet",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 3,
 			totalPages: 362,
@@ -391,8 +463,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Deadpool & Wolverine: WWIII",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2024,
 			issueNumber: 1,
 			totalPages: 29,
@@ -404,8 +485,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "The Walking Dead",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Walking Dead",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 1,
 			totalPages: 30,
@@ -417,8 +507,17 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "The Walking Dead",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Walking Dead",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 2,
 			totalPages: 31,

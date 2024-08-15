@@ -38,10 +38,31 @@ struct AddNewComicView: View {
 	// Values used by the form to store the input fields for the new comic being added.
 	/// The brand of the comic, example "Marvel".
 	@State private var brandName: String
+	/// The shorthand brand of the comic, example "TWD".
+	@State private var shortBrandName: String
+	/// The prioties shorthand even if it isnt needed
+	@State private var prioritizeShortBrandName: Bool
+	/// Lock the brand toggle so it cant be changed
+	@State private var lockBrandToggle: Bool = false
+	
 	/// The name of the series this comic is apart of.
 	@State private var seriesName: String
+	/// The shorthand series of the comic, example "JJK".
+	@State private var shortSeriesName: String
+	/// The prioties shorthand even if it isnt needed
+	@State private var prioritizeShortSeriesName: Bool
+	/// Lock the series toggle so it cant be changed
+	@State private var lockSeriesToggle: Bool = false
+	
 	/// The name of this specific comic, if it's different for every book in the series (Optional).
-	@State private var individualComicName: String
+	@State private var comicName: String
+	/// The shorthand comic name, example "JJK".
+	@State private var shortComicName: String
+	/// The prioties shorthand even if it isnt needed
+	@State private var prioritizeShortComicName: Bool
+	/// Lock the comic toggle so it cant be changed
+	@State private var lockComicToggle: Bool = false
+	
 	/// The year the first book in this series was first published.
 	@State private var yearFirstPublished: Int
 	/// The issue number of this specific comic book.
@@ -72,8 +93,17 @@ struct AddNewComicView: View {
 	// empty constructor for creating an empty view here
 	init() {
 		self.brandName = ""
+		self.shortBrandName = ""
+		self.prioritizeShortBrandName = false
+		
 		self.seriesName = ""
-		self.individualComicName = ""
+		self.shortSeriesName = ""
+		self.prioritizeShortSeriesName = false
+		
+		self.comicName = ""
+		self.shortComicName = ""
+		self.prioritizeShortComicName = false
+		
 		self.yearFirstPublished = Calendar.current.component(.year, from: Date())
 		self.issueNumber = ""
 		self.totalPages = ""
@@ -87,9 +117,18 @@ struct AddNewComicView: View {
 	
 	/// constructor which takes in a series to auto fill information from
 	init(series: ComicSeries) {
-		self.brandName = series.seriesBrand
-		self.seriesName = series.seriesTitle
-		self.individualComicName = ""
+		self.brandName = series.brandName
+		self.shortBrandName = series.shortBrandName
+		self.prioritizeShortBrandName = series.prioritizeShortBrandName
+		
+		self.seriesName = series.seriesName
+		self.shortSeriesName = series.shortSeriesName
+		self.prioritizeShortSeriesName = series.prioritizeShortSeriesName
+		
+		self.comicName = ""
+		self.shortComicName = ""
+		self.prioritizeShortComicName = false
+		
 		self.yearFirstPublished = Int(series.yearFirstPublished)
 		self.dateRead = Date()
 		self.dateKnown = false // so the date section is hidden by default
@@ -103,9 +142,18 @@ struct AddNewComicView: View {
 	
 	/// constructor which takes in a comic to auto fill information from
 	init(comic: ComicData) {
-		self.brandName = comic.brand
+		self.brandName = comic.brandName
+		self.shortBrandName = comic.shortBrandName
+		self.prioritizeShortBrandName = comic.prioritizeShortBrandName
+		
 		self.seriesName = comic.seriesName
-		self.individualComicName = ""
+		self.shortSeriesName = comic.shortSeriesName
+		self.prioritizeShortSeriesName = comic.prioritizeShortSeriesName
+		
+		self.comicName = ""
+		self.shortComicName = ""
+		self.prioritizeShortComicName = false
+		
 		self.yearFirstPublished = Int(comic.yearFirstPublished)
 		self.dateRead = Date()
 		self.dateKnown = false // so the date section is hidden by default
@@ -121,7 +169,8 @@ struct AddNewComicView: View {
 	
 	var body: some View {
 		NavigationStack {
-			VStack {// headings stack
+			VStack {
+				// headings stack
 				VStack(spacing: 0) {
 					HStack {
 						Text("ID")
@@ -145,52 +194,222 @@ struct AddNewComicView: View {
 						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
 				}
 				
+				// main options
 				List {
-					HStack {
-						Image(systemName: "person.text.rectangle")
-							.frame(width: iconWidth, alignment: .center)
-						
-						Text("Brand")
-							.font(.headline)
-						
-						TextEditor(text: $brandName)
-							.multilineTextAlignment(.trailing)
-							.padding(.bottom, -5)
-							.padding(.trailing, trailingTextPadding)
-						
-					}
-					.padding(.leading, leadingPadding)
 					
-					HStack {
-						Image(systemName: "books.vertical")
-							.frame(width: iconWidth, alignment: .center)
+					// Brand section
+					VStack {
+						HStack {
+							Image(systemName: "person.text.rectangle")
+								.frame(width: iconWidth, alignment: .center)
+							
+							Text("Brand")
+								.font(.headline)
+							
+							TextEditor(text: $brandName)
+								.onChange(of: brandName) {
+									// if the text is over the max length
+									if (brandName.count > globalState.maxDisplayedStringLength && !lockBrandToggle) {
+										// lock the toggle on
+										prioritizeShortBrandName = true
+										lockBrandToggle = true
+										
+									// if the text goes under max length but was still locked unlock it
+									} else if (brandName.count < globalState.maxDisplayedStringLength && lockBrandToggle) {
+										lockBrandToggle = false
+										
+										// dont toggle the short off though unless its empty
+										// if not empty leave it on
+										if (shortBrandName.isEmpty) {
+											prioritizeShortBrandName = false
+										}
+									}
+								}
+								.multilineTextAlignment(.trailing)
+								.padding(.bottom, -5)
+								.padding(.trailing, trailingTextPadding)
+							
+						}
+						.padding(.leading, leadingPadding)
 						
-						Text("Series")
-							.font(.headline)
+						HStack {
+							Image(systemName: "person.text.rectangle")
+								.frame(width: iconWidth, alignment: .center)
+							
+							Text("Short Brand?")
+								.font(.headline)
+							
+							TextEditor(text: $shortBrandName)
+								.onChange(of: shortBrandName) {
+									// if the string is empty toggle it back to off
+									if (shortBrandName.count == 0 && !lockBrandToggle) {
+										prioritizeShortBrandName = false
+									}
+								}
+								.multilineTextAlignment(.trailing)
+								.padding(.bottom, -5)
+								.padding(.trailing, trailingTextPadding)
+						}
+						.padding(.leading, leadingPadding)
 						
-						TextEditor(text: $seriesName)
-							.multilineTextAlignment(.trailing)
-							.padding(.bottom, -5)
-							.padding(.trailing, trailingTextPadding)
-						
+						if (!shortBrandName.isEmpty || prioritizeShortBrandName) {
+							HStack {
+								Image(systemName: "person.text.rectangle")
+									.frame(width: iconWidth, alignment: .center)
+								
+								Text("Prioritize Short")
+									.font(.headline)
+								
+								Toggle("", isOn: $prioritizeShortBrandName)
+									.disabled(lockBrandToggle)
+								
+							}
+							.padding(.leading, leadingPadding)
+						}
 					}
-					.padding(.leading, leadingPadding)
 					
-					HStack {
-						Image(systemName: "text.book.closed")
-							.frame(width: iconWidth, alignment: .center)
+					// Series section
+					VStack {
+						HStack {
+							Image(systemName: "books.vertical")
+								.frame(width: iconWidth, alignment: .center)
+							
+							Text("Series")
+								.font(.headline)
+							
+							TextEditor(text: $seriesName)
+								.onChange(of: seriesName) {
+									// if the text is over the max length
+									if (seriesName.count > globalState.maxDisplayedStringLength && !lockSeriesToggle) {
+										// lock the toggle on
+										prioritizeShortSeriesName = true
+										lockSeriesToggle = true
+										
+									// if the text goes under max length but was still locked unlock it
+									} else if (seriesName.count < globalState.maxDisplayedStringLength && lockSeriesToggle) {
+										lockSeriesToggle = false
+										
+										// dont toggle the short off though unless its empty
+										// if not empty leave it on
+										if (shortSeriesName.isEmpty) {
+											prioritizeShortSeriesName = false
+										}
+									}
+								}
+								.multilineTextAlignment(.trailing)
+								.padding(.bottom, -5)
+								.padding(.trailing, trailingTextPadding)
+							
+						}
+						.padding(.leading, leadingPadding)
 						
-						Text("Book?")
-							.font(.headline)
+						HStack {
+							Image(systemName: "books.vertical")
+								.frame(width: iconWidth, alignment: .center)
+							
+							Text("Short Series?")
+								.font(.headline)
+							
+							TextEditor(text: $shortSeriesName)
+								.onChange(of: shortSeriesName) {
+									// if the string is empty toggle it back to off
+									if (shortSeriesName.count == 0 && !lockSeriesToggle) {
+										prioritizeShortSeriesName = false
+									}
+								}
+								.multilineTextAlignment(.trailing)
+								.padding(.bottom, -5)
+								.padding(.trailing, trailingTextPadding)
+						}
+						.padding(.leading, leadingPadding)
 						
-						TextEditor(text: $individualComicName)
-							.multilineTextAlignment(.trailing)
-							.padding(.bottom, -5)
-							.padding(.trailing, trailingTextPadding)
-						
+						if (!shortSeriesName.isEmpty || prioritizeShortSeriesName) {
+							HStack {
+								Image(systemName: "books.vertical")
+									.frame(width: iconWidth, alignment: .center)
+								
+								Text("Prioritize Short")
+									.font(.headline)
+								
+								Toggle("", isOn: $prioritizeShortSeriesName)
+									.disabled(lockSeriesToggle)
+							}
+							.padding(.leading, leadingPadding)
+						}
 					}
-					.padding(.leading, leadingPadding)
 					
+					// Book section
+					VStack {
+						HStack {
+							Image(systemName: "text.book.closed")
+								.frame(width: iconWidth, alignment: .center)
+							
+							Text("Book?")
+								.font(.headline)
+								
+							
+							TextEditor(text: $comicName)
+								.onChange(of: comicName) {
+									// if the text is over the max length
+									if (comicName.count > globalState.maxDisplayedStringLength && !lockComicToggle) {
+										// lock the toggle on
+										prioritizeShortComicName = true
+										lockComicToggle = true
+										
+									// if the text goes under max length but was still locked unlock it
+									} else if (comicName.count < globalState.maxDisplayedStringLength && lockComicToggle) {
+										lockComicToggle = false
+										
+										// dont toggle the short off though unless its empty
+										// if not empty leave it on
+										if (shortComicName.isEmpty) {
+											prioritizeShortComicName = false
+										}
+									}
+								}
+								.multilineTextAlignment(.trailing)
+								.padding(.bottom, -5)
+								.padding(.trailing, trailingTextPadding)
+							
+						}
+						.padding(.leading, leadingPadding)
+						
+						HStack {
+							Image(systemName: "text.book.closed")
+								.frame(width: iconWidth, alignment: .center)
+							
+							Text("Short Book Name?")
+								.font(.headline)
+							
+							TextEditor(text: $shortComicName)
+								.onChange(of: shortComicName) {
+									// if the string is empty toggle it back to off
+									if (shortComicName.count == 0 && !lockComicToggle) {
+										prioritizeShortComicName = false
+									}
+								}
+								.multilineTextAlignment(.trailing)
+								.padding(.bottom, -5)
+								.padding(.trailing, trailingTextPadding)
+						}
+						.padding(.leading, leadingPadding)
+						
+						if (!shortComicName.isEmpty || prioritizeShortComicName) {
+							HStack {
+								Image(systemName: "text.book.closed")
+									.frame(width: iconWidth, alignment: .center)
+								
+								Text("Prioritize Short")
+									.font(.headline)
+								
+								Toggle("", isOn: $prioritizeShortComicName)
+									.disabled(lockComicToggle)
+							}
+							.padding(.leading, leadingPadding)
+						}
+					}
+					
+					// Issue
 					HStack {
 						Image(systemName: "number.circle")
 							.frame(width: iconWidth, alignment: .center)
@@ -206,6 +425,7 @@ struct AddNewComicView: View {
 					}
 					.padding(.leading, leadingPadding)
 					
+					// Year first published
 					HStack {
 						Image(systemName: "calendar")
 							.frame(width: iconWidth, alignment: .center)
@@ -222,6 +442,7 @@ struct AddNewComicView: View {
 					}
 					.padding(.leading, leadingPadding)
 					
+					// Pages read
 					HStack {
 						Image(systemName: "doc.plaintext")
 							.frame(width: iconWidth, alignment: .center)
@@ -237,6 +458,7 @@ struct AddNewComicView: View {
 					}
 					.padding(.leading, leadingPadding)
 					
+					// Event
 					HStack {
 						Image(systemName: "tag")
 							.frame(width: iconWidth, alignment: .center)
@@ -251,6 +473,7 @@ struct AddNewComicView: View {
 					}
 					.padding(.leading, leadingPadding)
 					
+					// Purpose
 					HStack {
 						Image(systemName: "pencil")
 							.frame(width: iconWidth, alignment: .center)
@@ -265,23 +488,26 @@ struct AddNewComicView: View {
 					}
 					.padding(.leading, leadingPadding)
 					
-					HStack {
-						Image(systemName: "calendar")
-							.frame(width: iconWidth, alignment: .center)
-						
-						Text("Date Read")
-							.font(.headline)
-						
-						Toggle(isOn: $dateKnown) {}
-					}
-					.padding(.leading, leadingPadding)
-					
-					if (dateKnown) {
+					// Date read section
+					VStack {
 						HStack {
-							DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
-								.datePickerStyle(GraphicalDatePickerStyle())
+							Image(systemName: "calendar")
+								.frame(width: iconWidth, alignment: .center)
+							
+							Text("Date Read")
+								.font(.headline)
+							
+							Toggle(isOn: $dateKnown) {}
 						}
 						.padding(.leading, leadingPadding)
+						
+						if (dateKnown) {
+							HStack {
+								DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
+									.datePickerStyle(GraphicalDatePickerStyle())
+							}
+							.padding(.leading, leadingPadding)
+						}
 					}
 				}
 				.padding([.leading, .trailing], -10)
@@ -330,17 +556,52 @@ struct AddNewComicView: View {
 		// check brand
 		var brandCheck = false
 		var seriesCheck = false
+		var comicCheck = false
 		var issueCheck = false
 		var pagesCheck = false
 		
 		// brand is not empty
 		if (!brandName.isEmpty) {
-			brandCheck = true
+			// check if the string is over max length
+			if (brandName.count > globalState.maxDisplayedStringLength) {
+				// requires shortend string
+				if (prioritizeShortBrandName && !shortBrandName.isEmpty && shortBrandName.count < globalState.maxDisplayedStringLength) {
+					brandCheck = true
+				}
+			// if the string isnt over max length then its good
+			} else {
+				brandCheck = true
+			}
 		}
 		
 		// series is not empty
 		if (!seriesName.isEmpty) {
-			seriesCheck = true
+			// check if the string is over max length
+			if (seriesName.count > globalState.maxDisplayedStringLength) {
+				// requires shortend string
+				if (prioritizeShortSeriesName && !shortSeriesName.isEmpty && shortSeriesName.count < globalState.maxDisplayedStringLength) {
+					seriesCheck = true
+				}
+			// if the string isnt over max length then its good
+			} else {
+				seriesCheck = true
+			}
+		}
+		
+		// comic check (can be empty)
+		if (!comicName.isEmpty) {
+			// check if the string is over max length
+			if (comicName.count > globalState.maxDisplayedStringLength) {
+				// requires shortend string
+				if (prioritizeShortComicName && !shortComicName.isEmpty && shortComicName.count < globalState.maxDisplayedStringLength) {
+					comicCheck = true
+				}
+			// if the string isnt over max length then its good
+			} else {
+				comicCheck = true
+			}
+		} else { // if its empty thats fine
+			comicCheck = true
 		}
 		
 		// issue is not empty and is >= 0 (not negative)
@@ -363,7 +624,7 @@ struct AddNewComicView: View {
 		
 		
 		// return true only if all checks are true
-		if (brandCheck && seriesCheck && issueCheck && pagesCheck) {
+		if (brandCheck && seriesCheck && comicCheck && issueCheck && pagesCheck) {
 			return true
 		} else {
 			return false
@@ -390,8 +651,17 @@ struct AddNewComicView: View {
 		// call the saveComic function to save the new comic
 		saveComic(
 			brandName: brandName,
+			shortBrandName: shortBrandName,
+			prioritizeShortBrandName: prioritizeShortBrandName,
+			
 			seriesName: seriesName,
-			individualComicName: individualComicName,
+			shortSeriesName: shortSeriesName,
+			prioritizeShortSeriesName: prioritizeShortSeriesName,
+			
+			comicName: comicName,
+			shortComicName: shortComicName,
+			prioritizeShortComicName: prioritizeShortComicName,
+			
 			yearFirstPublished: UInt16(yearFirstPublished),
 			issueNumber: UInt16(issueNumber) ?? 0,
 			totalPages: UInt16(totalPages) ?? 0,
@@ -409,9 +679,7 @@ struct AddNewComicView: View {
 			// need to manually save because there have been changes
 			globalState.saveDataIcon = nil
 		}
-		
-		// lastly set the saved comic to
-		
+				
 		// Dismiss the view back to the main view
 		presentationMode.wrappedValue.dismiss()
 	}
@@ -447,8 +715,17 @@ struct AddComicView_Previews: PreviewProvider {
 		// add some testing comics
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Infinity Gauntlet",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 1977,
 			issueNumber: 1,
 			totalPages: 30,
@@ -460,8 +737,17 @@ struct AddComicView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Infinity Gauntlet",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 1977,
 			issueNumber: 2,
 			totalPages: 31,
@@ -473,8 +759,17 @@ struct AddComicView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2015,
 			issueNumber: 1,
 			totalPages: 23,
@@ -486,8 +781,17 @@ struct AddComicView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2015,
 			issueNumber: 2,
 			totalPages: 22,
@@ -499,8 +803,17 @@ struct AddComicView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Star Wars",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Darth Vader",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 1,
 			totalPages: 22,
@@ -512,8 +825,17 @@ struct AddComicView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "FNAF",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Silver Eyes",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Silver Eyes",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 1,
 			totalPages: 356,
@@ -525,21 +847,39 @@ struct AddComicView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "FNAF",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Twisted Ones",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Twisted Ones",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 2,
 			totalPages: 301,
 			eventName: "FNAF",
 			purpose: "FNAF",
-			dateRead: nil,
+			dateRead: Date(),
 			modelContext: context
 		)
 		
 		saveComic(
 			brandName: "FNAF",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Silver Eyes",
-			individualComicName: "The Fourth Closet",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "The Fourth Closet",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2014,
 			issueNumber: 3,
 			totalPages: 362,
@@ -551,8 +891,17 @@ struct AddComicView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "Marvel",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "Deadpool & Wolverine: WWIII",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2024,
 			issueNumber: 1,
 			totalPages: 29,
@@ -564,21 +913,39 @@ struct AddComicView_Previews: PreviewProvider {
 		
 		saveComic(
 			brandName: "The Walking Dead",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Walking Dead",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 1,
 			totalPages: 30,
 			eventName: "",
 			purpose: "The Walking Dead",
-			dateRead: nil,
+			dateRead: Date(),
 			modelContext: context
 		)
 		
 		saveComic(
 			brandName: "The Walking Dead",
+			shortBrandName: "",
+			prioritizeShortBrandName: false,
+			
 			seriesName: "The Walking Dead",
-			individualComicName: "",
+			shortSeriesName: "",
+			prioritizeShortSeriesName: false,
+			
+			comicName: "",
+			shortComicName: "",
+			prioritizeShortComicName: false,
+			
 			yearFirstPublished: 2020,
 			issueNumber: 2,
 			totalPages: 31,

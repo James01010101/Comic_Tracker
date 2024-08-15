@@ -14,7 +14,9 @@ struct Comic_TrackerApp: App {
 	/// Store the static instance of the ``PersistenceController``
 	@StateObject private var persistenceController = PersistenceController.shared
 	
-	
+	/// Creates the static instance of ``GlobalState``
+	@StateObject private var globalState = GlobalState.shared
+
 	var body: some Scene {
 		WindowGroup {
 			ContentView()
