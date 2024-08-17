@@ -10,7 +10,7 @@ import SwiftData
 import CloudKit
 
 /// This class will be used for storing/loading/backing up all persistant data
-/// 
+///
 /// This data is saved to the file system (not currently icloud). This makes sure that I have saved back-up data so if I change the underlying data structures it wont be currupted when loading in the old data.
 ///
 /// All data structures that are saved are saved into the `JSON` file format, which requires each class to be `Codable`
@@ -68,7 +68,6 @@ class PersistenceController: ObservableObject {
 			}
 			// Else if nil or true continue on nil will already print messages to debug
 		}
-			
 	}
 	
 	/// This is used to save the context data although ModelContext only exists in memory so this isnt used,

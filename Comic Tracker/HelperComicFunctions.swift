@@ -22,7 +22,7 @@ func removeComicFromSeries(comic: ComicData, allSeries: [ComicSeries]) {
 			
 			series.issuesRead -= 1
 			series.pagesRead -= comic.totalPages
-	
+			
 			// decrease the series usages counter
 			if let count = globalState.seriesNamesUsages[series.seriesName] {
 				globalState.seriesNamesUsages[series.seriesName] = count - 1

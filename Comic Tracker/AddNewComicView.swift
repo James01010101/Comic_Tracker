@@ -189,8 +189,8 @@ struct AddNewComicView: View {
 					
 					// Divider
 					Rectangle()
-						.frame(height: 3)  // Adjust the height for a bolder line
-						.padding(.top, 10)  // Optional: Add some padding below the divider
+						.frame(height: 3) // Adjust the height for a bolder line
+						.padding(.top, 10) // Optional: Add some padding below the divider
 						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
 				}
 				
@@ -214,7 +214,7 @@ struct AddNewComicView: View {
 										prioritizeShortBrandName = true
 										lockBrandToggle = true
 										
-									// if the text goes under max length but was still locked unlock it
+										// if the text goes under max length but was still locked unlock it
 									} else if (brandName.count < globalState.maxDisplayedStringLength && lockBrandToggle) {
 										lockBrandToggle = false
 										
@@ -285,7 +285,7 @@ struct AddNewComicView: View {
 										prioritizeShortSeriesName = true
 										lockSeriesToggle = true
 										
-									// if the text goes under max length but was still locked unlock it
+										// if the text goes under max length but was still locked unlock it
 									} else if (seriesName.count < globalState.maxDisplayedStringLength && lockSeriesToggle) {
 										lockSeriesToggle = false
 										
@@ -346,7 +346,6 @@ struct AddNewComicView: View {
 							
 							Text("Book?")
 								.font(.headline)
-								
 							
 							TextEditor(text: $comicName)
 								.onChange(of: comicName) {
@@ -356,7 +355,7 @@ struct AddNewComicView: View {
 										prioritizeShortComicName = true
 										lockComicToggle = true
 										
-									// if the text goes under max length but was still locked unlock it
+										// if the text goes under max length but was still locked unlock it
 									} else if (comicName.count < globalState.maxDisplayedStringLength && lockComicToggle) {
 										lockComicToggle = false
 										
@@ -541,7 +540,7 @@ struct AddNewComicView: View {
 	
 	
 	/// Used to format the numbers without commas in the year picker.
-	/// 
+	///
 	/// - Parameter number: input `Int` to format without comma's.
 	/// - Returns: Formated `String` of an `Int` without comma's.
 	private func formattedNumber(number: Int) -> String {
@@ -568,7 +567,7 @@ struct AddNewComicView: View {
 				if (prioritizeShortBrandName && !shortBrandName.isEmpty && shortBrandName.count < globalState.maxDisplayedStringLength) {
 					brandCheck = true
 				}
-			// if the string isnt over max length then its good
+				// if the string isnt over max length then its good
 			} else {
 				brandCheck = true
 			}
@@ -582,7 +581,7 @@ struct AddNewComicView: View {
 				if (prioritizeShortSeriesName && !shortSeriesName.isEmpty && shortSeriesName.count < globalState.maxDisplayedStringLength) {
 					seriesCheck = true
 				}
-			// if the string isnt over max length then its good
+				// if the string isnt over max length then its good
 			} else {
 				seriesCheck = true
 			}
@@ -596,7 +595,7 @@ struct AddNewComicView: View {
 				if (prioritizeShortComicName && !shortComicName.isEmpty && shortComicName.count < globalState.maxDisplayedStringLength) {
 					comicCheck = true
 				}
-			// if the string isnt over max length then its good
+				// if the string isnt over max length then its good
 			} else {
 				comicCheck = true
 			}
@@ -670,8 +669,8 @@ struct AddNewComicView: View {
 			dateRead: date,
 			modelContext: modelContext
 		)
-
-
+		
+		
 		// Autosave
 		if (globalState.autoSave) {
 			globalState.saveDataIcon = persistenceController.saveAllData()
@@ -679,7 +678,7 @@ struct AddNewComicView: View {
 			// need to manually save because there have been changes
 			globalState.saveDataIcon = nil
 		}
-				
+		
 		// Dismiss the view back to the main view
 		presentationMode.wrappedValue.dismiss()
 	}
@@ -710,7 +709,7 @@ struct AddComicView_Previews: PreviewProvider {
 		} catch {
 			fatalError("Could not create ModelContainer: \(error)")
 		}
-				
+		
 		// reset to 0 since the preview can be loaded multiple times and this will keep incrementing
 		ComicData.staticComicId = 0
 		ComicSeries.staticSeriesId = 0
@@ -729,7 +728,7 @@ struct AddComicView_Previews: PreviewProvider {
 		// this way creating and deleting comics will work correctly
 		persistenceController.context = context
 		
-	
+		
 		return AddNewComicView()
 			.environment(\.modelContext, context)
 	}

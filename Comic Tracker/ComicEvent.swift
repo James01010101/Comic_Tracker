@@ -33,6 +33,7 @@ class ComicEvent: Codable {
 	var pagesRead: UInt16
 	
 	
+
 	/// Creates a new ``ComicEvent``.
 	///
 	/// This will also give it it's new unique id.

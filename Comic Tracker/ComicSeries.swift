@@ -180,11 +180,11 @@ class ComicSeries: Codable {
 		try container.encode(brandName, forKey: .brandName)
 		try container.encode(shortBrandName, forKey: .shortBrandName)
 		try container.encode(prioritizeShortBrandName, forKey: .prioritizeShortBrandName)
-
+		
 		try container.encode(seriesName, forKey: .seriesTitle)
 		try container.encode(shortSeriesName, forKey: .shortSeriesName)
 		try container.encode(prioritizeShortSeriesName, forKey: .prioritizeShortSeriesName)
-
+		
 		try container.encode(yearFirstPublished, forKey: .yearFirstPublished)
 		try container.encode(issuesRead, forKey: .issuesRead)
 		try container.encode(totalIssues, forKey: .totalIssues)

@@ -70,7 +70,6 @@ func saveComic(
 	
 	// finally save the model
 	try? modelContext.save()
-
 }
 
 
@@ -79,7 +78,7 @@ func saveComic(
 func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 	let series: [ComicSeries] = try! modelContext.fetch(FetchDescriptor<ComicSeries>())
 	let globalState = GlobalState.shared
-
+	
 	// Create a new series object for it if it doesnt exist
 	if (comic.seriesName != "") { // should always have a series
 		// See if i already have a series with the name
@@ -127,7 +126,7 @@ func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 			} else {
 				globalState.seriesNamesUsages[comic.seriesName] = 1
 			}
-
+			
 			// insert into the model context
 			modelContext.insert(newSeries)
 		}
@@ -139,7 +138,7 @@ func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 /// - Parameter comic: The new ``ComicData`` which contains the informations about the new comic
 func updateEventWithNewComic(comic: ComicData, modelContext: ModelContext) {
 	let events: [ComicEvent] = try! modelContext.fetch(FetchDescriptor<ComicEvent>())
-
+	
 	// Create a new event object for it if it doesnt exist
 	if (comic.eventName != "") { // dont need a event
 		// see if i already have a event with the name

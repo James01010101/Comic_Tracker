@@ -43,7 +43,7 @@ class ComicData: Codable {
 	///   - Normal case:
 	///     - JJK #1
 	///     - JJK #2
-	///   - Different case: 
+	///   - Different case:
 	///     - Fasbear Frights: Into The Pit
 	///     - Fasbear Frights: Fetch
 	///
@@ -55,9 +55,9 @@ class ComicData: Codable {
 	var prioritizeShortComicName: Bool
 	
 	/// Year the first issue of this series was first published.
-	/// 
+	///
 	/// Used to help distinguish series with the same name, but that were released in different years.
-	/// 
+	///
 	/// > Important: Not the year this current issue was published.
 	var yearFirstPublished: UInt16
 	/// WIthin a series which issue is this.

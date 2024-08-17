@@ -38,7 +38,7 @@ struct SeriesStatsView: View {
 	private let readIdWidth: CGFloat = 45
 	
 	// top section
-	private let seriesIdLeadingPadding : CGFloat = -12
+	private let seriesIdLeadingPadding: CGFloat = -12
 	
 	// bottom section
 	private let statMajorWidth: CGFloat = 75
@@ -78,8 +78,8 @@ struct SeriesStatsView: View {
 					
 					// Divider
 					Rectangle()
-						.frame(height: 3)  // Adjust the height for a bolder line
-						.padding(.top, 10)  // Optional: Add some padding below the divider
+						.frame(height: 3) // Adjust the height for a bolder line
+						.padding(.top, 10) // Optional: Add some padding below the divider
 						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
 				}
 				
@@ -90,7 +90,6 @@ struct SeriesStatsView: View {
 					ForEach(series) { series in
 						// this row
 						VStack {
-
 							// top row name
 							HStack {
 								Text(String(series.seriesId))
@@ -302,7 +301,7 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		} catch {
 			fatalError("Could not create ModelContainer: \(error)")
 		}
-				
+		
 		// reset to 0 since the preview can be loaded multiple times and this will keep incrementing
 		ComicData.staticComicId = 0
 		ComicSeries.staticSeriesId = 0
@@ -320,8 +319,7 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		// so itll create the persistence controller like normal but then to context wont be whatever i have on disk itll be what i create here
 		// this way creating and deleting comics will work correctly
 		persistenceController.context = context
-	
-	
+		
 		return SeriesStatsView()
 			.environment(\.modelContext, context)
 	}

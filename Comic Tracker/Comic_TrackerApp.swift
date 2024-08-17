@@ -16,7 +16,7 @@ struct Comic_TrackerApp: App {
 	
 	/// Creates the static instance of ``GlobalState``
 	@StateObject private var globalState = GlobalState.shared
-
+	
 	var body: some Scene {
 		WindowGroup {
 			ContentView()

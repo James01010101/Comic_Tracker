@@ -76,8 +76,8 @@ struct ContentView: View {
 					
 					// Divider
 					Rectangle()
-						.frame(height: 3)  // Adjust the height for a bolder line
-						.padding(.top, 10)  // Optional: Add some padding below the divider
+						.frame(height: 3) // Adjust the height for a bolder line
+						.padding(.top, 10) // Optional: Add some padding below the divider
 						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
 				}
 				
@@ -103,7 +103,7 @@ struct ContentView: View {
 									.frame(width: pagesWidth, alignment: .center)
 									.padding(.trailing, -10)
 							}
-							.padding(.vertical, -3)  // Optional: Add some vertical padding between row
+							.padding(.vertical, -3) // Optional: Add some vertical padding between row
 							.swipeActions(edge: .leading) {
 								Button(action: {
 									selectedComic = comic
@@ -219,7 +219,7 @@ struct ContentView: View {
 		displayedString += brandNameString
 		
 		if (comic.brandName != comic.seriesName) {
-			displayedString	+= ":\n"
+			displayedString += ":\n"
 			displayedString += seriesNameString
 		}
 		
@@ -307,7 +307,6 @@ struct ContentView_Previews: PreviewProvider {
 		// add some testing comics
 		createTestComics(context: context)
 		
-		
 		// lastly save it
 		try? context.save()
 		
@@ -315,7 +314,6 @@ struct ContentView_Previews: PreviewProvider {
 		// so itll create the persistence controller like normal but then to context wont be whatever i have on disk itll be what i create here
 		// this way creating and deleting comics will work correctly
 		persistenceController.context = context
-		
 		
 		return ContentView()
 			.environment(\.modelContext, context)
