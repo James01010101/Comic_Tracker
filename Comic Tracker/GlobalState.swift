@@ -12,6 +12,11 @@ class GlobalState: ObservableObject {
 	/// Static instance of the ``GlobalState``
 	static let shared = GlobalState()
 	
+	// Debugging variables
+	/// if i am running in preview mode or not, mainly so i dont actually do things like writing to disc
+	@Published var runningInPreview: Bool
+	
+	
 	// these are variable related to the views that i want to be global
 	/// Used to display the saved data icon.
 	/// - Values:
@@ -45,12 +50,17 @@ class GlobalState: ObservableObject {
 	
 	/// Initialise the default state of the ``GlobalState`` variables.
 	init() {
+		// debug settings
+		runningInPreview = false
+		
+		
 		// global view settings
 		// starts ticked because nothing has changed
 		self.saveDataIcon = true
 		
 		// create the series dictionary
 		self.seriesNamesUsages = [String: UInt8]()
+		
 		
 		
 		// global settings

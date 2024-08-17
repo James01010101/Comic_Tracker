@@ -689,6 +689,12 @@ struct AddNewComicView: View {
 /// The preview for the ``AddNewComicView``.
 struct AddComicView_Previews: PreviewProvider {
 	static var previews: some View {
+		
+		let persistenceController = PersistenceController.shared
+		let globalState = GlobalState.shared
+		
+		globalState.runningInPreview = true
+		
 		// create the model context
 		let schema = Schema([
 			ComicData.self,
@@ -704,263 +710,27 @@ struct AddComicView_Previews: PreviewProvider {
 		} catch {
 			fatalError("Could not create ModelContainer: \(error)")
 		}
-		
+				
 		// reset to 0 since the preview can be loaded multiple times and this will keep incrementing
 		ComicData.staticComicId = 0
 		ComicSeries.staticSeriesId = 0
 		ComicEvent.staticEventId = 0
 		
-		
+		globalState.resetSeriesNamesUsages()
 		
 		// add some testing comics
-		saveComic(
-			brandName: "Marvel",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Infinity Gauntlet",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 1977,
-			issueNumber: 1,
-			totalPages: 30,
-			eventName: "Infinity Gauntlet",
-			purpose: "Thanos",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Marvel",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Infinity Gauntlet",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 1977,
-			issueNumber: 2,
-			totalPages: 31,
-			eventName: "Infinity Gauntlet",
-			purpose: "Thanos",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Star Wars",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Darth Vader",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2015,
-			issueNumber: 1,
-			totalPages: 23,
-			eventName: "Darth Vader",
-			purpose: "Darth Vader",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Star Wars",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Darth Vader",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2015,
-			issueNumber: 2,
-			totalPages: 22,
-			eventName: "Darth Vader",
-			purpose: "Darth Vader",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Star Wars",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Darth Vader",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2020,
-			issueNumber: 1,
-			totalPages: 22,
-			eventName: "Darth Vader",
-			purpose: "Darth Vader",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "FNAF",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Silver Eyes",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "The Silver Eyes",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2014,
-			issueNumber: 1,
-			totalPages: 356,
-			eventName: "FNAF",
-			purpose: "FNAF",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "FNAF",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Silver Eyes",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "The Twisted Ones",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2014,
-			issueNumber: 2,
-			totalPages: 301,
-			eventName: "FNAF",
-			purpose: "FNAF",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "FNAF",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Silver Eyes",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "The Fourth Closet",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2014,
-			issueNumber: 3,
-			totalPages: 362,
-			eventName: "FNAF",
-			purpose: "FNAF",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Marvel",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Deadpool & Wolverine: WWIII",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2024,
-			issueNumber: 1,
-			totalPages: 29,
-			eventName: "",
-			purpose: "Deadpool",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "The Walking Dead",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Walking Dead",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2020,
-			issueNumber: 1,
-			totalPages: 30,
-			eventName: "",
-			purpose: "The Walking Dead",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "The Walking Dead",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Walking Dead",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2020,
-			issueNumber: 2,
-			totalPages: 31,
-			eventName: "",
-			purpose: "The Walking Dead",
-			dateRead: Date(),
-			modelContext: context
-		)
+		createTestComics(context: context)
 		
 		// lastly save it
 		try? context.save()
 		
+		// set the context so my created preview one
+		// so itll create the persistence controller like normal but then to context wont be whatever i have on disk itll be what i create here
+		// this way creating and deleting comics will work correctly
+		persistenceController.context = context
 		
+	
 		return AddNewComicView()
 			.environment(\.modelContext, context)
-			.environmentObject(GlobalState.shared)
 	}
 }

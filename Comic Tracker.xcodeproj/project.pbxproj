@@ -24,6 +24,7 @@
 		216F87012C575E9A008DD50F /* AddNewComicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216F87002C575E9A008DD50F /* AddNewComicView.swift */; };
 		2174E3F62C670C6700E4372F /* EventsStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2174E3F52C670C6700E4372F /* EventsStatsView.swift */; };
 		2174E3F82C6792EE00E4372F /* HelperComicFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */; };
+		21A737C12C707A3400F1481D /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A737C02C707A3400F1481D /* PreviewHelpers.swift */; };
 		21D1B3FA2C5EFDB4001FE360 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +66,7 @@
 		216F87002C575E9A008DD50F /* AddNewComicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewComicView.swift; sourceTree = "<group>"; };
 		2174E3F52C670C6700E4372F /* EventsStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsStatsView.swift; sourceTree = "<group>"; };
 		2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperComicFunctions.swift; sourceTree = "<group>"; };
+		21A737C02C707A3400F1481D /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
 		21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Comic-Tracker-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -119,18 +121,19 @@
 			isa = PBXGroup;
 			children = (
 				21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */,
-				21255F102C5F569500349694 /* GlobalState.swift */,
-				2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */,
-				215E5C112C66285400D0818A /* CreateNewComics.swift */,
+				214992AD2C55EC19004CAD3B /* ContentView.swift */,
+				216F87002C575E9A008DD50F /* AddNewComicView.swift */,
 				215E5C0F2C661E4800D0818A /* SeriesStatsView.swift */,
 				2174E3F52C670C6700E4372F /* EventsStatsView.swift */,
-				216F87002C575E9A008DD50F /* AddNewComicView.swift */,
 				214992D72C560A11004CAD3B /* ComicData.swift */,
 				214992DB2C561750004CAD3B /* ComicSeries.swift */,
 				214992D92C561681004CAD3B /* ComicEvent.swift */,
-				214992AD2C55EC19004CAD3B /* ContentView.swift */,
+				2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */,
+				215E5C112C66285400D0818A /* CreateNewComics.swift */,
 				21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */,
+				21255F102C5F569500349694 /* GlobalState.swift */,
 				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
+				21A737C02C707A3400F1481D /* PreviewHelpers.swift */,
 				214992B12C55EC1B004CAD3B /* Assets.xcassets */,
 				214992B32C55EC1B004CAD3B /* Preview Content */,
 			);
@@ -298,6 +301,7 @@
 				21255F112C5F569500349694 /* GlobalState.swift in Sources */,
 				2174E3F62C670C6700E4372F /* EventsStatsView.swift in Sources */,
 				214992AE2C55EC19004CAD3B /* ContentView.swift in Sources */,
+				21A737C12C707A3400F1481D /* PreviewHelpers.swift in Sources */,
 				214992DA2C561681004CAD3B /* ComicEvent.swift in Sources */,
 				216F87012C575E9A008DD50F /* AddNewComicView.swift in Sources */,
 				214992AC2C55EC19004CAD3B /* Comic_TrackerApp.swift in Sources */,

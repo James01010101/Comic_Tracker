@@ -61,14 +61,14 @@ class PersistenceController: ObservableObject {
 		}
 		
 		// Lastly load my saved backup data from disc
-		let loadResult = loadAllData()
-		if (loadResult == false) {
-			fatalError("Could not load all data files")
+		if (!globalState.runningInPreview) {
+			let loadResult = loadAllData()
+			if (loadResult == false) {
+				fatalError("Could not load all data files")
+			}
+			// Else if nil or true continue on nil will already print messages to debug
 		}
-		// Else if nil or true continue on nil will already print messages to debug
-		
-		// load the
-		
+			
 	}
 	
 	/// This is used to save the context data although ModelContext only exists in memory so this isnt used,
@@ -107,6 +107,8 @@ class PersistenceController: ObservableObject {
 			}
 		}
 		
+		//print("Backup directory: " + backupDirectory.absoluteString)
+		
 		return backupDirectory
 	}
 	
@@ -114,6 +116,9 @@ class PersistenceController: ObservableObject {
 	///
 	/// - Returns: ``Bool`` - Letting the user know if the save was successful or not
 	func saveComicData() -> Bool {
+		// dont actually save if running in preview
+		if (globalState.runningInPreview) { return true }
+		
 		let fetchRequestComicData = FetchDescriptor<ComicData>()
 		
 		do {
@@ -141,6 +146,9 @@ class PersistenceController: ObservableObject {
 	///
 	/// - Returns: `Bool?` - Showing the status of the load, whether it loaded the file correctly or not
 	func loadComicData() -> Bool? {
+		// dont actually load if running in preview
+		if (globalState.runningInPreview) { return true }
+		
 		do {
 			// Load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicDataBackupFilename)
@@ -189,6 +197,9 @@ class PersistenceController: ObservableObject {
 	///
 	/// - Returns: ``Bool`` - Letting the user know if the save was successful or not
 	func saveComicSeries() -> Bool {
+		// dont actually save if running in preview
+		if (globalState.runningInPreview) { return true }
+		
 		let fetchRequestComicSeries = FetchDescriptor<ComicSeries>()
 		
 		do {
@@ -216,6 +227,9 @@ class PersistenceController: ObservableObject {
 	///
 	/// - Returns: `Bool?` - Showing the status of the load, whether it loaded the file correctly or not
 	func loadComicSeries() -> Bool? {
+		// dont actually load if running in preview
+		if (globalState.runningInPreview) { return true }
+		
 		do {
 			// Load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicSeriesBackupFilename)
@@ -255,7 +269,6 @@ class PersistenceController: ObservableObject {
 					globalState.seriesNamesUsages[newSeries.seriesName] = 1
 				}
 				
-				print(String(newSeries.seriesName) + ": " + String(globalState.seriesNamesUsages[newSeries.seriesName]!))
 			}
 			
 			self.saveContext()
@@ -272,6 +285,9 @@ class PersistenceController: ObservableObject {
 	///
 	/// - Returns: ``Bool`` - Letting the user know if the save was successful or not
 	func saveComicEvent() -> Bool {
+		// dont actually save if running in preview
+		if (globalState.runningInPreview) { return true }
+		
 		let fetchRequestComicEvent = FetchDescriptor<ComicEvent>()
 		
 		do {
@@ -299,6 +315,9 @@ class PersistenceController: ObservableObject {
 	///
 	/// - Returns: `Bool?` - Showing the status of the load, whether it loaded the file correctly or not
 	func loadComicEvent() -> Bool? {
+		// dont actually load if running in preview
+		if (globalState.runningInPreview) { return true }
+		
 		do {
 			// Load the most recent backup file and get all of the elements from that file
 			let url = getBackupDirectory().appendingPathComponent(comicEventBackupFilename)

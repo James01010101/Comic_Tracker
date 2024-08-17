@@ -95,7 +95,6 @@ func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 				
 				// dont want to continue searching
 				foundSeries = true
-				//print("Found series: " + String(s.seriesTitle))
 				break
 			}
 		}
@@ -128,7 +127,6 @@ func updateSeriesWithNewComic(comic: ComicData, modelContext: ModelContext) {
 			} else {
 				globalState.seriesNamesUsages[comic.seriesName] = 1
 			}
-			print(String(comic.seriesName) + ": " + String(globalState.seriesNamesUsages[comic.seriesName]!))
 
 			// insert into the model context
 			modelContext.insert(newSeries)

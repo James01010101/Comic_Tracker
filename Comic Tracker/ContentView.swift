@@ -107,13 +107,13 @@ struct ContentView: View {
 							.swipeActions(edge: .leading) {
 								Button(action: {
 									selectedComic = comic
-									goToAddNewComicView()
+									navigateToAddNewComicView = true
 								}) {
 									Label("Add Comic From Series", systemImage: "plus")
 								}
 								.tint(.green)
 							}
-
+							
 						}
 						.onDelete(perform: deleteItems)
 					}
@@ -145,12 +145,16 @@ struct ContentView: View {
 					}
 				}
 				ToolbarItem(placement: .topBarLeading) {
-					Button(action: goToSeriesView) {
+					Button(action: {
+						navigateToSeriesStatsView = true
+					}) {
 						Label("Go To Series View", systemImage: "s.circle")
 					}
 				}
 				ToolbarItem(placement: .topBarLeading) {
-					Button(action: goToEventsView) {
+					Button(action: {
+						navigateToEventsStatsView = true
+					}) {
 						Label("Go To Events View", systemImage: "e.circle")
 					}
 				}
@@ -160,7 +164,7 @@ struct ContentView: View {
 					// add new comic button
 					Button(action: {
 						selectedComic = nil
-						goToAddNewComicView()
+						navigateToAddNewComicView = true
 					}) {
 						Label("Add Comic", systemImage: "plus")
 					}
@@ -175,8 +179,8 @@ struct ContentView: View {
 				if let c = selectedComic {
 					// set it back to nil so i can click the plus and have an empty new comic view. otherwise once i create from a recent comic i wont be able to create a new empty comic
 					AddNewComicView(comic: c)
-				
-				// if it fails just dont auto fill
+					
+					// if it fails just dont auto fill
 				} else {
 					AddNewComicView()
 				}
@@ -209,9 +213,16 @@ struct ContentView: View {
 	/// - Returns: Nicely formatted `String` to be displayed to the user in the comic list.
 	private func createDisplayedComicString(comic: ComicData) -> String {
 		var displayedString: String = ""
+		let brandNameString: String = comic.prioritizeShortBrandName ? comic.shortBrandName : comic.brandName
+		let seriesNameString: String = comic.prioritizeShortSeriesName ? comic.shortSeriesName : comic.seriesName
 		
-		displayedString += comic.brandName + ":\n"
-		displayedString += comic.seriesName
+		displayedString += brandNameString
+		
+		if (comic.brandName != comic.seriesName) {
+			displayedString	+= ":\n"
+			displayedString += seriesNameString
+		}
+		
 		
 		// do series collision checks and add year on if needed
 		if let count = globalState.seriesNamesUsages[comic.seriesName] {
@@ -230,50 +241,8 @@ struct ContentView: View {
 	}
 	
 	
-	/// Send the user to an empty ``AddNewComicView`` to add a brand new comic book from a new series.
-	///
-	/// This is ran when selecting 'New Series' in the action sheet. This will create a new ``ComicSeries`` and/or a new ``ComicEvent`` if needed. Otherwise will add to them if they already exist.
-	private func goToAddNewComicView() {
-		navigateToAddNewComicView = true
-	}
-	
-	/// Send the user to ``SeriesStatsView`` to view all series and stats.
-	///
-	/// This is ran when selecting 'S' in the nav bar. This will show a list of all of the series and their stats.
-	private func goToSeriesView() {
-		navigateToSeriesStatsView = true
-	}
-	
-	/// Send the user to ``EventsStatsView`` to view all events and stats.
-	///
-	/// This is ran when selecting 'E' in the nav bar. This will show a list of all of the events and their stats.
-	private func goToEventsView() {
-		navigateToEventsStatsView = true
-	}
-	
-	/// Send the user to a partially auto filled ``AddNewComicView`` to add a new comic book to an already existing series.
-	///
-	/// This is ran when selecting 'Continuing Series' in the action sheet. This will automatically populate lots of the fields so the user doesn't have to manually input all of them. It will also create a new ``ComicEvent`` if needed. It will add to the ``ComicEvent`` and ``ComicSeries`` if they exist.
-	///
-	/// - Fields that will be autofilled:
-	///   - `brand`
-	///   - `seriesName`
-	///   - `yearFirstPublished`
-	///   - `issueNumber`: Previous issue number + 1
-	///   - `totalPages`: Auto filled from previous comic in the series (will most likely need to be changed)
-	///   - `eventName`
-	///   - `purpose`
-	///   - `dateRead`: Will be today's date
-	///
-	/// - Fields not autofilled:
-	///   - `individualComicName`: Will be unique to each comic
-	private func addContinuingSeriesComic() {
-		navigateToAddNewComicView = true
-	}
-	
-	
 	/// Called when an item is deleted from the ``ComicData`` list.
-	/// 
+	///
 	/// Will delete an instance of ``ComicData`` from the ``modelContext`` given by the index.
 	/// - Parameter offsets: An ``IndexSet`` used to delete the correct element from the  ``ComicData`` array.
 	///
@@ -281,6 +250,13 @@ struct ContentView: View {
 	private func deleteItems(offsets: IndexSet) {
 		withAnimation {
 			for index in offsets {
+				// find the comic series and decrease the number of read comics
+				removeComicFromSeries(comic: comics[index], allSeries: series)
+				
+				// find all events this comic was apart of and decrease the total number os issues read
+				removeComicFromEvents(comic: comics[index], allEvents: events)
+				
+				// delete the comic
 				persistenceController.context.delete(comics[index])
 			}
 		}
@@ -298,8 +274,13 @@ struct ContentView: View {
 
 /// Main view preview settings
 struct ContentView_Previews: PreviewProvider {
-	
-	static let initializeData: ModelContext = {
+	static var previews: some View {
+		
+		let persistenceController = PersistenceController.shared
+		let globalState = GlobalState.shared
+		
+		globalState.runningInPreview = true
+		
 		// create the model context
 		let schema = Schema([
 			ComicData.self,
@@ -316,267 +297,27 @@ struct ContentView_Previews: PreviewProvider {
 			fatalError("Could not create ModelContainer: \(error)")
 		}
 		
-		print("Loading ContentView_Previews")
-		
 		// reset to 0 since the preview can be loaded multiple times and this will keep incrementing
 		ComicData.staticComicId = 0
 		ComicSeries.staticSeriesId = 0
 		ComicEvent.staticEventId = 0
 		
-		let globalState = GlobalState.shared
 		globalState.resetSeriesNamesUsages()
 		
 		// add some testing comics
-		saveComic(
-			brandName: "Marvel",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Infinity Gauntlet",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 1977,
-			issueNumber: 1,
-			totalPages: 30,
-			eventName: "Infinity Gauntlet",
-			purpose: "Thanos",
-			dateRead: Date(),
-			modelContext: context
-		)
+		createTestComics(context: context)
 		
-		saveComic(
-			brandName: "Marvel",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Infinity Gauntlet",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 1977,
-			issueNumber: 2,
-			totalPages: 31,
-			eventName: "Infinity Gauntlet",
-			purpose: "Thanos",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Star Wars",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Darth Vader",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2015,
-			issueNumber: 1,
-			totalPages: 23,
-			eventName: "Darth Vader",
-			purpose: "Darth Vader",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Star Wars",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Darth Vader",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2015,
-			issueNumber: 2,
-			totalPages: 22,
-			eventName: "Darth Vader",
-			purpose: "Darth Vader",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Star Wars",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Darth Vader",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2020,
-			issueNumber: 1,
-			totalPages: 22,
-			eventName: "Darth Vader",
-			purpose: "Darth Vader",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Five Nights At Freddy's",
-			shortBrandName: "FNAF",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Silver Eyes",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "The Silver Eyes",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2014,
-			issueNumber: 1,
-			totalPages: 356,
-			eventName: "FNAF",
-			purpose: "FNAF",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Five Nights At Freddy's",
-			shortBrandName: "FNAF",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Silver Eyes",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "The Twisted Ones",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2014,
-			issueNumber: 2,
-			totalPages: 301,
-			eventName: "FNAF",
-			purpose: "FNAF",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Five Nights At Freddy's",
-			shortBrandName: "FNAF",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Silver Eyes",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "The Fourth Closet",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2014,
-			issueNumber: 3,
-			totalPages: 362,
-			eventName: "FNAF",
-			purpose: "FNAF",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "Marvel",
-			shortBrandName: "",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "Deadpool & Wolverine: WWIII",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2024,
-			issueNumber: 1,
-			totalPages: 29,
-			eventName: "",
-			purpose: "Deadpool",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "The Walking Dead",
-			shortBrandName: "TWD",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Walking Dead Deluxe",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2020,
-			issueNumber: 1,
-			totalPages: 30,
-			eventName: "",
-			purpose: "The Walking Dead",
-			dateRead: Date(),
-			modelContext: context
-		)
-		
-		saveComic(
-			brandName: "The Walking Dead",
-			shortBrandName: "TWD",
-			prioritizeShortBrandName: false,
-			
-			seriesName: "The Walking Dead Deluxe",
-			shortSeriesName: "",
-			prioritizeShortSeriesName: false,
-			
-			comicName: "",
-			shortComicName: "",
-			prioritizeShortComicName: false,
-			
-			yearFirstPublished: 2020,
-			issueNumber: 2,
-			totalPages: 31,
-			eventName: "",
-			purpose: "The Walking Dead",
-			dateRead: Date(),
-			modelContext: context
-		)
 		
 		// lastly save it
 		try? context.save()
-		return context
-	}()
-	
-	static var previews: some View {
+		
+		// set the context so my created preview one
+		// so itll create the persistence controller like normal but then to context wont be whatever i have on disk itll be what i create here
+		// this way creating and deleting comics will work correctly
+		persistenceController.context = context
+		
+		
 		return ContentView()
-			.environment(\.modelContext, initializeData)
-			.environmentObject(GlobalState.shared)
+			.environment(\.modelContext, context)
 	}
 }
