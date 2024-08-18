@@ -158,6 +158,7 @@ func updateEventWithNewComic(comic: ComicData, modelContext: ModelContext) {
 		// If I didn't find the event then i need to create it
 		if (!foundEvent) {
 			let newEvent = ComicEvent(
+				eventBrand: comic.brandName,
 				eventName: comic.eventName,
 				issuesRead: 1,
 				totalIssues: 0,

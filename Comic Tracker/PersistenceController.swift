@@ -329,6 +329,7 @@ class PersistenceController: ObservableObject {
 			
 			for event in comicEvent {
 				let newEvent = ComicEvent(
+					eventBrand: event.eventBrand,
 					eventName: event.eventName,
 					issuesRead: event.issuesRead,
 					totalIssues: event.totalIssues,

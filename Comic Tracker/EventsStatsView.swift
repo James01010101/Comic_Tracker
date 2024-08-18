@@ -43,30 +43,6 @@ struct EventsStatsView: View {
 	var body: some View {
 		NavigationStack {
 			VStack {
-				// headings stack
-				VStack(spacing: 0) {
-					HStack {
-						Text("ID")
-							.frame(width: readIdWidth, alignment: .center)
-							.font(.headline)
-							.padding(.leading, 10)
-						
-						Text("Series Name")
-							.frame(maxWidth: .infinity, alignment: .center)
-							.font(.headline)
-							.padding(.leading, -10 - readIdWidth) // to adjust for the pages text being moved in slightly more
-							.padding(.trailing, 10)
-					}
-					.padding(.top, 10)
-					.padding(.bottom, -5)
-					
-					// Divider
-					Rectangle()
-						.frame(height: 3) // Adjust the height for a bolder line
-						.padding(.top, 10) // Optional: Add some padding below the divider
-						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
-				}
-				
 				// VStack list for all the series
 				// the series will take up to lines each
 				// one for the series, and one for stats
@@ -155,10 +131,6 @@ struct EventsStatsView: View {
 						}
 					}
 				}
-				// this shrinks the gap at the top of the list so it sits under the headers nicely
-				.onAppear(perform: {
-					UICollectionView.appearance().contentInset.top = -35
-				})
 				// less padding either side of the list
 				.padding(.leading, -10)
 				.padding(.trailing, -10)
@@ -174,7 +146,9 @@ struct EventsStatsView: View {
 	/// - Returns: Formatted `String` representing the event.
 	private func getEventsFormattedName(event: ComicEvent) -> String {
 		var formattedString: String = ""
-		formattedString = event.eventName
+		
+		formattedString = event.eventBrand
+		formattedString += ": " + event.eventName
 		
 		return formattedString
 	}

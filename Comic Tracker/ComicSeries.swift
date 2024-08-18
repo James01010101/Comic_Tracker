@@ -12,7 +12,7 @@ import SwiftData
 ///
 /// It must conform to `Codable` because this enables it to be converted to and from `JSON`, which is used for writing and reading from the backup files.
 @Model
-class ComicSeries: Codable {
+class ComicSeries: Codable, Identifiable {
 	/// This is used as a static unique id
 	///
 	/// Everytime I create a new series it gets incremented and given to that series so they each get a unique id. It is also used to know the order of series I have read
@@ -22,6 +22,8 @@ class ComicSeries: Codable {
 	///
 	/// > Note: Mainly used internally, most likely won't be shown to the user.
 	var seriesId: UInt32
+	/// Use seriesId to fulfill the Identifiable requirement
+	var id: UInt32 { seriesId }
 	
 	/// Brand of the series
 	var brandName: String

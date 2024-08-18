@@ -79,7 +79,7 @@ struct AddNewComicView: View {
 	@State private var dateKnown: Bool
 	
 	/// Is the form valid and able to be submitted (start blue, then if i click itll turn red if invalid).
-	@State private var validForm: Bool = false
+	@State private var validForm: Bool = true
 	
 	
 	/// The amount of spacing the icons get to keep it consistant
@@ -170,33 +170,8 @@ struct AddNewComicView: View {
 	var body: some View {
 		NavigationStack {
 			VStack {
-				// headings stack
-				VStack(spacing: 0) {
-					HStack {
-						Text("ID")
-							.frame(width: 45, alignment: .center)
-							.font(.headline)
-							.padding(.leading, 10)
-						
-						Text("Series Name")
-							.frame(maxWidth: .infinity, alignment: .center)
-							.font(.headline)
-							.padding(.leading, -10 - 45) // to adjust for the pages text being moved in slightly more
-							.padding(.trailing, 10)
-					}
-					.padding(.top, 10)
-					.padding(.bottom, -5)
-					
-					// Divider
-					Rectangle()
-						.frame(height: 3) // Adjust the height for a bolder line
-						.padding(.top, 10) // Optional: Add some padding below the divider
-						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
-				}
-				
 				// main options
 				List {
-					
 					// Brand section
 					VStack {
 						HStack {

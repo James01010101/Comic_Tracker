@@ -12,7 +12,7 @@ import SwiftData
 ///
 /// It must conform to `Codable` because this enables it to be converted to and from `JSON`, which is used for writing and reading from the backup files.
 @Model
-class ComicEvent: Codable {
+class ComicEvent: Codable, Identifiable {
 	/// This is used as a static unique id for each event.
 	///
 	/// Everytime I create a new event it gets incremented and given to the new event so they each get a unique id. This is also used to know the order that I read the events.
@@ -22,6 +22,11 @@ class ComicEvent: Codable {
 	///
 	/// > Note: Mainly used internally, most likely wont be shown to the user.
 	var eventId: UInt32
+	/// Use eventId to fulfill the Identifiable requirement
+	var id: UInt32 { eventId }
+	
+	/// The brand this event is part of eg Marvel
+	var eventBrand: String
 	/// The full name of this event.
 	var eventName: String
 	/// The total number of comic issues that have been read in this event.
@@ -37,13 +42,15 @@ class ComicEvent: Codable {
 	/// Creates a new ``ComicEvent``.
 	///
 	/// This will also give it it's new unique id.
-	init(eventName: String,
+	init(eventBrand: String,
+		 eventName: String,
 		 issuesRead: UInt16,
 		 totalIssues: UInt16,
 		 pagesRead: UInt16) {
 		
 		ComicEvent.staticEventId += 1
 		self.eventId = ComicEvent.staticEventId
+		self.eventBrand = eventBrand
 		self.eventName = eventName
 		self.issuesRead = issuesRead
 		self.totalIssues = totalIssues
@@ -53,6 +60,7 @@ class ComicEvent: Codable {
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
 		case eventId
+		case eventBrand
 		case eventName
 		case issuesRead
 		case totalIssues
@@ -69,6 +77,7 @@ class ComicEvent: Codable {
 		eventId = tmpEventId
 		ComicEvent.staticEventId = tmpEventId
 		
+		eventBrand = try container.decode(String.self, forKey: .eventBrand)
 		eventName = try container.decode(String.self, forKey: .eventName)
 		issuesRead = try container.decode(UInt16.self, forKey: .issuesRead)
 		totalIssues = try container.decode(UInt16.self, forKey: .totalIssues)
@@ -81,6 +90,7 @@ class ComicEvent: Codable {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		
 		try container.encode(eventId, forKey: .eventId)
+		try container.encode(eventBrand, forKey: .eventBrand)
 		try container.encode(eventName, forKey: .eventName)
 		try container.encode(issuesRead, forKey: .issuesRead)
 		try container.encode(totalIssues, forKey: .totalIssues)
