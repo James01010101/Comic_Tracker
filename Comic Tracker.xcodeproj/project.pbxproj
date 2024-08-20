@@ -26,6 +26,7 @@
 		2174E3F82C6792EE00E4372F /* HelperComicFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */; };
 		21A737C12C707A3400F1481D /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A737C02C707A3400F1481D /* PreviewHelpers.swift */; };
 		21D1B3FA2C5EFDB4001FE360 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */; };
+		21DA792E2C74A7C400AA0251 /* ComicReadEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21DA792D2C74A7C400AA0251 /* ComicReadEnum.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 		21A737C02C707A3400F1481D /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
 		21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Comic-Tracker-Info.plist"; sourceTree = SOURCE_ROOT; };
+		21DA792D2C74A7C400AA0251 /* ComicReadEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicReadEnum.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +136,7 @@
 				21255F102C5F569500349694 /* GlobalState.swift */,
 				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
 				21A737C02C707A3400F1481D /* PreviewHelpers.swift */,
+				21DA792D2C74A7C400AA0251 /* ComicReadEnum.swift */,
 				214992B12C55EC1B004CAD3B /* Assets.xcassets */,
 				214992B32C55EC1B004CAD3B /* Preview Content */,
 			);
@@ -296,6 +299,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21DA792E2C74A7C400AA0251 /* ComicReadEnum.swift in Sources */,
 				215E5C122C66285400D0818A /* CreateNewComics.swift in Sources */,
 				214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */,
 				21255F112C5F569500349694 /* GlobalState.swift in Sources */,

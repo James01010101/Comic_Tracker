@@ -79,6 +79,14 @@ class ComicData: Codable, Identifiable {
 	/// Automatically filled in when a comic is added, but can be manually set.
 	var dateRead: Date?
 	
+	/// This is a link to the marvel ultimate page for this comic.
+	///
+	/// Mainly used in the event list to be able to easily find a comic to read
+	var marvelUltimateLink: String
+	
+	/// Enum to store wether ive read this comic or not
+	var comicRead: ComicReadEnum
+	
 	
 	/// Creates a new ``ComicData``.
 	///
@@ -100,7 +108,10 @@ class ComicData: Codable, Identifiable {
 		 totalPages: UInt16,
 		 eventName: String,
 		 purpose: String,
-		 dateRead: Date?
+		 dateRead: Date?,
+		 
+		 marvelUltimateLink: String,
+		 comicRead: ComicReadEnum
 	) {
 		
 		ComicData.staticComicId += 1
@@ -124,6 +135,9 @@ class ComicData: Codable, Identifiable {
 		self.eventName = eventName
 		self.purpose = purpose
 		self.dateRead = dateRead
+		
+		self.marvelUltimateLink = marvelUltimateLink
+		self.comicRead = comicRead
 	}
 	
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
@@ -148,6 +162,9 @@ class ComicData: Codable, Identifiable {
 		case eventName
 		case purpose
 		case dateRead
+		
+		case marvelUltimateLink
+		case comicRead
 	}
 	
 	/// Conformance to Codable,  a decoder function to take a `JSON` decoder object read in from my backup file and create a new ``ComicData`` from it.
@@ -180,6 +197,9 @@ class ComicData: Codable, Identifiable {
 		eventName = try container.decode(String.self, forKey: .eventName)
 		purpose = try container.decode(String.self, forKey: .purpose)
 		dateRead = try container.decode(Date?.self, forKey: .dateRead)
+		
+		marvelUltimateLink = try container.decode(String.self, forKey: .marvelUltimateLink)
+		comicRead = try container.decode(ComicReadEnum.self, forKey: .comicRead)
 	}
 	
 	/// Conformance to Codable,  a encoder function to encode my ``ComicData`` into `JSON` to be written to a file.
@@ -207,5 +227,8 @@ class ComicData: Codable, Identifiable {
 		try container.encode(eventName, forKey: .eventName)
 		try container.encode(purpose, forKey: .purpose)
 		try container.encode(dateRead, forKey: .dateRead)
+		
+		try container.encode(marvelUltimateLink, forKey: .marvelUltimateLink)
+		try container.encode(comicRead, forKey: .comicRead)
 	}
 }

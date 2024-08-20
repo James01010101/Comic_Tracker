@@ -26,7 +26,12 @@ class ComicEvent: Codable, Identifiable {
 	var id: UInt32 { eventId }
 	
 	/// The brand this event is part of eg Marvel
-	var eventBrand: String
+	var brandName: String
+	/// The shorthand brand of the brand, example "TWD".
+	var shortBrandName: String
+	/// The prioties shorthand even if it isnt needed
+	var prioritizeShortBrandName: Bool
+	
 	/// The full name of this event.
 	var eventName: String
 	/// The total number of comic issues that have been read in this event.
@@ -42,7 +47,9 @@ class ComicEvent: Codable, Identifiable {
 	/// Creates a new ``ComicEvent``.
 	///
 	/// This will also give it it's new unique id.
-	init(eventBrand: String,
+	init(brandName: String,
+		 shortBrandName: String,
+		 prioritizeShortBrandName: Bool,
 		 eventName: String,
 		 issuesRead: UInt16,
 		 totalIssues: UInt16,
@@ -50,7 +57,9 @@ class ComicEvent: Codable, Identifiable {
 		
 		ComicEvent.staticEventId += 1
 		self.eventId = ComicEvent.staticEventId
-		self.eventBrand = eventBrand
+		self.brandName = brandName
+		self.shortBrandName = shortBrandName
+		self.prioritizeShortBrandName = prioritizeShortBrandName
 		self.eventName = eventName
 		self.issuesRead = issuesRead
 		self.totalIssues = totalIssues
@@ -60,7 +69,9 @@ class ComicEvent: Codable, Identifiable {
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
 		case eventId
-		case eventBrand
+		case brandName
+		case shortBrandName
+		case prioritizeShortBrandName
 		case eventName
 		case issuesRead
 		case totalIssues
@@ -76,8 +87,10 @@ class ComicEvent: Codable, Identifiable {
 		let tmpEventId = try container.decode(UInt32.self, forKey: .eventId)
 		eventId = tmpEventId
 		ComicEvent.staticEventId = tmpEventId
-		
-		eventBrand = try container.decode(String.self, forKey: .eventBrand)
+		 
+		brandName = try container.decode(String.self, forKey: .brandName)
+		shortBrandName = try container.decode(String.self, forKey: .shortBrandName)
+		prioritizeShortBrandName = try container.decode(Bool.self, forKey: .prioritizeShortBrandName)
 		eventName = try container.decode(String.self, forKey: .eventName)
 		issuesRead = try container.decode(UInt16.self, forKey: .issuesRead)
 		totalIssues = try container.decode(UInt16.self, forKey: .totalIssues)
@@ -90,7 +103,9 @@ class ComicEvent: Codable, Identifiable {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		
 		try container.encode(eventId, forKey: .eventId)
-		try container.encode(eventBrand, forKey: .eventBrand)
+		try container.encode(brandName, forKey: .brandName)
+		try container.encode(shortBrandName, forKey: .shortBrandName)
+		try container.encode(prioritizeShortBrandName, forKey: .prioritizeShortBrandName)
 		try container.encode(eventName, forKey: .eventName)
 		try container.encode(issuesRead, forKey: .issuesRead)
 		try container.encode(totalIssues, forKey: .totalIssues)

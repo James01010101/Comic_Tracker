@@ -35,7 +35,10 @@ func saveComic(
 	eventName: String,
 	purpose: String,
 	dateRead: Date?,
-	modelContext: ModelContext
+	modelContext: ModelContext,
+	
+	marvelUltimateLink: String,
+	comicRead: ComicReadEnum
 ) {
 	
 	let newComic = ComicData(
@@ -56,7 +59,10 @@ func saveComic(
 		totalPages: totalPages,
 		eventName: eventName,
 		purpose: purpose,
-		dateRead: dateRead
+		dateRead: dateRead,
+		
+		marvelUltimateLink: marvelUltimateLink,
+		comicRead: comicRead
 	)
 	
 	// Insert into the model context
@@ -158,7 +164,9 @@ func updateEventWithNewComic(comic: ComicData, modelContext: ModelContext) {
 		// If I didn't find the event then i need to create it
 		if (!foundEvent) {
 			let newEvent = ComicEvent(
-				eventBrand: comic.brandName,
+				brandName: comic.brandName,
+				shortBrandName: comic.shortBrandName,
+				prioritizeShortBrandName: comic.prioritizeShortBrandName,
 				eventName: comic.eventName,
 				issuesRead: 1,
 				totalIssues: 0,

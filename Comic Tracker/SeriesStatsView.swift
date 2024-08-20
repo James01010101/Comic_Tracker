@@ -188,7 +188,6 @@ struct SeriesStatsView: View {
 							.tint(.green)
 						}
 						.onTapGesture {
-							print("Pressed series: " + series.seriesName)
 							selectedSeries = series
 							totalIssues = ""
 							showSheet = true

@@ -21,6 +21,12 @@ struct EventsStatsView: View {
 	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
 	@Query private var events: [ComicEvent]
 	
+	/// Go to an edit view for the event, this is how you would add reading lists
+	@State private var showSheet: Bool = false
+	
+	/// Selected event to be stored to be used later
+	@State private var selectedEvent: ComicEvent?
+	
 	
 	/// Width of the `readId` element in the list
 	///
@@ -129,12 +135,46 @@ struct EventsStatsView: View {
 							.padding([.leading, .trailing], -15)
 							.padding(.bottom, -8)
 						}
+						.onTapGesture {
+							selectedEvent = event
+							showSheet = true
+						}
 					}
 				}
 				// less padding either side of the list
 				.padding(.leading, -10)
 				.padding(.trailing, -10)
 				.listRowSpacing(8)
+			}
+			.alert("Toggle Shorthand Brand", isPresented: $showSheet) {
+				if let event = selectedEvent {
+					if (!event.shortBrandName.isEmpty) {
+						
+						Button("Turn Short " + (event.prioritizeShortBrandName ? "Off" : "On"), action: {
+							event.prioritizeShortBrandName.toggle()
+							// autosave
+							if (globalState.autoSave) {
+								globalState.saveDataIcon = persistenceController.saveAllData()
+							} else {
+								// need to manually because there have been changes
+								globalState.saveDataIcon = nil
+							}
+							
+							showSheet = false
+						})
+					}
+				}
+				Button("Cancel", action: {
+					showSheet = false
+				})
+			} message: {
+				if let event = selectedEvent {
+					if (event.prioritizeShortBrandName) {
+						Text("Shorthand Is ON")
+					} else {
+						Text("Shorthand Is OFF")
+					}
+				}
 			}
 			.navigationTitle("Comic Events")
 		}
@@ -147,7 +187,7 @@ struct EventsStatsView: View {
 	private func getEventsFormattedName(event: ComicEvent) -> String {
 		var formattedString: String = ""
 		
-		formattedString = event.eventBrand
+		formattedString = event.prioritizeShortBrandName ? event.shortBrandName : event.brandName
 		formattedString += ": " + event.eventName
 		
 		return formattedString

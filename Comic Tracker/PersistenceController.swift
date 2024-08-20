@@ -177,7 +177,11 @@ class PersistenceController: ObservableObject {
 					totalPages: comic.totalPages,
 					eventName: comic.eventName,
 					purpose: comic.purpose,
-					dateRead: comic.dateRead
+					dateRead: comic.dateRead,
+					
+					marvelUltimateLink: comic.marvelUltimateLink,
+					comicRead: comic.comicRead
+										
 				)
 				self.context.insert(newComic)
 			}
@@ -329,7 +333,9 @@ class PersistenceController: ObservableObject {
 			
 			for event in comicEvent {
 				let newEvent = ComicEvent(
-					eventBrand: event.eventBrand,
+					brandName: event.brandName,
+					shortBrandName: event.shortBrandName,
+					prioritizeShortBrandName: event.prioritizeShortBrandName,
 					eventName: event.eventName,
 					issuesRead: event.issuesRead,
 					totalIssues: event.totalIssues,

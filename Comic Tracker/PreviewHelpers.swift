@@ -33,7 +33,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "Infinity Gauntlet",
 		purpose: "Thanos",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -55,7 +58,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "Infinity Gauntlet",
 		purpose: "Thanos",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -77,7 +83,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "Darth Vader",
 		purpose: "Darth Vader",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -99,7 +108,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "Darth Vader",
 		purpose: "Darth Vader",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -121,7 +133,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "Darth Vader",
 		purpose: "Darth Vader",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -143,7 +158,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "FNAF",
 		purpose: "FNAF",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -165,7 +183,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "FNAF",
 		purpose: "FNAF",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -187,7 +208,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "FNAF",
 		purpose: "FNAF",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -209,7 +233,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "",
 		purpose: "Deadpool",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -231,7 +258,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "",
 		purpose: "The Walking Dead",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -253,7 +283,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "",
 		purpose: "The Walking Dead",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -275,7 +308,10 @@ func createTestComics(context: ModelContext) {
 		eventName: "",
 		purpose: "Jujutsu Kaisen",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 	
 	saveComic(
@@ -297,6 +333,9 @@ func createTestComics(context: ModelContext) {
 		eventName: "",
 		purpose: "Jujutsu Kaisen",
 		dateRead: Date(),
-		modelContext: context
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
 	)
 }

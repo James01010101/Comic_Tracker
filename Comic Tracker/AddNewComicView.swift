@@ -78,6 +78,11 @@ struct AddNewComicView: View {
 	/// Known or unknown date, if false then date will be set to nil.
 	@State private var dateKnown: Bool
 	
+	/// The Url for this comic to the marvel ultimate app,
+	@State private var marvelUltimateLink: String
+	/// An enum representing if ive read this comic or not
+	@State private var comicRead: ComicReadEnum
+	
 	/// Is the form valid and able to be submitted (start blue, then if i click itll turn red if invalid).
 	@State private var validForm: Bool = true
 	
@@ -111,6 +116,9 @@ struct AddNewComicView: View {
 		self.purpose = ""
 		self.dateRead = Date()
 		self.dateKnown = false // so the date section is hidden by default
+		
+		self.marvelUltimateLink = ""
+		self.comicRead = ComicReadEnum.NotRead
 	}
 	
 	
@@ -138,6 +146,9 @@ struct AddNewComicView: View {
 		self.totalPages = String(series.recentComicTotalPages)
 		self.eventName = String(series.recentComicEventName)
 		self.purpose = String(series.recentComicPurpose)
+		
+		self.marvelUltimateLink = ""
+		self.comicRead = ComicReadEnum.NotRead
 	}
 	
 	/// constructor which takes in a comic to auto fill information from
@@ -163,6 +174,9 @@ struct AddNewComicView: View {
 		self.totalPages = String(comic.totalPages)
 		self.eventName = String(comic.eventName)
 		self.purpose = String(comic.purpose)
+		
+		self.marvelUltimateLink = ""
+		self.comicRead = ComicReadEnum.NotRead
 	}
 	
 	
@@ -642,7 +656,10 @@ struct AddNewComicView: View {
 			eventName: eventName,
 			purpose: purpose,
 			dateRead: date,
-			modelContext: modelContext
+			modelContext: modelContext,
+			
+			marvelUltimateLink: marvelUltimateLink,
+			comicRead: comicRead
 		)
 		
 		
