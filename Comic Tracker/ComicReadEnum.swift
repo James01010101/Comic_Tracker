@@ -15,8 +15,14 @@ import SwiftData
 /// Read: if ive read the comic
 /// Skipped: if im not reading it or i cant find it
 /// NotRead: if i havent read it yet
-enum ComicReadEnum : Codable {
-	case Read
-	case Skipped
-	case NotRead
+///
+/// Giving them the String class to be able to easily store a displayable version of the enum vlaues
+/// CaseIterable allows views to easily get a list of the elements in the enum for use in menus
+/// Identifiable is used ro give an id to each object for unique id in a list
+enum ComicReadEnum : String, Codable, CaseIterable, Identifiable {
+	case Read = "Read"
+	case Skipped = "Skipped"
+	case NotRead = "Not Read"
+	
+	var id: String { self.rawValue }
 }

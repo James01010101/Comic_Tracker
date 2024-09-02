@@ -476,25 +476,63 @@ struct AddNewComicView: View {
 					}
 					.padding(.leading, leadingPadding)
 					
+					// Marvel Comics Link
+					HStack {
+						Image(systemName: "link")
+							.frame(width: iconWidth, alignment: .center)
+						
+						Text("Marvel Universe Link?")
+							.font(.headline)
+						
+						TextEditor(text: $marvelUltimateLink)
+							.multilineTextAlignment(.trailing)
+							.padding(.bottom, -5)
+							.padding(.trailing, trailingTextPadding)
+					}
+					.padding(.leading, leadingPadding)
+					
 					// Date read section
 					VStack {
-						HStack {
-							Image(systemName: "calendar")
-								.frame(width: iconWidth, alignment: .center)
-							
-							Text("Date Read")
+						VStack {
+							Text("Select Comic Read Status")
 								.font(.headline)
 							
-							Toggle(isOn: $dateKnown) {}
+							Picker("Comic Read Status", selection: $comicRead) {
+								ForEach(ComicReadEnum.allCases) { state in
+									Text(state.rawValue).tag(state)
+								}
+								
+							}
+							.pickerStyle(SegmentedPickerStyle())
+							.onChange(of: comicRead) {
+								// if i change it back to not read or skipped i dont wasnt to save the date anymore so both the date variables need to go back to defaults
+								if (comicRead == ComicReadEnum.NotRead || comicRead == ComicReadEnum.Skipped) {
+									dateKnown = false
+									// dateRead will be set to nil if dateKnown in false in the save function below
+								}
+							}
 						}
-						.padding(.leading, leadingPadding)
+						.padding(.bottom, 5)
 						
-						if (dateKnown) {
+						if (comicRead == ComicReadEnum.Read) {
 							HStack {
-								DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
-									.datePickerStyle(GraphicalDatePickerStyle())
+								Image(systemName: "calendar")
+									.frame(width: iconWidth, alignment: .center)
+								
+								Text("Date Read")
+									.font(.headline)
+								
+								Toggle(isOn: $dateKnown) {}
 							}
 							.padding(.leading, leadingPadding)
+							
+							if (dateKnown) {
+								HStack {
+									DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
+										.datePickerStyle(GraphicalDatePickerStyle())
+								}
+								.padding(.leading, leadingPadding)
+							}
 						}
 					}
 				}

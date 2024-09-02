@@ -68,14 +68,14 @@ class ComicEvent: Codable, Identifiable {
 	
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
-		case eventId
-		case brandName
-		case shortBrandName
-		case prioritizeShortBrandName
-		case eventName
-		case issuesRead
-		case totalIssues
-		case pagesRead
+		case eventId = "id"
+		case brandName = "brand"
+		case shortBrandName = "sBrand"
+		case prioritizeShortBrandName = "psBrand"
+		case eventName = "event"
+		case issuesRead = "issuesRead"
+		case totalIssues = "totalIssues"
+		case pagesRead = "pages"
 	}
 	
 	/// Conformance to Codable,  a decoder function to take a `JSON` decoder object read in from my backup file and create a new ``ComicEvent`` from it.
@@ -89,11 +89,13 @@ class ComicEvent: Codable, Identifiable {
 		ComicEvent.staticEventId = tmpEventId
 		 
 		brandName = try container.decode(String.self, forKey: .brandName)
-		shortBrandName = try container.decode(String.self, forKey: .shortBrandName)
-		prioritizeShortBrandName = try container.decode(Bool.self, forKey: .prioritizeShortBrandName)
+		shortBrandName = try container.decodeIfPresent(String.self, forKey: .shortBrandName) ?? ""
+		let prioritizeShortBrandNameInt = try container.decodeIfPresent(Int.self, forKey: .prioritizeShortBrandName) ?? 0 // saved as a 1 or 0 instead of true / false, so i need to decode that back into boolean
+		prioritizeShortBrandName = prioritizeShortBrandNameInt == 1
+		
 		eventName = try container.decode(String.self, forKey: .eventName)
 		issuesRead = try container.decode(UInt16.self, forKey: .issuesRead)
-		totalIssues = try container.decode(UInt16.self, forKey: .totalIssues)
+		totalIssues = try container.decodeIfPresent(UInt16.self, forKey: .totalIssues) ?? 0
 		pagesRead = try container.decode(UInt16.self, forKey: .pagesRead)
 	}
 	
@@ -104,11 +106,17 @@ class ComicEvent: Codable, Identifiable {
 		
 		try container.encode(eventId, forKey: .eventId)
 		try container.encode(brandName, forKey: .brandName)
-		try container.encode(shortBrandName, forKey: .shortBrandName)
-		try container.encode(prioritizeShortBrandName, forKey: .prioritizeShortBrandName)
+		
+		if (!shortBrandName.isEmpty) {
+			try container.encode(shortBrandName, forKey: .shortBrandName)
+			try container.encode(prioritizeShortBrandName ? 1 : 0, forKey: .prioritizeShortBrandName)
+		}
+		
 		try container.encode(eventName, forKey: .eventName)
 		try container.encode(issuesRead, forKey: .issuesRead)
-		try container.encode(totalIssues, forKey: .totalIssues)
+		if (totalIssues != 0) {
+			try container.encode(totalIssues, forKey: .totalIssues)
+		}
 		try container.encode(pagesRead, forKey: .pagesRead)
 	}
 }

@@ -141,30 +141,31 @@ class ComicData: Codable, Identifiable {
 	}
 	
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
+	/// giving them shorter names so the filesize is smaller because its not using the full variable names every time
 	enum CodingKeys: String, CodingKey {
-		case comicId
+		case comicId = "id"
 		
-		case brandName
-		case shortBrandName
-		case prioritizeShortBrandName
+		case brandName = "brand"
+		case shortBrandName = "sBrand"
+		case prioritizeShortBrandName = "psBrand"
 		
-		case seriesName
-		case shortSeriesName
-		case prioritizeShortSeriesName
+		case seriesName = "series"
+		case shortSeriesName = "sSeries"
+		case prioritizeShortSeriesName = "psSeries"
 		
-		case comicName
-		case shortComicName
-		case prioritizeShortComicName
+		case comicName = "comic"
+		case shortComicName = "sComic"
+		case prioritizeShortComicName = "psComic"
 		
-		case yearFirstPublished
-		case issueNumber
-		case totalPages
-		case eventName
-		case purpose
-		case dateRead
+		case yearFirstPublished = "year"
+		case issueNumber = "issue"
+		case totalPages = "pages"
+		case eventName = "event"
+		case purpose = "purpose"
+		case dateRead = "date"
 		
-		case marvelUltimateLink
-		case comicRead
+		case marvelUltimateLink = "link"
+		case comicRead = "read"
 	}
 	
 	/// Conformance to Codable,  a decoder function to take a `JSON` decoder object read in from my backup file and create a new ``ComicData`` from it.
@@ -176,33 +177,37 @@ class ComicData: Codable, Identifiable {
 		let tmpComicId = try container.decode(UInt32.self, forKey: .comicId)
 		comicId = tmpComicId
 		ComicData.staticComicId = tmpComicId
-		
-		comicId = try container.decode(UInt32.self, forKey: .comicId)
-		
+				
 		brandName = try container.decode(String.self, forKey: .brandName)
-		shortBrandName = try container.decode(String.self, forKey: .shortBrandName)
-		prioritizeShortBrandName = try container.decode(Bool.self, forKey: .prioritizeShortBrandName)
+		shortBrandName = try container.decodeIfPresent(String.self, forKey: .shortBrandName) ?? ""
+		let prioritizeShortBrandNameInt = try container.decodeIfPresent(Int.self, forKey: .prioritizeShortBrandName) ?? 0 // saved as a 1 or 0 instead of true / false, so i need to decode that back into boolean
+		prioritizeShortBrandName = prioritizeShortBrandNameInt == 1
 		
 		seriesName = try container.decode(String.self, forKey: .seriesName)
-		shortSeriesName = try container.decode(String.self, forKey: .shortSeriesName)
-		prioritizeShortSeriesName = try container.decode(Bool.self, forKey: .prioritizeShortSeriesName)
+		shortSeriesName = try container.decodeIfPresent(String.self, forKey: .shortSeriesName) ?? ""
+		let prioritizeShortSeriesNameInt = try container.decodeIfPresent(Int.self, forKey: .prioritizeShortSeriesName) ?? 0
+		prioritizeShortSeriesName = prioritizeShortSeriesNameInt == 1
 		
-		comicName = try container.decode(String.self, forKey: .comicName)
-		shortComicName = try container.decode(String.self, forKey: .shortComicName)
-		prioritizeShortComicName = try container.decode(Bool.self, forKey: .prioritizeShortComicName)
+		comicName = try container.decodeIfPresent(String.self, forKey: .comicName)  ?? ""
+		shortComicName = try container.decodeIfPresent(String.self, forKey: .shortComicName) ?? ""
+		prioritizeShortComicName = try container.decodeIfPresent(Bool.self, forKey: .prioritizeShortComicName) ?? false
+		let prioritizeShortComicNameInt = try container.decodeIfPresent(Int.self, forKey: .prioritizeShortComicName) ?? 0
+		prioritizeShortComicName = prioritizeShortComicNameInt == 1
 		
 		yearFirstPublished = try container.decode(UInt16.self, forKey: .yearFirstPublished)
 		issueNumber = try container.decode(UInt16.self, forKey: .issueNumber)
 		totalPages = try container.decode(UInt16.self, forKey: .totalPages)
-		eventName = try container.decode(String.self, forKey: .eventName)
-		purpose = try container.decode(String.self, forKey: .purpose)
-		dateRead = try container.decode(Date?.self, forKey: .dateRead)
+		eventName = try container.decodeIfPresent(String.self, forKey: .eventName) ?? ""
+		purpose = try container.decodeIfPresent(String.self, forKey: .purpose) ?? ""
+		dateRead = try container.decodeIfPresent(Date?.self, forKey: .dateRead) ?? nil
 		
-		marvelUltimateLink = try container.decode(String.self, forKey: .marvelUltimateLink)
+		marvelUltimateLink = try container.decodeIfPresent(String.self, forKey: .marvelUltimateLink) ?? ""
 		comicRead = try container.decode(ComicReadEnum.self, forKey: .comicRead)
 	}
 	
 	/// Conformance to Codable,  a encoder function to encode my ``ComicData`` into `JSON` to be written to a file.
+	///
+	/// For some bariables if they can be empty strings or null and they are i just wont save that to disc and when reading it in later if it didnt exist on file then ill load it in as a default value respectively.
 	/// - Parameter encoder: Takes an ``Encoder`` and encoders `this` into it.
 	func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
@@ -210,25 +215,31 @@ class ComicData: Codable, Identifiable {
 		try container.encode(comicId, forKey: .comicId)
 		
 		try container.encode(brandName, forKey: .brandName)
-		try container.encode(shortBrandName, forKey: .shortBrandName)
-		try container.encode(prioritizeShortBrandName, forKey: .prioritizeShortBrandName)
+		if (!shortBrandName.isEmpty) {
+			try container.encode(shortBrandName, forKey: .shortBrandName)
+			try container.encode(prioritizeShortBrandName ? 1 : 0, forKey: .prioritizeShortBrandName)
+		}
 		
 		try container.encode(seriesName, forKey: .seriesName)
-		try container.encode(shortSeriesName, forKey: .shortSeriesName)
-		try container.encode(prioritizeShortSeriesName, forKey: .prioritizeShortSeriesName)
+		if (!shortSeriesName.isEmpty) {
+			try container.encode(shortSeriesName, forKey: .shortSeriesName)
+			try container.encode(prioritizeShortSeriesName ? 1 : 0, forKey: .prioritizeShortSeriesName)
+		}
 		
-		try container.encode(comicName, forKey: .comicName)
-		try container.encode(shortComicName, forKey: .shortComicName)
-		try container.encode(prioritizeShortComicName, forKey: .prioritizeShortComicName)
+		if (!comicName.isEmpty) { try container.encode(comicName, forKey: .comicName) }
+		if (!shortComicName.isEmpty) {
+			try container.encode(shortComicName, forKey: .shortComicName)
+			try container.encode(prioritizeShortComicName ? 1 : 0, forKey: .prioritizeShortComicName)
+		}
 		
 		try container.encode(yearFirstPublished, forKey: .yearFirstPublished)
 		try container.encode(issueNumber, forKey: .issueNumber)
 		try container.encode(totalPages, forKey: .totalPages)
-		try container.encode(eventName, forKey: .eventName)
-		try container.encode(purpose, forKey: .purpose)
-		try container.encode(dateRead, forKey: .dateRead)
+		if (!eventName.isEmpty) { try container.encode(eventName, forKey: .eventName) }
+		if (!purpose.isEmpty) { try container.encode(purpose, forKey: .purpose) }
+		if (dateRead != nil) { try container.encode(dateRead, forKey: .dateRead) }
 		
-		try container.encode(marvelUltimateLink, forKey: .marvelUltimateLink)
+		if (!marvelUltimateLink.isEmpty) { try container.encode(marvelUltimateLink, forKey: .marvelUltimateLink) }
 		try container.encode(comicRead, forKey: .comicRead)
 	}
 }

@@ -106,7 +106,7 @@ class PersistenceController: ObservableObject {
 			}
 		}
 		
-		//print("Backup directory: " + backupDirectory.absoluteString)
+		print("Backup directory: " + backupDirectory.absoluteString)
 		
 		return backupDirectory
 	}

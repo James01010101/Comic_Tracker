@@ -122,24 +122,24 @@ class ComicSeries: Codable, Identifiable {
 	
 	/// Conformance to Codable, a list of enums representing the variables I'm storing.
 	enum CodingKeys: String, CodingKey {
-		case seriesId
+		case seriesId = "id"
 		
-		case brandName
-		case shortBrandName
-		case prioritizeShortBrandName
+		case brandName = "brand"
+		case shortBrandName = "sBrand"
+		case prioritizeShortBrandName = "psBrand"
 		
-		case seriesTitle
-		case shortSeriesName
-		case prioritizeShortSeriesName
+		case seriesTitle = "series"
+		case shortSeriesName = "sSeries"
+		case prioritizeShortSeriesName = "psSeries"
 		
-		case yearFirstPublished
-		case issuesRead
-		case totalIssues
-		case pagesRead
-		case recentComicIssueNumber
-		case recentComicTotalPages
-		case recentComicEventName
-		case recentComicPurpose
+		case yearFirstPublished = "year"
+		case issuesRead = "issuesRead"
+		case totalIssues = "totalIssues"
+		case pagesRead = "pages"
+		case recentComicIssueNumber = "rIssue"
+		case recentComicTotalPages = "rTotalPages"
+		case recentComicEventName = "rEvent"
+		case recentComicPurpose = "rPurpose"
 	}
 	
 	/// Conformance to Codable,  a decoder function to take a `JSON` decoder object read in from my backup file and create a new ``ComicSeries`` from it.
@@ -153,16 +153,18 @@ class ComicSeries: Codable, Identifiable {
 		ComicSeries.staticSeriesId = tmpSeriesId
 		
 		brandName = try container.decode(String.self, forKey: .brandName)
-		shortBrandName = try container.decode(String.self, forKey: .shortBrandName)
-		prioritizeShortBrandName = try container.decode(Bool.self, forKey: .prioritizeShortBrandName)
+		shortBrandName = try container.decodeIfPresent(String.self, forKey: .shortBrandName) ?? ""
+		let prioritizeShortBrandNameInt = try container.decodeIfPresent(Int.self, forKey: .prioritizeShortBrandName) ?? 0 // saved as a 1 or 0 instead of true / false, so i need to decode that back into boolean
+		prioritizeShortBrandName = prioritizeShortBrandNameInt == 1
 		
 		seriesName = try container.decode(String.self, forKey: .seriesTitle)
-		shortSeriesName = try container.decode(String.self, forKey: .shortSeriesName)
-		prioritizeShortSeriesName = try container.decode(Bool.self, forKey: .prioritizeShortSeriesName)
+		shortSeriesName = try container.decodeIfPresent(String.self, forKey: .shortSeriesName) ?? ""
+		let prioritizeShortSeriesNameInt = try container.decodeIfPresent(Int.self, forKey: .prioritizeShortSeriesName) ?? 0
+		prioritizeShortSeriesName = prioritizeShortSeriesNameInt == 1
 		
 		yearFirstPublished = try container.decode(UInt16.self, forKey: .yearFirstPublished)
 		issuesRead = try container.decode(UInt16.self, forKey: .issuesRead)
-		totalIssues = try container.decode(UInt16.self, forKey: .totalIssues)
+		totalIssues = try container.decodeIfPresent(UInt16.self, forKey: .totalIssues) ?? 0
 		pagesRead = try container.decode(UInt16.self, forKey: .pagesRead)
 		
 		// recent comic stats
@@ -180,16 +182,22 @@ class ComicSeries: Codable, Identifiable {
 		try container.encode(seriesId, forKey: .seriesId)
 		
 		try container.encode(brandName, forKey: .brandName)
-		try container.encode(shortBrandName, forKey: .shortBrandName)
-		try container.encode(prioritizeShortBrandName, forKey: .prioritizeShortBrandName)
+		if (!shortBrandName.isEmpty) {
+			try container.encode(shortBrandName, forKey: .shortBrandName)
+			try container.encode(prioritizeShortBrandName ? 1 : 0, forKey: .prioritizeShortBrandName)
+		}
 		
 		try container.encode(seriesName, forKey: .seriesTitle)
-		try container.encode(shortSeriesName, forKey: .shortSeriesName)
-		try container.encode(prioritizeShortSeriesName, forKey: .prioritizeShortSeriesName)
+		if (!shortSeriesName.isEmpty) {
+			try container.encode(shortSeriesName, forKey: .shortSeriesName)
+			try container.encode(prioritizeShortSeriesName ? 1 : 0, forKey: .prioritizeShortSeriesName)
+		}
 		
 		try container.encode(yearFirstPublished, forKey: .yearFirstPublished)
 		try container.encode(issuesRead, forKey: .issuesRead)
-		try container.encode(totalIssues, forKey: .totalIssues)
+		if (totalIssues != 0) {
+			try container.encode(totalIssues, forKey: .totalIssues)
+		}
 		try container.encode(pagesRead, forKey: .pagesRead)
 		
 		// recent comic stats
