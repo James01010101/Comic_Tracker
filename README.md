@@ -16,6 +16,8 @@ All subsequent views will inheret this and will push everything up higher than i
 
 When making changes to the save files and datastructures there is 3 main cases i need to deal with.
 
+NOTE First make a complete copy of the most recent saved files of my data and save them somewhere completely different. So if i mess up and corrupt my data i have the old files there which are untouched.
+
 1. Adding new data fields
 In this case i just add the new field into the data structure
 In its decode function (load) i decode it if present and give it a default value, since it wont exist the first time it will be loaded with a default value.
