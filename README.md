@@ -22,7 +22,7 @@ NOTE First make a complete copy of the most recent saved files of my data and sa
 In this case i just add the new field into the data structure
 In its decode function (load) i decode it if present and give it a default value, since it wont exist the first time it will be loaded with a default value.
 In its encode value i just write it to the file as i would normally.
-Then after one load and ssave all structures should have this as a default variable i can use. I will need to manually go through and edit these myself to add the relevant data to them.
+Then after one load and save all structures should have this as a default variable i can use. I will need to manually go through and edit these myself to add the relevant data to them.
 
 2. Remove old data fields
 Remove this field from the decode (load) and the encode (save) so you dont write it to a file, so the next file you save does not contain that data anymore.

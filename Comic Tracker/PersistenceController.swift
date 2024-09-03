@@ -39,6 +39,13 @@ class PersistenceController: ObservableObject {
 	/// The filename for the ``ComicEvent`` backup file
 	let comicEventBackupFilename: String = "backup_comic_event.json"
 	
+	/// The Root folder which will contain all day folders with all of my data
+	let rootFolder: URL;
+	/// The folder ill read my data in from, initialised in the init method to find the most recent folder, not necessarily today
+	let loadFilesFolder: URL?;
+	/// The folder ill save files to, will be todays date, and will be created if it doesnt exist
+	let saveFilesFolder: URL;
+	
 	
 	/// Initialises all data the app needs
 	///
@@ -60,6 +67,19 @@ class PersistenceController: ObservableObject {
 			fatalError("Could not create ModelContainer: \(error)")
 		}
 		
+		
+		
+		// get the root folder path
+		self.rootFolder = getRootDirectory();
+		
+		// get the folder to load the files from, if nil then everything is just default this is fine
+		self.loadFilesFolder = getMostRecentBackupFolder(rootFolder: self.rootFolder);
+		
+		// get the folder to save the files to, this will be todays date, if it does not exist i will create it, otherwise ill overwrite whatever files are in it on a save
+		self.saveFilesFolder = getOrCreateSaveFilesFolder(rootFolder: self.rootFolder);
+		
+		
+		
 		// Lastly load my saved backup data from disc
 		if (!globalState.runningInPreview) {
 			let loadResult = loadAllData()
@@ -68,6 +88,15 @@ class PersistenceController: ObservableObject {
 			}
 			// Else if nil or true continue on nil will already print messages to debug
 		}
+		
+		// If the save folder is new ill need to write my files to it initially so the folder isnt empty, 
+		// since the next time i go to read from it it will read from the new file (which might be empty if i didnt make any changes)
+		// check this my comparing the save and load folders. if they are different the save was just created
+		if (self.saveFilesFolder.lastPathComponent != self.loadFilesFolder?.lastPathComponent) {
+			let s = self.saveAllData();
+			print("Saving data to new folder: " + (s ? "successful" : "failed"));
+		}
+
 	}
 	
 	/// This is used to save the context data although ModelContext only exists in memory so this isnt used,
@@ -86,30 +115,6 @@ class PersistenceController: ObservableObject {
 		}
 	}
 	
-	/// Get the directory to save the backup files to
-	///
-	/// - Returns: ``URL`` - Which contains a directory object to the backup files directory
-	private func getBackupDirectory() -> URL {
-		let fileManager = FileManager.default
-		guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
-			fatalError("Could not find directory")
-		}
-		
-		let backupDirectory = documentsDirectory.appendingPathComponent("Comic Tracker")
-		
-		// Create the directory if it doesn't exist
-		if !fileManager.fileExists(atPath: backupDirectory.path) {
-			do {
-				try fileManager.createDirectory(at: backupDirectory, withIntermediateDirectories: true, attributes: nil)
-			} catch {
-				fatalError("Could not create backup directory: \(error)")
-			}
-		}
-		
-		print("Backup directory: " + backupDirectory.absoluteString)
-		
-		return backupDirectory
-	}
 	
 	/// Saves the ``ComicData`` from the ``context`` to its own backup file at ``comicDataBackupFilename`` in `JSON` format
 	///
@@ -124,7 +129,7 @@ class PersistenceController: ObservableObject {
 			let comics = try context.fetch(fetchRequestComicData)
 			let encoder = JSONEncoder()
 			let data = try encoder.encode(comics)
-			let url = getBackupDirectory().appendingPathComponent(comicDataBackupFilename)
+			let url = self.saveFilesFolder.appendingPathComponent(comicDataBackupFilename)
 			try data.write(to: url)
 		} catch {
 			print("Failed to back up comic data data: \(error)")
@@ -149,8 +154,16 @@ class PersistenceController: ObservableObject {
 		if (globalState.runningInPreview) { return true }
 		
 		do {
-			// Load the most recent backup file and get all of the elements from that file
-			let url = getBackupDirectory().appendingPathComponent(comicDataBackupFilename)
+			// Load the most recent backup file and get all of the elements from that file, if it fails to load then
+			let url: URL;
+			if let temp = self.loadFilesFolder {
+				url = temp.appendingPathComponent(comicDataBackupFilename);
+			} else {
+				// the folder doesnt exist so return
+				return nil;
+			}
+	
+			
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic data")
 				return nil
@@ -209,7 +222,7 @@ class PersistenceController: ObservableObject {
 			let comicsSeries = try context.fetch(fetchRequestComicSeries)
 			let encoder = JSONEncoder()
 			let data = try encoder.encode(comicsSeries)
-			let url = getBackupDirectory().appendingPathComponent(comicSeriesBackupFilename)
+			let url = self.saveFilesFolder.appendingPathComponent(comicSeriesBackupFilename)
 			try data.write(to: url)
 		} catch {
 			print("Failed to back up comic series data: \(error)")
@@ -235,7 +248,14 @@ class PersistenceController: ObservableObject {
 		
 		do {
 			// Load the most recent backup file and get all of the elements from that file
-			let url = getBackupDirectory().appendingPathComponent(comicSeriesBackupFilename)
+			let url: URL;
+			if let temp = self.loadFilesFolder {
+				url = temp.appendingPathComponent(comicSeriesBackupFilename);
+			} else {
+				// the folder doesnt exist so return
+				return nil;
+			}
+
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic series")
 				return nil // Not failed but the file doesnt exist
@@ -297,7 +317,7 @@ class PersistenceController: ObservableObject {
 			let comicsEvents = try context.fetch(fetchRequestComicEvent)
 			let encoder = JSONEncoder()
 			let data = try encoder.encode(comicsEvents)
-			let url = getBackupDirectory().appendingPathComponent(comicEventBackupFilename)
+			let url = self.saveFilesFolder.appendingPathComponent(comicEventBackupFilename)
 			try data.write(to: url)
 		} catch {
 			print("Failed to back up comic event data: \(error)")
@@ -323,7 +343,14 @@ class PersistenceController: ObservableObject {
 		
 		do {
 			// Load the most recent backup file and get all of the elements from that file
-			let url = getBackupDirectory().appendingPathComponent(comicEventBackupFilename)
+			let url: URL;
+			if let temp = self.loadFilesFolder {
+				url = temp.appendingPathComponent(comicEventBackupFilename);
+			} else {
+				// the folder doesnt exist so return
+				return nil;
+			}
+
 			guard let data = try? Data(contentsOf: url) else {
 				print("No backup file to load, starting with empty comic event")
 				return nil
@@ -402,4 +429,119 @@ class PersistenceController: ObservableObject {
 		// If none are false or nil, all must be true
 		return true
 	}
+}
+
+
+
+
+
+
+
+// All of these functions need to be outside the class so that they can be used during the initise phase
+/// Get the root directory of all of the backup folders
+///
+/// From here I can then find the most recent folder to load from
+/// - Returns: URL which is the path to the root directory
+private func getRootDirectory() -> URL {
+	let fileManager = FileManager.default
+	guard var root = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+		fatalError("Could not find root directory, a restart might fix this problem");
+	}
+	
+	root = root.appendingPathComponent("Comic Tracker");
+	print("Root dir: " + root.absoluteString);
+	
+	return root;
+}
+
+/// Function to convert a date string in `day-month-year` format to a `Date` object
+private func dateFromString(_ dateString: String) -> Date? {
+	// quick check to make sure the string is in the right format
+	if dateString.split(separator: "-").count != 3 { return nil; }
+	
+	let dateFormatter = DateFormatter()
+	dateFormatter.dateFormat = "d-M-yyyy"
+	return dateFormatter.date(from: dateString)
+}
+
+/// Get the most recent backup folder based on the folder names (which are dates)
+private func getMostRecentBackupFolder(rootFolder: URL) -> URL? {
+	let fileManager = FileManager.default
+	
+	do {
+		let subfolders = try fileManager.contentsOfDirectory(at: rootFolder, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]);
+		
+		// Filter to only include directories
+		let directories = subfolders.filter { url in
+			// check that it is a directory
+			var isDirectory: ObjCBool = false;
+			fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory);
+			
+			// also check that the file name is in the right format {}-{}-{}, if not return false
+			if let _ = dateFromString(url.lastPathComponent) {
+				return isDirectory.boolValue;
+			}
+			return false;
+		}
+		
+		// Sort directories by the date in their name
+		let sortedDirectories = directories.sorted { (url1, url2) -> Bool in
+			if let date1 = dateFromString(url1.lastPathComponent), let date2 = dateFromString(url2.lastPathComponent) {
+				return date1 > date2;
+			}
+			return false;
+		}
+		
+		// Keep only the 5 most recent folders
+		if sortedDirectories.count > 5 {
+			let directoriesToDelete = sortedDirectories[5...];
+			for folder in directoriesToDelete {
+				do {
+					try fileManager.removeItem(at: folder);
+					print("Deleted old backup folder: \(folder.path)");
+				} catch {
+					print("Failed to delete folder: \(folder.path), error: \(error)");
+				}
+			}
+		}
+		
+		// print for debug
+		if let v = sortedDirectories.first {
+			print("Most recent backup folder to load: " + v.absoluteString);
+		} else {
+			print("Most recent backup folder to load: nil");
+
+		}
+		
+		// Return the most recent folder (possiblly nil if non exist)
+		return sortedDirectories.first
+	} catch {
+		// if it fails it need to error here and not continue
+		fatalError("Error reading backup directories: \(error)")
+	}
+}
+
+/// from the root folder get the path to the folder where i will save my files to, this will be todays date. if this folder doesn't exist create it
+private func getOrCreateSaveFilesFolder(rootFolder: URL) -> URL {
+	// Get today's date as a string in the format "day-month-year"
+	let dateFormatter = DateFormatter();
+	dateFormatter.dateFormat = "d-M-yyyy";
+	let todaysDate = dateFormatter.string(from: Date());
+	
+	// get the path filename to where i want to save my files too
+	let saveFolder = rootFolder.appendingPathComponent(todaysDate);
+	
+	// Check if the folder exists, if not, create it
+	let fileManager = FileManager.default;
+	if !fileManager.fileExists(atPath: saveFolder.path) {
+		do {
+			try fileManager.createDirectory(at: saveFolder, withIntermediateDirectories: true, attributes: nil);
+			print("Created new save folder: \(saveFolder.path)");
+		} catch {
+			fatalError("Could not create save folder: \(error)");
+		}
+	}
+	
+	print("Save folder: " + saveFolder.absoluteString)
+	return saveFolder;
 }
