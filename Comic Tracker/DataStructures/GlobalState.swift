@@ -48,23 +48,48 @@ class GlobalState: ObservableObject {
 	@Published var autoSave: Bool
 	
 	
+	
+	
+	// Hardcoded variables i want set that cant be changed
+	/// This is a hardcoded list of colours to brands, so for instance Marvel comics have a red background when being listed
+	@Published var brandRowColours: [String: Color];
+	
+	@Published var mainDisplayTextSize: CGFloat;
+	@Published var mainDisplayTextColour: Color;
+	
+	
 	/// Initialise the default state of the ``GlobalState`` variables.
 	init() {
 		// debug settings
-		runningInPreview = false
+		runningInPreview = false;
 		
 		
 		// global view settings
 		// starts ticked because nothing has changed
-		self.saveDataIcon = true
+		self.saveDataIcon = true;
 		
 		// create the series dictionary
-		self.seriesNamesUsages = [String: UInt8]()
+		self.seriesNamesUsages = [String: UInt8]();
 		
 		
 		
 		// global settings
-		self.autoSave = true
+		self.autoSave = true;
+		
+		
+		
+		// Hardcoded Variables
+		self.brandRowColours = [
+			"Marvel": Color.red,
+			"Five Nights At Freddy's": Color.orange,
+			"Invincible": Color.yellow,
+			"The Walking Dead": Color.green,
+			"Jujutsu Kaisen": Color.purple,
+			"Star Wars": Color.blue,
+		];
+		
+		self.mainDisplayTextSize = 18.0;
+		self.mainDisplayTextColour = Color.black;
 	}
 	
 	
@@ -73,5 +98,10 @@ class GlobalState: ObservableObject {
 	/// Mainly used in the preview functions to reset it everytime it loads so multiple loads dont keep it around
 	public func resetSeriesNamesUsages() {
 		self.seriesNamesUsages = [String: UInt8]()
+	}
+	
+	
+	public func getBrandColor(brandName: String) -> Color {
+		return self.brandRowColours[brandName] ?? Color.gray;
 	}
 }

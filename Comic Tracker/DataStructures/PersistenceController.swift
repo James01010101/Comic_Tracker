@@ -172,32 +172,9 @@ class PersistenceController: ObservableObject {
 			let comics = try decoder.decode([ComicData].self, from: data)
 			
 			for comic in comics {
-				let newComic = ComicData(
-					brandName: comic.brandName,
-					shortBrandName: comic.shortBrandName,
-					prioritizeShortBrandName: comic.prioritizeShortBrandName,
-					
-					seriesName: comic.seriesName,
-					shortSeriesName: comic.shortSeriesName,
-					prioritizeShortSeriesName: comic.prioritizeShortSeriesName,
-					
-					comicName: comic.comicName,
-					shortComicName: comic.shortComicName,
-					prioritizeShortComicName: comic.prioritizeShortComicName,
-					
-					yearFirstPublished: comic.yearFirstPublished,
-					issueNumber: comic.issueNumber,
-					totalPages: comic.totalPages,
-					eventName: comic.eventName,
-					purpose: comic.purpose,
-					dateRead: comic.dateRead,
-					
-					marvelUltimateLink: comic.marvelUltimateLink,
-					comicRead: comic.comicRead
-										
-				)
-				self.context.insert(newComic)
+				self.context.insert(comic)
 			}
+			
 			
 			self.saveContext()
 			print("Successfully loaded " + String(comics.count) + " comics")
@@ -264,32 +241,14 @@ class PersistenceController: ObservableObject {
 			let comicSeries = try decoder.decode([ComicSeries].self, from: data)
 			
 			for series in comicSeries {
-				let newSeries = ComicSeries(
-					brandName: series.brandName,
-					shortBrandName: series.shortBrandName,
-					prioritizeShortBrandName: series.prioritizeShortBrandName,
-					
-					seriesName: series.seriesName,
-					shortSeriesName: series.shortSeriesName,
-					prioritizeShortSeriesName: series.prioritizeShortSeriesName,
-					
-					yearFirstPublished: series.yearFirstPublished,
-					issuesRead: series.issuesRead,
-					totalIssues: series.totalIssues,
-					pagesRead: series.pagesRead,
-					recentComicIssueNumber: series.recentComicIssueNumber,
-					recentComicTotalPages: series.recentComicTotalPages,
-					recentComicEventName: series.recentComicEventName,
-					recentComicPurpose: series.recentComicPurpose
-				)
-				self.context.insert(newSeries)
+				self.context.insert(series)
 				
 				// check if it exists in the dict, if so add one, else add it
-				if let count = globalState.seriesNamesUsages[newSeries.seriesName] {
+				if let count = globalState.seriesNamesUsages[series.seriesName] {
 					// if it exists
-					globalState.seriesNamesUsages[newSeries.seriesName] = count + 1
+					globalState.seriesNamesUsages[series.seriesName] = count + 1
 				} else {
-					globalState.seriesNamesUsages[newSeries.seriesName] = 1
+					globalState.seriesNamesUsages[series.seriesName] = 1
 				}
 				
 			}
@@ -359,16 +318,7 @@ class PersistenceController: ObservableObject {
 			let comicEvent = try decoder.decode([ComicEvent].self, from: data)
 			
 			for event in comicEvent {
-				let newEvent = ComicEvent(
-					brandName: event.brandName,
-					shortBrandName: event.shortBrandName,
-					prioritizeShortBrandName: event.prioritizeShortBrandName,
-					eventName: event.eventName,
-					issuesRead: event.issuesRead,
-					totalIssues: event.totalIssues,
-					pagesRead: event.pagesRead
-				)
-				self.context.insert(newEvent)
+				self.context.insert(event)
 			}
 			
 			self.saveContext()

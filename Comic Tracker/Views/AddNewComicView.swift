@@ -184,6 +184,23 @@ struct AddNewComicView: View {
 	var body: some View {
 		NavigationStack {
 			VStack {
+				// headings stack
+				VStack(spacing: 0) {
+					HStack {
+						Text("Input New Comic Information")
+							.frame(maxWidth: .infinity, alignment: .center)
+							.font(.headline)
+					}
+					.padding(.top, 10)
+					.padding(.bottom, -5)
+					
+					// Divider
+					Rectangle()
+						.frame(height: 3) // Adjust the height for a bolder line
+						.padding(.top, 10) // Optional: Add some padding below the divider
+						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
+				}
+				
 				// main options
 				List {
 					// Brand section

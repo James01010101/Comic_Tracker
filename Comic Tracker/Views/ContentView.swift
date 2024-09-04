@@ -90,19 +90,26 @@ struct ContentView: View {
 								Text(String(comic.comicId))
 									.frame(width: readIdWidth, alignment: .center)
 									.padding(.leading, -10)
+									.modifier(MainDisplayTextStyle(globalState: globalState))
+
 								
 								Divider()
 								
 								
 								Text(createDisplayedComicString(comic: comic))
 									.frame(maxWidth: .infinity, alignment: .leading)
-								
+									.modifier(MainDisplayTextStyle(globalState: globalState))
+									
+
 								Divider()
 								
 								Text(String(comic.totalPages))
 									.frame(width: pagesWidth, alignment: .center)
 									.padding(.trailing, -10)
+									.modifier(MainDisplayTextStyle(globalState: globalState))
+
 							}
+							.listRowBackground(globalState.getBrandColor(brandName: comic.brandName))
 							.padding(.vertical, -3) // Optional: Add some vertical padding between row
 							.swipeActions(edge: .leading) {
 								Button(action: {
@@ -116,10 +123,12 @@ struct ContentView: View {
 							
 						}
 						.onDelete(perform: deleteItems)
+						
 					}
 					.padding(.leading, -10)
 					.padding(.trailing, -10)
 					.listRowSpacing(8)
+
 				}
 			}
 			// toolbar for the buttons

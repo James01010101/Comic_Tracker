@@ -117,6 +117,8 @@ class ComicData: Codable, Identifiable {
 		ComicData.staticComicId += 1
 		self.comicId = ComicData.staticComicId
 		
+		print("Loading Comic Data, Static id: " + String(ComicData.staticComicId));
+		
 		self.brandName = brandName
 		self.shortBrandName = shortBrandName
 		self.prioritizeShortBrandName = prioritizeShortBrandName
@@ -177,6 +179,7 @@ class ComicData: Codable, Identifiable {
 		let tmpComicId = try container.decode(UInt32.self, forKey: .comicId)
 		comicId = tmpComicId
 		ComicData.staticComicId = tmpComicId
+		print("Setting static id from comic data: " + String(ComicData.staticComicId))
 				
 		brandName = try container.decode(String.self, forKey: .brandName)
 		shortBrandName = try container.decodeIfPresent(String.self, forKey: .shortBrandName) ?? ""

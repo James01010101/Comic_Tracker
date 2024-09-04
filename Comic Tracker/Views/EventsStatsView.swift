@@ -1,35 +1,31 @@
 //
-//  SeriesStatsView.swift
+//  EventsStatsView.swift
 //  Comic Tracker
 //
-//  Created by James Coldwell on 9/8/2024.
+//  Created by James Coldwell on 10/8/2024.
 //
 
 import Foundation
 import SwiftUI
 import SwiftData
 
-/// This contains a list of all of the series I have with a bunch of statistics for each series
-struct SeriesStatsView: View {
+/// This contains a list of all of the events I have with a bunch of statistics for each event
+struct EventsStatsView: View {
 	
 	/// Controls all persistent data this view uses.
 	@StateObject private var persistenceController = PersistenceController.shared
 	/// Controls all global variables this view uses.
 	@StateObject private var globalState = GlobalState.shared
 	
-	/// Stores an array of ``ComicData`` which contains all of the individual comic books, which are stored in the ``PersistenceController``.
-	///
-	/// This is sorted in decending order on the `comicId` to correctly be shown in  order in the list.
-	@Query(sort: \ComicData.comicId, order: .reverse) private var comics: [ComicData]
-	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
-	@Query private var series: [ComicSeries]
 	
-	/// Used to toggle between this main view and the ``AddNewComicView``
-	@State private var navigateToAddNewComicView: Bool = false
+	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
+	@Query private var events: [ComicEvent]
 	
-	/// Currently selected series, saved so i can send it to the add new comic view when needed.
-	/// Also used to select comic to edit total issues
-	@State private var selectedSeries: ComicSeries?
+	/// Go to an edit view for the event, this is how you would add reading lists
+	@State private var showSheet: Bool = false
+	
+	/// Selected event to be stored to be used later
+	@State private var selectedEvent: ComicEvent?
 	
 	
 	/// Width of the `readId` element in the list
@@ -38,7 +34,7 @@ struct SeriesStatsView: View {
 	private let readIdWidth: CGFloat = 45
 	
 	// top section
-	private let seriesIdLeadingPadding: CGFloat = -12
+	private let eventsIdLeadingPadding: CGFloat = -12
 	
 	// bottom section
 	private let statMajorWidth: CGFloat = 75
@@ -48,14 +44,8 @@ struct SeriesStatsView: View {
 	private let minorIssuesVerticalDividerPaddingTop: CGFloat = 8
 	private let minorIssuesVerticalDividerPaddingBottom: CGFloat = 10
 	
-	/// show sheet to update the series total issues
-	@State private var showSheet: Bool = false
-	/// Save the number to update the total issues of a series with
-	@State private var totalIssues: String = ""
 	
-	
-	
-	// main views body
+	// main view body
 	var body: some View {
 		NavigationStack {
 			VStack {
@@ -67,7 +57,7 @@ struct SeriesStatsView: View {
 							.font(.headline)
 							.padding(.leading, 10)
 						
-						Text("Series Name")
+						Text("Event Name")
 							.frame(maxWidth: .infinity, alignment: .center)
 							.font(.headline)
 							.padding(.leading, -10 - readIdWidth) // to adjust for the pages text being moved in slightly more
@@ -87,25 +77,26 @@ struct SeriesStatsView: View {
 				// the series will take up to lines each
 				// one for the series, and one for stats
 				List {
-					ForEach(series) { series in
+					ForEach(events) { event in
 						// this row
 						VStack {
 							// top row name
 							HStack {
-								Text(String(series.seriesId))
+								Text(String(event.eventId))
 									.frame(width: 25, alignment: .center)
-									.padding(.leading, seriesIdLeadingPadding)
+									.padding(.leading, eventsIdLeadingPadding)
+									.modifier(MainDisplayTextStyle(globalState: globalState))
 								
 								Divider()
 									.padding(.top, 1)
 								
-								Text(getSeriesFormattedName(series: series))
-									.font(.headline)
+								Text(getEventsFormattedName(event: event))
 									// force it to take up all the space so the id gets forced to the left
 									.frame(maxWidth: .infinity)
 									// remove as much padding from either side to give it as much space as possible (it is centered so normally you wont tell anyway)
 									.padding(.leading, -5)
 									.padding(.trailing, -15)
+									.modifier(MainDisplayTextStyle(globalState: globalState))
 							}
 							.frame(height: 25)
 							.padding(.bottom, -3)
@@ -115,27 +106,21 @@ struct SeriesStatsView: View {
 							
 							// bottom row stats
 							HStack {
-								VStack {
-									Text("Year")
-									Text(String(series.yearFirstPublished))
-										.frame(width: statMajorWidth)
-								}
-								.padding(.top, statMajorTopPadding)
-								
-								Divider()
-									.padding(.bottom, majorDividerBottomPadding)
 								
 								VStack {
 									Text("Issues")
 										.padding([.top, .bottom], -6)
+										.modifier(MainDisplayTextStyle(globalState: globalState))
 									
 									Divider()
 									
 									HStack {
 										VStack {
 											Text("Total")
-											Text(String(series.totalIssues))
+												.modifier(MainDisplayTextStyle(globalState: globalState))
+											Text(String(event.totalIssues))
 												.frame(maxWidth: .infinity)
+												.modifier(MainDisplayTextStyle(globalState: globalState))
 										}
 										.padding(.top, issuesStatsTopPadding)
 										
@@ -145,8 +130,10 @@ struct SeriesStatsView: View {
 										
 										VStack {
 											Text("Read")
-											Text(String(series.issuesRead))
+												.modifier(MainDisplayTextStyle(globalState: globalState))
+											Text(String(event.issuesRead))
 												.frame(maxWidth: .infinity)
+												.modifier(MainDisplayTextStyle(globalState: globalState))
 										}
 										.padding(.top, issuesStatsTopPadding)
 										
@@ -156,8 +143,10 @@ struct SeriesStatsView: View {
 										
 										VStack {
 											Text("Left")
-											Text(getIssuesLeft(series: series))
+												.modifier(MainDisplayTextStyle(globalState: globalState))
+											Text(getIssuesLeft(event: event))
 												.frame(maxWidth: .infinity)
+												.modifier(MainDisplayTextStyle(globalState: globalState))
 										}
 										.padding(.top, issuesStatsTopPadding)
 									}
@@ -169,8 +158,10 @@ struct SeriesStatsView: View {
 								
 								VStack {
 									Text("Pages")
-									Text(String(series.pagesRead))
+										.modifier(MainDisplayTextStyle(globalState: globalState))
+									Text(String(event.pagesRead))
 										.frame(width: statMajorWidth)
+										.modifier(MainDisplayTextStyle(globalState: globalState))
 								}
 								.padding(.top, statMajorTopPadding)
 							}
@@ -178,88 +169,77 @@ struct SeriesStatsView: View {
 							.padding([.leading, .trailing], -15)
 							.padding(.bottom, -8)
 						}
-						.swipeActions(edge: .leading) {
-							Button(action: {
-								selectedSeries = series
-								navigateToAddNewComicView = true
-							}) {
-								Label("Add Comic From Series", systemImage: "plus")
-							}
-							.tint(.green)
-						}
 						.onTapGesture {
-							selectedSeries = series
-							totalIssues = ""
+							selectedEvent = event
 							showSheet = true
 						}
+						.listRowBackground(globalState.getBrandColor(brandName: event.brandName))
 					}
+					.onDelete(perform: deleteItems)
 				}
-				// this shrinks the gap at the top of the list so it sits under the headers nicely
-				.onAppear(perform: {
-					UICollectionView.appearance().contentInset.top = -35
-				})
 				// less padding either side of the list
 				.padding(.leading, -10)
 				.padding(.trailing, -10)
 				.listRowSpacing(8)
 			}
-			.alert("Enter Total Issues", isPresented: $showSheet) {
-				TextField("Total Issues", text: $totalIssues)
-				Button("Save", action: {
-					if let series = selectedSeries {
-						if let newTotalIssues = UInt16(totalIssues) {
-							series.totalIssues = newTotalIssues
-						}
+			.alert("Toggle Shorthand Brand", isPresented: $showSheet) {
+				if let event = selectedEvent {
+					if (!event.shortBrandName.isEmpty) {
+						
+						Button("Turn Short " + (event.prioritizeShortBrandName ? "Off" : "On"), action: {
+							event.prioritizeShortBrandName.toggle()
+							// autosave
+							if (globalState.autoSave) {
+								globalState.saveDataIcon = persistenceController.saveAllData()
+							} else {
+								// need to manually because there have been changes
+								globalState.saveDataIcon = nil
+							}
+							
+							showSheet = false
+						})
 					}
-					// no matter what happens after clicking save it will exit the alert
-					showSheet = false
-				})
+				}
 				Button("Cancel", action: {
 					showSheet = false
 				})
 			} message: {
-				Text("How many issues are there in: \n\(selectedSeries?.seriesName ?? "UNKNOWN_SERIES") (\(String(selectedSeries?.yearFirstPublished ?? 0)))?")
-			}
-			.navigationTitle("Comic Series")
-			.navigationDestination(isPresented: $navigateToAddNewComicView) {
-				
-				// try to go to comic data with data from the series
-				if let series = selectedSeries {
-					AddNewComicView(series: series)
-					
-				// if it fails just dont auto fill
-				} else {
-					AddNewComicView()
+				if let event = selectedEvent {
+					if (event.prioritizeShortBrandName) {
+						Text("Shorthand Is ON")
+					} else {
+						Text("Shorthand Is OFF")
+					}
 				}
 			}
+			.navigationTitle("Comic Events")
 		}
 	}
 	
 	
-	
-	/// Takes a series and returns a nicely formatted string to represent it.
-	/// - Parameter series: ``ComicSeries`` which contains all the information about the series.
-	/// - Returns: Formatted `String` representing the series.
-	private func getSeriesFormattedName(series: ComicSeries) -> String {
+	/// Takes a event and returns a nicely formatted string to represent it.
+	/// - Parameter series: ``ComicEvent`` which contains all the information about the event.
+	/// - Returns: Formatted `String` representing the event.
+	private func getEventsFormattedName(event: ComicEvent) -> String {
 		var formattedString: String = ""
-		formattedString = series.brandName
 		
-		if (series.brandName != series.seriesName) {
-			formattedString += ": " + series.seriesName
-		}
+		formattedString = event.prioritizeShortBrandName ? event.shortBrandName : event.brandName
+		formattedString += ": " + event.eventName
+		
 		return formattedString
 	}
 	
 	
-	/// Get the number of issues left to read in this series.
+	
+	/// Get the number of issues left to read in this event.
 	///
 	/// This is done as a function because the values are UInt and i am subtracting it the app can crash if i underflow without catching that.
 	///
-	/// - Parameter series: A ``ComicSeries`` containing all the information about the series.
+	/// - Parameter series: A ``ComicEvent`` containing all the information about the event.
 	/// - Returns: `String` which is the number of issues left to read, or 0 if failed.
-	private func getIssuesLeft(series: ComicSeries) -> String {
-		let read: UInt16 = series.issuesRead
-		let total: UInt16 = series.totalIssues
+	private func getIssuesLeft(event: ComicEvent) -> String {
+		let read: UInt16 = event.issuesRead
+		let total: UInt16 = event.totalIssues
 		var left: Int = 0
 		
 		// I haven't set the total yet
@@ -274,10 +254,37 @@ struct SeriesStatsView: View {
 			return String(left)
 		}
 	}
+	
+	
+	/// Called when an item is deleted from the ``EventData`` list.
+	///
+	/// Will delete an instance of ``EventData`` from the ``modelContext`` given by the index.
+	/// - Parameter offsets: An ``IndexSet`` used to delete the correct element from the  ``EventData`` array.
+	///
+	/// > Note: Will automatically save the data if `GlobalState.autoSave` is on.
+	private func deleteItems(offsets: IndexSet) {
+		withAnimation {
+			for index in offsets {
+				// delete the comic
+				persistenceController.context.delete(events[index])
+			}
+		}
+		
+		// autosave
+		if (globalState.autoSave) {
+			globalState.saveDataIcon = persistenceController.saveAllData()
+		} else {
+			// need to manually because there have been changes
+			globalState.saveDataIcon = nil
+		}
+	}
 }
 
+
+
+
 /// Main view preview settings
-struct SeriesStatsView_Previews: PreviewProvider {
+struct EventsStatsView_Previews: PreviewProvider {
 	static var previews: some View {
 		
 		let persistenceController = PersistenceController.shared
@@ -308,7 +315,7 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		
 		globalState.resetSeriesNamesUsages()
 		
-		
+		// add some testing comics
 		createTestComics(context: context)
 		
 		// lastly save it
@@ -319,7 +326,8 @@ struct SeriesStatsView_Previews: PreviewProvider {
 		// this way creating and deleting comics will work correctly
 		persistenceController.context = context
 		
-		return SeriesStatsView()
+		return EventsStatsView()
 			.environment(\.modelContext, context)
 	}
 }
+

@@ -27,6 +27,7 @@
 		2174E3F82C6792EE00E4372F /* HelperComicFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */; };
 		21A737C12C707A3400F1481D /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A737C02C707A3400F1481D /* PreviewHelpers.swift */; };
 		21D1B3FA2C5EFDB4001FE360 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */; };
+		21D79F552C8872990073CF68 /* ViewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D79F542C8872990073CF68 /* ViewHelpers.swift */; };
 		21DA792E2C74A7C400AA0251 /* ComicReadEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21DA792D2C74A7C400AA0251 /* ComicReadEnum.swift */; };
 /* End PBXBuildFile section */
 
@@ -72,6 +73,7 @@
 		21A737C02C707A3400F1481D /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
 		21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Comic-Tracker-Info.plist"; sourceTree = SOURCE_ROOT; };
+		21D79F542C8872990073CF68 /* ViewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewHelpers.swift; sourceTree = "<group>"; };
 		21DA792D2C74A7C400AA0251 /* ComicReadEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicReadEnum.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -125,21 +127,11 @@
 		214992AA2C55EC19004CAD3B /* Comic Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				21D79F592C8877A70073CF68 /* HelperFunctions */,
+				21D79F572C88775C0073CF68 /* DataStructures */,
+				21D79F562C8877460073CF68 /* Views */,
 				21D1B3FB2C5F0677001FE360 /* Comic-Tracker-Info.plist */,
-				214992AD2C55EC19004CAD3B /* ContentView.swift */,
-				216F87002C575E9A008DD50F /* AddNewComicView.swift */,
-				215E5C0F2C661E4800D0818A /* SeriesStatsView.swift */,
-				2174E3F52C670C6700E4372F /* EventsStatsView.swift */,
-				214992D72C560A11004CAD3B /* ComicData.swift */,
-				214992DB2C561750004CAD3B /* ComicSeries.swift */,
-				214992D92C561681004CAD3B /* ComicEvent.swift */,
-				2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */,
-				215E5C112C66285400D0818A /* CreateNewComics.swift */,
-				21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */,
-				21255F102C5F569500349694 /* GlobalState.swift */,
 				214992AB2C55EC19004CAD3B /* Comic_TrackerApp.swift */,
-				21A737C02C707A3400F1481D /* PreviewHelpers.swift */,
-				21DA792D2C74A7C400AA0251 /* ComicReadEnum.swift */,
 				214992B12C55EC1B004CAD3B /* Assets.xcassets */,
 				214992B32C55EC1B004CAD3B /* Preview Content */,
 			);
@@ -169,6 +161,41 @@
 				214992CA2C55EC1B004CAD3B /* Comic_TrackerUITestsLaunchTests.swift */,
 			);
 			path = "Comic TrackerUITests";
+			sourceTree = "<group>";
+		};
+		21D79F562C8877460073CF68 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				214992AD2C55EC19004CAD3B /* ContentView.swift */,
+				216F87002C575E9A008DD50F /* AddNewComicView.swift */,
+				215E5C0F2C661E4800D0818A /* SeriesStatsView.swift */,
+				2174E3F52C670C6700E4372F /* EventsStatsView.swift */,
+				21D79F542C8872990073CF68 /* ViewHelpers.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		21D79F572C88775C0073CF68 /* DataStructures */ = {
+			isa = PBXGroup;
+			children = (
+				214992D72C560A11004CAD3B /* ComicData.swift */,
+				214992DB2C561750004CAD3B /* ComicSeries.swift */,
+				214992D92C561681004CAD3B /* ComicEvent.swift */,
+				21DA792D2C74A7C400AA0251 /* ComicReadEnum.swift */,
+				21255F102C5F569500349694 /* GlobalState.swift */,
+				21D1B3F92C5EFDB4001FE360 /* PersistenceController.swift */,
+			);
+			path = DataStructures;
+			sourceTree = "<group>";
+		};
+		21D79F592C8877A70073CF68 /* HelperFunctions */ = {
+			isa = PBXGroup;
+			children = (
+				2174E3F72C6792EE00E4372F /* HelperComicFunctions.swift */,
+				215E5C112C66285400D0818A /* CreateNewComics.swift */,
+				21A737C02C707A3400F1481D /* PreviewHelpers.swift */,
+			);
+			path = HelperFunctions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -306,6 +333,7 @@
 				21DA792E2C74A7C400AA0251 /* ComicReadEnum.swift in Sources */,
 				215E5C122C66285400D0818A /* CreateNewComics.swift in Sources */,
 				214992DC2C561750004CAD3B /* ComicSeries.swift in Sources */,
+				21D79F552C8872990073CF68 /* ViewHelpers.swift in Sources */,
 				21255F112C5F569500349694 /* GlobalState.swift in Sources */,
 				2174E3F62C670C6700E4372F /* EventsStatsView.swift in Sources */,
 				214992AE2C55EC19004CAD3B /* ContentView.swift in Sources */,
@@ -456,6 +484,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
