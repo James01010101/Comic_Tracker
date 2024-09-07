@@ -92,6 +92,10 @@ struct AddNewComicView: View {
 	private let leadingPadding: CGFloat = -10
 	private let trailingTextPadding: CGFloat = 0
 	
+	// editing booleans so that i can align text center if editing otherwise right
+	@State private var editingPages: Bool = false
+	@State private var editingIssues: Bool = false
+	
 	
 	
 	
@@ -118,7 +122,7 @@ struct AddNewComicView: View {
 		self.dateKnown = false // so the date section is hidden by default
 		
 		self.marvelUltimateLink = ""
-		self.comicRead = ComicReadEnum.NotRead
+		self.comicRead = ComicReadEnum.Read
 	}
 	
 	
@@ -148,7 +152,7 @@ struct AddNewComicView: View {
 		self.purpose = String(series.recentComicPurpose)
 		
 		self.marvelUltimateLink = ""
-		self.comicRead = ComicReadEnum.NotRead
+		self.comicRead = ComicReadEnum.Read
 	}
 	
 	/// constructor which takes in a comic to auto fill information from
@@ -176,7 +180,7 @@ struct AddNewComicView: View {
 		self.purpose = String(comic.purpose)
 		
 		self.marvelUltimateLink = ""
-		self.comicRead = ComicReadEnum.NotRead
+		self.comicRead = ComicReadEnum.Read
 	}
 	
 	
@@ -422,9 +426,11 @@ struct AddNewComicView: View {
 						Text("Issue")
 							.font(.headline)
 						
-						TextField("", text: $issueNumber)
+						TextField("", text: $issueNumber, onEditingChanged: { editing in
+							self.editingIssues = editing;
+						})
 							.keyboardType(.numberPad)
-							.multilineTextAlignment(.trailing)
+							.multilineTextAlignment(self.editingIssues ? .center : .trailing)
 							.padding(.trailing, trailingTextPadding)
 						
 					}
@@ -455,9 +461,11 @@ struct AddNewComicView: View {
 						Text("Pages")
 							.font(.headline)
 						
-						TextField("", text: $totalPages)
+						TextField("", text: $totalPages, onEditingChanged: { editing in
+							self.editingPages = editing;
+						})
 							.keyboardType(.numberPad)
-							.multilineTextAlignment(.trailing)
+							.multilineTextAlignment(self.editingPages ? .center : .trailing)
 							.padding(.trailing, trailingTextPadding)
 						
 					}

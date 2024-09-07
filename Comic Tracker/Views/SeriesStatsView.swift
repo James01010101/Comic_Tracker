@@ -20,9 +20,9 @@ struct SeriesStatsView: View {
 	/// Stores an array of ``ComicData`` which contains all of the individual comic books, which are stored in the ``PersistenceController``.
 	///
 	/// This is sorted in decending order on the `comicId` to correctly be shown in  order in the list.
-	@Query(sort: \ComicData.comicId, order: .reverse) private var comics: [ComicData]
+	@Query private var comics: [ComicData]
 	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
-	@Query private var series: [ComicSeries]
+	@Query(sort: \ComicSeries.seriesId, order: .reverse)  private var series: [ComicSeries]
 	
 	/// Used to toggle between this main view and the ``AddNewComicView``
 	@State private var navigateToAddNewComicView: Bool = false
