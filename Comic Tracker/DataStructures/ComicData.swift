@@ -16,28 +16,28 @@ class ComicData: Codable, Identifiable {
 	/// This is used as a static unique id for each comic.
 	///
 	/// Everytime I create a new comic it gets incremented and given to the new comic so they each get a unique id. This is also used to know the order that I read the comics.
-	static var staticComicId: UInt32 = 0
+	static var staticComicId: UInt32 = 0;
 	
 	/// This is the n'th comic I have read, it is an id which mainly shows the order of comics I have read, but is also used to uniquely identify each comic.
-	var comicId: UInt32
+	var comicId: UInt32 = 0;
 	/// Use comicId to fulfill the Identifiable requirement
-	var id: UInt32 { comicId }
+	var id: UInt32 { comicId };
 	
 	/// Brand this comic is from, example: (Marvel, Star Wars, FNAF).
-	var brandName: String
+	var brandName: String = "";
 	/// The shorthand brand of the brand, example "TWD".
-	var shortBrandName: String
+	var shortBrandName: String = "";
 	/// The prioties shorthand even if it isnt needed
-	var prioritizeShortBrandName: Bool
+	var prioritizeShortBrandName: Bool = false;
 	
 	/// The name of the series this comic is part of.
 	///
 	/// This is the main comic's name. If multiple books in a series can have different names then they can be specified later in the ``individualComicName``.
-	var seriesName: String
+	var seriesName: String = "";
 	/// The shorthand series name, example "TWD".
-	var shortSeriesName: String
+	var shortSeriesName: String = "";
 	/// The prioties shorthand even if it isnt needed
-	var prioritizeShortSeriesName: Bool
+	var prioritizeShortSeriesName: Bool = false;
 	
 	/// The name of this book if books in a series can have different names, instead of, or including, issues (Optional).
 	///
@@ -50,42 +50,42 @@ class ComicData: Codable, Identifiable {
 	///     - Fasbear Frights: Fetch
 	///
 	/// This allows you to specify different names for the individual books, if it isn't just an issue number change (Still use issue numbers).
-	var comicName: String
+	var comicName: String = "";
 	/// The shorthand comic name, example "TWD".
-	var shortComicName: String
+	var shortComicName: String = "";
 	/// The prioties shorthand even if it isnt needed
-	var prioritizeShortComicName: Bool
+	var prioritizeShortComicName: Bool = false;
 	
 	/// Year the first issue of this series was first published.
 	///
 	/// Used to help distinguish series with the same name, but that were released in different years.
 	///
 	/// > Important: Not the year this current issue was published.
-	var yearFirstPublished: UInt16
+	var yearFirstPublished: UInt16 = 0;
 	/// WIthin a series which issue is this.
 	///
 	/// Required even if using ``individualComicName``.
-	var issueNumber: UInt16
+	var issueNumber: UInt16 = 0;
 	/// The total number of pages this comic has.
-	var totalPages: UInt16
+	var totalPages: UInt16 = 0;
 	/// What event does this comic belong to (Optional).
-	var eventName: String
+	var eventName: String = "";
 	/// Give the comic a purpose as to why it was read.
 	///
 	/// Did I read it for a specific character or group of event?
-	var purpose: String
+	var purpose: String = "";
 	/// The date this comic was read.
 	///
 	/// Automatically filled in when a comic is added, but can be manually set.
-	var dateRead: Date?
+	var dateRead: Date? = nil;
 	
 	/// This is a link to the marvel ultimate page for this comic.
 	///
 	/// Mainly used in the event list to be able to easily find a comic to read
-	var marvelUltimateLink: String
+	var marvelUltimateLink: String = "";
 	
 	/// Enum to store wether ive read this comic or not
-	var comicRead: ComicReadEnum
+	var comicRead: ComicReadEnum = ComicReadEnum.NotRead;
 	
 	
 	/// Creates a new ``ComicData``.

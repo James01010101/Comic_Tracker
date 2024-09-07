@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-import CloudKit
 
 /// This class will be used for storing/loading/backing up all persistant data
 ///
@@ -386,26 +385,83 @@ class PersistenceController: ObservableObject {
 
 
 
-
 // All of these functions need to be outside the class so that they can be used during the initise phase
 /// Get the root directory of all of the backup folders
 ///
 /// From here I can then find the most recent folder to load from
 /// - Returns: URL which is the path to the root directory
-private func getRootDirectory() -> URL {
+func getRootDirectory() -> URL {
 	let fileManager = FileManager.default
 	guard var root = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
 		fatalError("Could not find root directory, a restart might fix this problem");
 	}
-	
 	root = root.appendingPathComponent("Comic Tracker");
-	print("Root dir: " + root.absoluteString);
 	
+	// Check if the Comic Tracker folder exists
+	if !FileManager.default.fileExists(atPath: root.path) {
+		do {
+			// Create the Comic Tracker folder
+			try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true, attributes: nil)
+			print("Created Comic Tracker folder at: \(root)")
+		} catch {
+			print("Failed to create Comic Tracker folder: \(error.localizedDescription)")
+		}
+	}
+	
+	print("Root dir: " + root.absoluteString);
 	return root;
 }
 
+/// Get the icloud directory of all of the backup folders
+///
+/// From here I can then find the most recent folder to load from
+/// - Returns: URL which is the path to the icloud directory
+@available(*, deprecated, message: "This function is not used, using getRootDirectory() instead (icloud is a pain)")
+func getICloudDirectory(retries: UInt8 = 0) -> URL {
+	var iCloudURL: URL;
+	let maxRetries: UInt8 = 5;
+	var currentRetries: UInt8 = retries;
+	let iCloudContainerIdentifier = "iCloud.com.Personal.James.ComicTracker";
+	
+	//print("Sleeping for 3 seconds to allow icloud to setup");
+	//sleep(2);
+	//print("Finished sleeping");
+	
+	if let url = FileManager.default.url(forUbiquityContainerIdentifier: iCloudContainerIdentifier) {
+		iCloudURL = url.appendingPathComponent("Documents").appendingPathComponent("Comic Tracker");
+		
+		// Check if the Comic Tracker folder exists
+		if !FileManager.default.fileExists(atPath: iCloudURL.path) {
+			do {
+				// Create the Comic Tracker folder
+				try FileManager.default.createDirectory(at: iCloudURL, withIntermediateDirectories: true, attributes: nil)
+				print("Created Comic Tracker folder at: \(iCloudURL)")
+			} catch {
+				print("Failed to create Comic Tracker folder: \(error.localizedDescription)")
+			}
+		}
+		
+	} else {
+		// if max number of retries hasnt been reached sleep for one second and then try again
+		if retries < maxRetries {
+			currentRetries += 1;
+			print("Failed to get icloud container retrying (\(currentRetries)) time(s)");
+			sleep(1);
+			return getICloudDirectory(retries: currentRetries);
+			
+		} else {
+			fatalError("Failed to get the ICloud Directory, retried \(maxRetries) times");
+		}
+	}
+	
+	print("ICloud dir: " + iCloudURL.absoluteString);
+	return iCloudURL;
+}
+
+
+
 /// Function to convert a date string in `day-month-year` format to a `Date` object
-private func dateFromString(_ dateString: String) -> Date? {
+func dateFromString(_ dateString: String) -> Date? {
 	// quick check to make sure the string is in the right format
 	if dateString.split(separator: "-").count != 3 { return nil; }
 	
@@ -415,7 +471,7 @@ private func dateFromString(_ dateString: String) -> Date? {
 }
 
 /// Get the most recent backup folder based on the folder names (which are dates)
-private func getMostRecentBackupFolder(rootFolder: URL) -> URL? {
+func getMostRecentBackupFolder(rootFolder: URL) -> URL? {
 	let fileManager = FileManager.default
 	
 	do {
@@ -472,7 +528,7 @@ private func getMostRecentBackupFolder(rootFolder: URL) -> URL? {
 }
 
 /// from the root folder get the path to the folder where i will save my files to, this will be todays date. if this folder doesn't exist create it
-private func getOrCreateSaveFilesFolder(rootFolder: URL) -> URL {
+func getOrCreateSaveFilesFolder(rootFolder: URL) -> URL {
 	// Get today's date as a string in the format "day-month-year"
 	let dateFormatter = DateFormatter();
 	dateFormatter.dateFormat = "d-M-yyyy";

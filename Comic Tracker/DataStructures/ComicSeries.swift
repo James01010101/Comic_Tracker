@@ -16,51 +16,51 @@ class ComicSeries: Codable, Identifiable {
 	/// This is used as a static unique id
 	///
 	/// Everytime I create a new series it gets incremented and given to that series so they each get a unique id. It is also used to know the order of series I have read
-	static var staticSeriesId: UInt32 = 0
+	static var staticSeriesId: UInt32 = 0;
 	
 	/// Unique id for this series
 	///
 	/// > Note: Mainly used internally, most likely won't be shown to the user.
-	var seriesId: UInt32
+	var seriesId: UInt32 = 0;
 	/// Use seriesId to fulfill the Identifiable requirement
 	var id: UInt32 { seriesId }
 	
 	/// Brand of the series
-	var brandName: String
+	var brandName: String = "";
 	/// The shorthand brand of the brand, example "TWD".
-	var shortBrandName: String
+	var shortBrandName: String = "";
 	/// The prioties shorthand even if it isnt needed
-	var prioritizeShortBrandName: Bool
+	var prioritizeShortBrandName: Bool = false;
 	
 	/// The title of this series.
-	var seriesName: String
+	var seriesName: String = "";
 	/// The shorthand brand of the series name, example "TWD".
-	var shortSeriesName: String
+	var shortSeriesName: String = "";
 	/// The prioties shorthand even if it isnt needed
-	var prioritizeShortSeriesName: Bool
+	var prioritizeShortSeriesName: Bool = false;
 	
 	/// The year the first comic book in this series was first published
 	///
 	/// Used to help distinguish series with the same name.
-	var yearFirstPublished: UInt16
+	var yearFirstPublished: UInt16 = 0;
 	/// Total number of comic book issues read in this series.
 	///
 	/// > Note: I don't have to have read the comics in this series in order.
-	var issuesRead: UInt16
+	var issuesRead: UInt16 = 0;
 	/// Total number of comic book issues in this series.
-	var totalIssues: UInt16
+	var totalIssues: UInt16 = 0;
 	/// The total number of pages read in all comic books in this series.
-	var pagesRead: UInt16
+	var pagesRead: UInt16 = 0;
 	
 	// theses are variables of the most recent comic added so i can easily add a continuing series from these stats
 	/// Recent comics issue
-	var recentComicIssueNumber: UInt16
+	var recentComicIssueNumber: UInt16 = 0;
 	/// Recent comics total pages
-	var recentComicTotalPages: UInt16
+	var recentComicTotalPages: UInt16 = 0;
 	/// Recent comics event name
-	var recentComicEventName: String
+	var recentComicEventName: String = "";
 	/// Recent comics purpose
-	var recentComicPurpose: String
+	var recentComicPurpose: String = "";
 	
 	
 	

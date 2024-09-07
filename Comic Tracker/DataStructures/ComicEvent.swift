@@ -21,26 +21,26 @@ class ComicEvent: Codable, Identifiable {
 	/// Unique id for this event.
 	///
 	/// > Note: Mainly used internally, most likely wont be shown to the user.
-	var eventId: UInt32
+	var eventId: UInt32 = 0;
 	/// Use eventId to fulfill the Identifiable requirement
 	var id: UInt32 { eventId }
 	
 	/// The brand this event is part of eg Marvel
-	var brandName: String
+	var brandName: String = "";
 	/// The shorthand brand of the brand, example "TWD".
-	var shortBrandName: String
+	var shortBrandName: String = "";
 	/// The prioties shorthand even if it isnt needed
-	var prioritizeShortBrandName: Bool
+	var prioritizeShortBrandName: Bool = false;
 	
 	/// The full name of this event.
-	var eventName: String
+	var eventName: String = "";
 	/// The total number of comic issues that have been read in this event.
 	/// > Note: I don't have to have read the comics in this event in order.
-	var issuesRead: UInt16
+	var issuesRead: UInt16 = 0;
 	/// The total number of comic issues in this event.
-	var totalIssues: UInt16
+	var totalIssues: UInt16 = 0;
 	/// The total number of pages read in all comic books in this event.
-	var pagesRead: UInt16
+	var pagesRead: UInt16 = 0;
 	
 	
 
