@@ -140,9 +140,9 @@ func createTestComics(context: ModelContext) {
 	)
 	
 	saveComic(
-		brandName: "Five Nights At Freddy's",
+		brandName: "Five Nights At Freddys",
 		shortBrandName: "FNAF",
-		prioritizeShortBrandName: false,
+		prioritizeShortBrandName: true,
 		
 		seriesName: "The Silver Eyes",
 		shortSeriesName: "",
@@ -165,9 +165,59 @@ func createTestComics(context: ModelContext) {
 	)
 	
 	saveComic(
-		brandName: "Five Nights At Freddy's",
+		brandName: "Five Nights At Freddys",
 		shortBrandName: "FNAF",
-		prioritizeShortBrandName: false,
+		prioritizeShortBrandName: true,
+		
+		seriesName: "The Silver Eyes (Graphic Novels)",
+		shortSeriesName: "The Silver Eyes (Graphic)",
+		prioritizeShortSeriesName: false,
+		
+		comicName: "The Silver Eyes",
+		shortComicName: "",
+		prioritizeShortComicName: false,
+		
+		yearFirstPublished: 2014,
+		issueNumber: 1,
+		totalPages: 356,
+		eventName: "FNAF",
+		purpose: "FNAF",
+		dateRead: Date(),
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
+	)
+	
+	saveComic(
+		brandName: "Five Nights At Freddys",
+		shortBrandName: "FNAF",
+		prioritizeShortBrandName: true,
+		
+		seriesName: "The Silver Eyes (Graphic Novels)",
+		shortSeriesName: "The Silver Eyes (Graphic)",
+		prioritizeShortSeriesName: false,
+		
+		comicName: "The Silver Eyes",
+		shortComicName: "",
+		prioritizeShortComicName: false,
+		
+		yearFirstPublished: 2014,
+		issueNumber: 1,
+		totalPages: 356,
+		eventName: "FNAF",
+		purpose: "FNAF",
+		dateRead: Date(),
+		modelContext: context,
+		
+		marvelUltimateLink: "",
+		comicRead: ComicReadEnum.NotRead
+	)
+	
+	saveComic(
+		brandName: "Five Nights At Freddys",
+		shortBrandName: "FNAF",
+		prioritizeShortBrandName: true,
 		
 		seriesName: "The Silver Eyes",
 		shortSeriesName: "",
@@ -190,9 +240,9 @@ func createTestComics(context: ModelContext) {
 	)
 	
 	saveComic(
-		brandName: "Five Nights At Freddy's",
+		brandName: "Five Nights At Freddys",
 		shortBrandName: "FNAF",
-		prioritizeShortBrandName: false,
+		prioritizeShortBrandName: true,
 		
 		seriesName: "The Silver Eyes",
 		shortSeriesName: "",
@@ -242,9 +292,9 @@ func createTestComics(context: ModelContext) {
 	saveComic(
 		brandName: "The Walking Dead",
 		shortBrandName: "TWD",
-		prioritizeShortBrandName: false,
+		prioritizeShortBrandName: true,
 		
-		seriesName: "The Walking Dead Deluxe",
+		seriesName: "The Walking Dead: Deluxe",
 		shortSeriesName: "",
 		prioritizeShortSeriesName: false,
 		
@@ -267,9 +317,9 @@ func createTestComics(context: ModelContext) {
 	saveComic(
 		brandName: "The Walking Dead",
 		shortBrandName: "TWD",
-		prioritizeShortBrandName: false,
+		prioritizeShortBrandName: true,
 		
-		seriesName: "The Walking Dead Deluxe",
+		seriesName: "The Walking Dead: Deluxe",
 		shortSeriesName: "",
 		prioritizeShortSeriesName: false,
 		

@@ -24,6 +24,15 @@ struct SeriesStatsView: View {
 	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
 	@Query(sort: \ComicSeries.seriesId, order: .reverse)  private var series: [ComicSeries]
 	
+	/// needed so i can sort the series how i like as the above series is read only and cant be changed myself to sort it
+	@State private var sortedSeries: [ComicSeries] = []
+	
+	// only define the options i want for sorting serires not all
+	let sortOptionsForSeries: [SortOption] = [.id, .pagesRead, .issuesRead]
+	
+	// how am i sorting my list of series
+	@State private var selectedSortOption: SortOption = .pagesRead
+
 	/// Used to toggle between this main view and the ``AddNewComicView``
 	@State private var navigateToAddNewComicView: Bool = false
 	
@@ -71,7 +80,7 @@ struct SeriesStatsView: View {
 							.frame(maxWidth: .infinity, alignment: .center)
 							.font(.headline)
 							.padding(.leading, -10 - readIdWidth) // to adjust for the pages text being moved in slightly more
-							.padding(.trailing, 10)
+							.padding(.trailing, -20)
 					}
 					.padding(.top, 10)
 					.padding(.bottom, -5)
@@ -83,11 +92,32 @@ struct SeriesStatsView: View {
 						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
 				}
 				
+				// the sorting dropdown
+				VStack {
+					Menu {
+						Picker(selection: $selectedSortOption, label: Text("Sort Options")) {
+							ForEach(sortOptionsForSeries) { option in
+								Text(option.rawValue).tag(option)
+							}
+						}
+					} label: {
+						Label("Sort by: \(selectedSortOption.rawValue)", systemImage: "arrow.up.arrow.down")
+							.padding()
+					}
+					.onChange(of: selectedSortOption) {
+						sortSeries()
+					}
+					.onAppear {
+						sortSeries() // Initial sorting on view load
+					}
+					.frame(height: 30)
+				}
+								
 				// VStack list for all the series
 				// the series will take up to lines each
 				// one for the series, and one for stats
 				List {
-					ForEach(series) { series in
+					ForEach(sortedSeries) { series in
 						// this row
 						VStack {
 							// top row name
@@ -100,15 +130,28 @@ struct SeriesStatsView: View {
 								Divider()
 									.padding(.top, 1)
 								
-								Text(getSeriesFormattedName(series: series))
-									// force it to take up all the space so the id gets forced to the left
-									.frame(maxWidth: .infinity)
-									// remove as much padding from either side to give it as much space as possible (it is centered so normally you wont tell anyway)
-									.padding(.leading, -5)
-									.padding(.trailing, -15)
-									.modifier(MainDisplayTextStyle(globalState: globalState))
+								VStack {
+									Text(getSeriesFormattedBrandName(series: series))
+										// force it to take up all the space so the id gets forced to the left
+										.frame(maxWidth: .infinity)
+										// remove as much padding from either side to give it as much space as possible (it is centered so normally you wont tell anyway)
+										.padding(.leading, -5)
+										.padding(.trailing, -15)
+										.modifier(MainDisplayTextStyle(globalState: globalState))
+									
+									// dont display the series name if it is the same as the brand name
+									if (getSeriesFormattedBrandName(series: series) != getSeriesFormattedName(series: series)) {
+										Text(getSeriesFormattedName(series: series))
+										// force it to take up all the space so the id gets forced to the left
+											.frame(maxWidth: .infinity)
+										// remove as much padding from either side to give it as much space as possible (it is centered so normally you wont tell anyway)
+											.padding(.leading, -5)
+											.padding(.trailing, -15)
+											.modifier(MainDisplayTextStyle(globalState: globalState))
+									}
+								}
 							}
-							.frame(height: 25)
+							.frame(height: 35)
 							.padding(.bottom, -3)
 							
 							Divider()
@@ -250,17 +293,64 @@ struct SeriesStatsView: View {
 	}
 	
 	
+	/// Sorts the series based on its enum chosen
+	private func sortSeries() {
+		switch selectedSortOption {
+			case .id:
+				sortedSeries = series.sorted { $0.seriesId > $1.seriesId };
+				
+			case .pagesRead:
+				sortedSeries = series.sorted { $0.pagesRead > $1.pagesRead };
+				
+			case .issuesRead:
+				sortedSeries = series.sorted { $0.issuesRead > $1.issuesRead };
+		}
+	}
+	
+	/// Get the formatted series brand name
+	private func getSeriesFormattedBrandName(series: ComicSeries) -> String {
+		// full name unless its over the size limit
+		if series.brandName.count > globalState.maxDisplayedSeriesViewStringLength {
+			if !series.shortBrandName.isEmpty {
+				return series.shortBrandName;
+			}
+		}
+		
+		return series.brandName;
+	}
+	
 	/// Takes a series and returns a nicely formatted string to represent it.
 	/// - Parameter series: ``ComicSeries`` which contains all the information about the series.
 	/// - Returns: Formatted `String` representing the series.
 	private func getSeriesFormattedName(series: ComicSeries) -> String {
-		var formattedString: String = ""
-		formattedString = series.brandName
+		// This contains the shortest string found so far, so if nothing is short enough itll use the shortest string
+		var shortestString: String = ""
 		
-		if (series.brandName != series.seriesName) {
-			formattedString += ": " + series.seriesName
+		// otherwise try different combos to see what fits
+		// Full name
+		let fullString = series.seriesName;
+		if fullString.count < globalState.maxDisplayedSeriesViewStringLength {
+			return fullString;
 		}
-		return formattedString
+		// this is the initial shortest
+		shortestString = fullString;
+		
+		
+		// Short name
+		if !series.shortSeriesName.isEmpty {
+			let shortString = series.shortSeriesName;
+			if shortString.count < globalState.maxDisplayedSeriesViewStringLength {
+				return shortString;
+			}
+			
+			// didnt fit but check if this is the smallest so far
+			if shortString.count < shortestString.count {
+				shortestString = shortString;
+			}
+		}
+		
+		// else if nothing else works just use shortestString i found
+		return shortestString;
 	}
 	
 	

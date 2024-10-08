@@ -51,8 +51,6 @@ struct AddNewComicView: View {
 	@State private var shortSeriesName: String
 	/// The prioties shorthand even if it isnt needed
 	@State private var prioritizeShortSeriesName: Bool
-	/// Lock the series toggle so it cant be changed
-	@State private var lockSeriesToggle: Bool = false
 	
 	/// The name of this specific comic, if it's different for every book in the series (Optional).
 	@State private var comicName: String
@@ -60,8 +58,6 @@ struct AddNewComicView: View {
 	@State private var shortComicName: String
 	/// The prioties shorthand even if it isnt needed
 	@State private var prioritizeShortComicName: Bool
-	/// Lock the comic toggle so it cant be changed
-	@State private var lockComicToggle: Bool = false
 	
 	/// The year the first book in this series was first published.
 	@State private var yearFirstPublished: Int
@@ -86,17 +82,14 @@ struct AddNewComicView: View {
 	/// Is the form valid and able to be submitted (start blue, then if i click itll turn red if invalid).
 	@State private var validForm: Bool = true
 	
+	/// when creating a comic from a series i can hide the top input fields to allow more space for other fields
+	@State private var hideTopInputs: Bool = true
+	
 	
 	/// The amount of spacing the icons get to keep it consistant
 	private let iconWidth: CGFloat = 25
 	private let leadingPadding: CGFloat = -10
 	private let trailingTextPadding: CGFloat = 0
-	
-	// editing booleans so that i can align text center if editing otherwise right
-	@State private var editingPages: Bool = false
-	@State private var editingIssues: Bool = false
-	
-	
 	
 	
 	// empty constructor for creating an empty view here
@@ -119,13 +112,11 @@ struct AddNewComicView: View {
 		self.eventName = ""
 		self.purpose = ""
 		self.dateRead = Date()
-		self.dateKnown = false // so the date section is hidden by default
+		self.dateKnown = true
 		
 		self.marvelUltimateLink = ""
 		self.comicRead = ComicReadEnum.Read
 	}
-	
-	
 	
 	/// constructor which takes in a series to auto fill information from
 	init(series: ComicSeries) {
@@ -143,7 +134,7 @@ struct AddNewComicView: View {
 		
 		self.yearFirstPublished = Int(series.yearFirstPublished)
 		self.dateRead = Date()
-		self.dateKnown = false // so the date section is hidden by default
+		self.dateKnown = true
 		
 		// stats from recent comis
 		self.issueNumber = String(series.recentComicIssueNumber + 1)
@@ -165,13 +156,13 @@ struct AddNewComicView: View {
 		self.shortSeriesName = comic.shortSeriesName
 		self.prioritizeShortSeriesName = comic.prioritizeShortSeriesName
 		
-		self.comicName = ""
-		self.shortComicName = ""
-		self.prioritizeShortComicName = false
+		self.comicName = comic.comicName
+		self.shortComicName = comic.shortComicName
+		self.prioritizeShortComicName = comic.prioritizeShortComicName
 		
 		self.yearFirstPublished = Int(comic.yearFirstPublished)
 		self.dateRead = Date()
-		self.dateKnown = false // so the date section is hidden by default
+		self.dateKnown = true
 		
 		// stats from recent comis
 		self.issueNumber = String(comic.issueNumber + 1)
@@ -182,7 +173,6 @@ struct AddNewComicView: View {
 		self.marvelUltimateLink = ""
 		self.comicRead = ComicReadEnum.Read
 	}
-	
 	
 	
 	var body: some View {
@@ -207,359 +197,118 @@ struct AddNewComicView: View {
 				
 				// main options
 				List {
-					// Brand section
-					VStack {
-						HStack {
-							Image(systemName: "person.text.rectangle")
-								.frame(width: iconWidth, alignment: .center)
+					if (!hideTopInputs) {
+						// Brand section
+						BrandInputsView(
+							iconWidth: iconWidth,
+							leadingPadding: leadingPadding,
+							trailingTextPadding: trailingTextPadding,
 							
-							Text("Brand")
-								.font(.headline)
-							
-							TextEditor(text: $brandName)
-								.onChange(of: brandName) {
-									// if the text is over the max length
-									if (brandName.count > globalState.maxDisplayedStringLength && !lockBrandToggle) {
-										// lock the toggle on
-										prioritizeShortBrandName = true
-										lockBrandToggle = true
-										
-										// if the text goes under max length but was still locked unlock it
-									} else if (brandName.count < globalState.maxDisplayedStringLength && lockBrandToggle) {
-										lockBrandToggle = false
-										
-										// dont toggle the short off though unless its empty
-										// if not empty leave it on
-										if (shortBrandName.isEmpty) {
-											prioritizeShortBrandName = false
-										}
-									}
-								}
-								.multilineTextAlignment(.trailing)
-								.padding(.bottom, -5)
-								.padding(.trailing, trailingTextPadding)
-							
-						}
-						.padding(.leading, leadingPadding)
+							brandName: $brandName,
+							shortBrandName: $shortBrandName,
+							prioritizeShortBrandName: $prioritizeShortBrandName
+						)
 						
-						HStack {
-							Image(systemName: "person.text.rectangle")
-								.frame(width: iconWidth, alignment: .center)
+						// Series section
+						SeriesInputsView(
+							iconWidth: iconWidth,
+							leadingPadding: leadingPadding,
+							trailingTextPadding: trailingTextPadding,
 							
-							Text("Short Brand?")
-								.font(.headline)
-							
-							TextEditor(text: $shortBrandName)
-								.onChange(of: shortBrandName) {
-									// if the string is empty toggle it back to off
-									if (shortBrandName.count == 0 && !lockBrandToggle) {
-										prioritizeShortBrandName = false
-									}
-								}
-								.multilineTextAlignment(.trailing)
-								.padding(.bottom, -5)
-								.padding(.trailing, trailingTextPadding)
-						}
-						.padding(.leading, leadingPadding)
+							seriesName: $seriesName,
+							shortSeriesName: $shortSeriesName,
+							prioritizeShortSeriesName: $prioritizeShortSeriesName
+						)
 						
-						if (!shortBrandName.isEmpty || prioritizeShortBrandName) {
-							HStack {
-								Image(systemName: "person.text.rectangle")
-									.frame(width: iconWidth, alignment: .center)
-								
-								Text("Prioritize Short")
-									.font(.headline)
-								
-								Toggle("", isOn: $prioritizeShortBrandName)
-									.disabled(lockBrandToggle)
-								
-							}
-							.padding(.leading, leadingPadding)
-						}
-					}
-					
-					// Series section
-					VStack {
-						HStack {
-							Image(systemName: "books.vertical")
-								.frame(width: iconWidth, alignment: .center)
+						// Book section
+						BookInputsView(
+							iconWidth: iconWidth,
+							leadingPadding: leadingPadding,
+							trailingTextPadding: trailingTextPadding,
 							
-							Text("Series")
-								.font(.headline)
-							
-							TextEditor(text: $seriesName)
-								.onChange(of: seriesName) {
-									// if the text is over the max length
-									if (seriesName.count > globalState.maxDisplayedStringLength && !lockSeriesToggle) {
-										// lock the toggle on
-										prioritizeShortSeriesName = true
-										lockSeriesToggle = true
-										
-										// if the text goes under max length but was still locked unlock it
-									} else if (seriesName.count < globalState.maxDisplayedStringLength && lockSeriesToggle) {
-										lockSeriesToggle = false
-										
-										// dont toggle the short off though unless its empty
-										// if not empty leave it on
-										if (shortSeriesName.isEmpty) {
-											prioritizeShortSeriesName = false
-										}
-									}
-								}
-								.multilineTextAlignment(.trailing)
-								.padding(.bottom, -5)
-								.padding(.trailing, trailingTextPadding)
-							
-						}
-						.padding(.leading, leadingPadding)
+							comicName: $comicName,
+							shortComicName: $shortComicName,
+							prioritizeShortComicName: $prioritizeShortComicName
+						)
 						
-						HStack {
-							Image(systemName: "books.vertical")
-								.frame(width: iconWidth, alignment: .center)
-							
-							Text("Short Series?")
-								.font(.headline)
-							
-							TextEditor(text: $shortSeriesName)
-								.onChange(of: shortSeriesName) {
-									// if the string is empty toggle it back to off
-									if (shortSeriesName.count == 0 && !lockSeriesToggle) {
-										prioritizeShortSeriesName = false
-									}
-								}
-								.multilineTextAlignment(.trailing)
-								.padding(.bottom, -5)
-								.padding(.trailing, trailingTextPadding)
-						}
-						.padding(.leading, leadingPadding)
+						// Year first published
+						YearInputView(
+							iconWidth: iconWidth,
+							leadingPadding: leadingPadding,
+							trailingTextPadding: trailingTextPadding,
+							yearFirstPublished: $yearFirstPublished
+						)
 						
-						if (!shortSeriesName.isEmpty || prioritizeShortSeriesName) {
-							HStack {
-								Image(systemName: "books.vertical")
-									.frame(width: iconWidth, alignment: .center)
-								
-								Text("Prioritize Short")
-									.font(.headline)
-								
-								Toggle("", isOn: $prioritizeShortSeriesName)
-									.disabled(lockSeriesToggle)
-							}
-							.padding(.leading, leadingPadding)
-						}
-					}
-					
-					// Book section
-					VStack {
-						HStack {
-							Image(systemName: "text.book.closed")
-								.frame(width: iconWidth, alignment: .center)
-							
-							Text("Book?")
-								.font(.headline)
-							
-							TextEditor(text: $comicName)
-								.onChange(of: comicName) {
-									// if the text is over the max length
-									if (comicName.count > globalState.maxDisplayedStringLength && !lockComicToggle) {
-										// lock the toggle on
-										prioritizeShortComicName = true
-										lockComicToggle = true
-										
-										// if the text goes under max length but was still locked unlock it
-									} else if (comicName.count < globalState.maxDisplayedStringLength && lockComicToggle) {
-										lockComicToggle = false
-										
-										// dont toggle the short off though unless its empty
-										// if not empty leave it on
-										if (shortComicName.isEmpty) {
-											prioritizeShortComicName = false
-										}
-									}
-								}
-								.multilineTextAlignment(.trailing)
-								.padding(.bottom, -5)
-								.padding(.trailing, trailingTextPadding)
-							
-						}
-						.padding(.leading, leadingPadding)
+						// Event
+						EventInputView(
+							iconWidth: iconWidth,
+							leadingPadding: leadingPadding,
+							trailingTextPadding: trailingTextPadding,
+							eventName: $eventName
+						)
 						
-						HStack {
-							Image(systemName: "text.book.closed")
-								.frame(width: iconWidth, alignment: .center)
+						// Purpose
+						PurposeInputView(
+							iconWidth: iconWidth,
+							leadingPadding: leadingPadding,
+							trailingTextPadding: trailingTextPadding,
+							purpose: $purpose
+						)
+					} else {
+						// if i am hiding them then instead i want to show the comics bubble
+						CondensedComicView(
+							brandName: $brandName,
+							shortBrandName: $shortBrandName,
+							prioritizeShortBrandName: $prioritizeShortBrandName,
 							
-							Text("Short Book Name?")
-								.font(.headline)
+							seriesName: $seriesName,
+							shortSeriesName: $shortSeriesName,
+							prioritizeShortSeriesName: $prioritizeShortSeriesName,
 							
-							TextEditor(text: $shortComicName)
-								.onChange(of: shortComicName) {
-									// if the string is empty toggle it back to off
-									if (shortComicName.count == 0 && !lockComicToggle) {
-										prioritizeShortComicName = false
-									}
-								}
-								.multilineTextAlignment(.trailing)
-								.padding(.bottom, -5)
-								.padding(.trailing, trailingTextPadding)
-						}
-						.padding(.leading, leadingPadding)
-						
-						if (!shortComicName.isEmpty || prioritizeShortComicName) {
-							HStack {
-								Image(systemName: "text.book.closed")
-									.frame(width: iconWidth, alignment: .center)
-								
-								Text("Prioritize Short")
-									.font(.headline)
-								
-								Toggle("", isOn: $prioritizeShortComicName)
-									.disabled(lockComicToggle)
-							}
-							.padding(.leading, leadingPadding)
-						}
+							comicName: $comicName,
+							shortComicName: $shortComicName,
+							prioritizeShortComicName: $prioritizeShortComicName,
+							
+							yearFirstPublished: $yearFirstPublished,
+							issueNumber: $issueNumber,
+							totalPages: $totalPages
+						);
 					}
 					
 					// Issue
-					HStack {
-						Image(systemName: "number.circle")
-							.frame(width: iconWidth, alignment: .center)
-						
-						Text("Issue")
-							.font(.headline)
-						
-						TextField("", text: $issueNumber, onEditingChanged: { editing in
-							self.editingIssues = editing;
-						})
-							.keyboardType(.numberPad)
-							.multilineTextAlignment(self.editingIssues ? .center : .trailing)
-							.padding(.trailing, trailingTextPadding)
-						
-					}
-					.padding(.leading, leadingPadding)
-					
-					// Year first published
-					HStack {
-						Image(systemName: "calendar")
-							.frame(width: iconWidth, alignment: .center)
-						
-						Text("Year First Published")
-							.font(.headline)
-						
-						Picker("", selection: $yearFirstPublished) {
-							ForEach(1800...2100, id: \.self) { year in
-								Text(formattedNumber(number: year)).tag(year)
-							}
-						}
-						.pickerStyle(MenuPickerStyle())
-					}
-					.padding(.leading, leadingPadding)
+					IssueInputView(
+						iconWidth: iconWidth,
+						leadingPadding: leadingPadding,
+						trailingTextPadding: trailingTextPadding,
+						issueNumber: $issueNumber
+					);
 					
 					// Pages read
-					HStack {
-						Image(systemName: "doc.plaintext")
-							.frame(width: iconWidth, alignment: .center)
-						
-						Text("Pages")
-							.font(.headline)
-						
-						TextField("", text: $totalPages, onEditingChanged: { editing in
-							self.editingPages = editing;
-						})
-							.keyboardType(.numberPad)
-							.multilineTextAlignment(self.editingPages ? .center : .trailing)
-							.padding(.trailing, trailingTextPadding)
-						
-					}
-					.padding(.leading, leadingPadding)
-					
-					// Event
-					HStack {
-						Image(systemName: "tag")
-							.frame(width: iconWidth, alignment: .center)
-						
-						Text("Event?")
-							.font(.headline)
-						
-						TextEditor(text: $eventName)
-							.multilineTextAlignment(.trailing)
-							.padding(.bottom, -5)
-							.padding(.trailing, trailingTextPadding)
-					}
-					.padding(.leading, leadingPadding)
-					
-					// Purpose
-					HStack {
-						Image(systemName: "pencil")
-							.frame(width: iconWidth, alignment: .center)
-						
-						Text("Purpose?")
-							.font(.headline)
-						
-						TextEditor(text: $purpose)
-							.multilineTextAlignment(.trailing)
-							.padding(.bottom, -5)
-							.padding(.trailing, trailingTextPadding)
-					}
-					.padding(.leading, leadingPadding)
+					PagesInputView(
+						iconWidth: iconWidth,
+						leadingPadding: leadingPadding,
+						trailingTextPadding: trailingTextPadding,
+						totalPages: $totalPages
+					);
 					
 					// Marvel Comics Link
-					HStack {
-						Image(systemName: "link")
-							.frame(width: iconWidth, alignment: .center)
-						
-						Text("Marvel Universe Link?")
-							.font(.headline)
-						
-						TextEditor(text: $marvelUltimateLink)
-							.multilineTextAlignment(.trailing)
-							.padding(.bottom, -5)
-							.padding(.trailing, trailingTextPadding)
-					}
-					.padding(.leading, leadingPadding)
+					LinkInputView(
+						iconWidth: iconWidth,
+						leadingPadding: leadingPadding,
+						trailingTextPadding: trailingTextPadding,
+						marvelUltimateLink: $marvelUltimateLink
+					);
 					
 					// Date read section
-					VStack {
-						VStack {
-							Text("Select Comic Read Status")
-								.font(.headline)
-							
-							Picker("Comic Read Status", selection: $comicRead) {
-								ForEach(ComicReadEnum.allCases) { state in
-									Text(state.rawValue).tag(state)
-								}
-								
-							}
-							.pickerStyle(SegmentedPickerStyle())
-							.onChange(of: comicRead) {
-								// if i change it back to not read or skipped i dont wasnt to save the date anymore so both the date variables need to go back to defaults
-								if (comicRead == ComicReadEnum.NotRead || comicRead == ComicReadEnum.Skipped) {
-									dateKnown = false
-									// dateRead will be set to nil if dateKnown in false in the save function below
-								}
-							}
-						}
-						.padding(.bottom, 5)
+					DateInputView(
+						iconWidth: iconWidth,
+						leadingPadding: leadingPadding,
+						trailingTextPadding: trailingTextPadding,
 						
-						if (comicRead == ComicReadEnum.Read) {
-							HStack {
-								Image(systemName: "calendar")
-									.frame(width: iconWidth, alignment: .center)
-								
-								Text("Date Read")
-									.font(.headline)
-								
-								Toggle(isOn: $dateKnown) {}
-							}
-							.padding(.leading, leadingPadding)
-							
-							if (dateKnown) {
-								HStack {
-									DatePicker("Date Read", selection: $dateRead, displayedComponents: .date)
-										.datePickerStyle(GraphicalDatePickerStyle())
-								}
-								.padding(.leading, leadingPadding)
-							}
-						}
-					}
+						comicRead: $comicRead,
+						dateKnown: $dateKnown,
+						dateRead: $dateRead
+					)
 				}
 				.padding([.leading, .trailing], -10)
 				.listRowSpacing(8)
@@ -589,18 +338,6 @@ struct AddNewComicView: View {
 			}
 		}
 	}
-	
-	
-	/// Used to format the numbers without commas in the year picker.
-	///
-	/// - Parameter number: input `Int` to format without comma's.
-	/// - Returns: Formated `String` of an `Int` without comma's.
-	private func formattedNumber(number: Int) -> String {
-		let numberFormatter = NumberFormatter()
-		numberFormatter.usesGroupingSeparator = false
-		return numberFormatter.string(from: NSNumber(value: number)) ?? "\(number)"
-	}
-	
 	
 	/// before actually saving the new comic check that all required input fields are valid
 	private func saveNewComicCheck() -> Bool {
@@ -682,7 +419,6 @@ struct AddNewComicView: View {
 		}
 	}
 	
-	
 	/// Save the newly created comic to the modelContext.
 	///
 	/// This will also create a new ``ComicSeries`` and/or ``ComicEvent`` if it didnt exist before.
@@ -700,28 +436,29 @@ struct AddNewComicView: View {
 		}
 		
 		// call the saveComic function to save the new comic
+		// trim whitespace off the starts and ends of strings
 		saveComic(
-			brandName: brandName,
-			shortBrandName: shortBrandName,
+			brandName: brandName.trimmingCharacters(in: .whitespacesAndNewlines),
+			shortBrandName: shortBrandName.trimmingCharacters(in: .whitespacesAndNewlines),
 			prioritizeShortBrandName: prioritizeShortBrandName,
 			
-			seriesName: seriesName,
-			shortSeriesName: shortSeriesName,
+			seriesName: seriesName.trimmingCharacters(in: .whitespacesAndNewlines),
+			shortSeriesName: shortSeriesName.trimmingCharacters(in: .whitespacesAndNewlines),
 			prioritizeShortSeriesName: prioritizeShortSeriesName,
 			
-			comicName: comicName,
-			shortComicName: shortComicName,
+			comicName: comicName.trimmingCharacters(in: .whitespacesAndNewlines),
+			shortComicName: shortComicName.trimmingCharacters(in: .whitespacesAndNewlines),
 			prioritizeShortComicName: prioritizeShortComicName,
 			
 			yearFirstPublished: UInt16(yearFirstPublished),
 			issueNumber: UInt16(issueNumber) ?? 0,
 			totalPages: UInt16(totalPages) ?? 0,
-			eventName: eventName,
-			purpose: purpose,
+			eventName: eventName.trimmingCharacters(in: .whitespacesAndNewlines),
+			purpose: purpose.trimmingCharacters(in: .whitespacesAndNewlines),
 			dateRead: date,
 			modelContext: modelContext,
 			
-			marvelUltimateLink: marvelUltimateLink,
+			marvelUltimateLink: marvelUltimateLink.trimmingCharacters(in: .whitespacesAndNewlines),
 			comicRead: comicRead
 		)
 		

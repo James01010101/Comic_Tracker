@@ -19,7 +19,7 @@ struct Comic_TrackerApp: App {
 	
 	var body: some Scene {
 		WindowGroup {
-			ContentView()
+			ComicStatsView()
 				.environment(\.modelContext, persistenceController.context)
 		}
 	}

@@ -86,7 +86,6 @@ class ComicEvent: Codable, Identifiable {
 		// the id is saved in the files to keep the order so i need to update the static id everytime so if i add a new event it is at the right value
 		let tmpEventId = try container.decode(UInt32.self, forKey: .eventId)
 		eventId = tmpEventId
-		ComicEvent.staticEventId = tmpEventId
 		 
 		brandName = try container.decode(String.self, forKey: .brandName)
 		shortBrandName = try container.decodeIfPresent(String.self, forKey: .shortBrandName) ?? ""

@@ -150,7 +150,6 @@ class ComicSeries: Codable, Identifiable {
 		// The id is saved in the files to keep the order so i need to update the static id everytime so if i add a new series it is at the right value
 		let tmpSeriesId = try container.decode(UInt32.self, forKey: .seriesId)
 		seriesId = tmpSeriesId
-		ComicSeries.staticSeriesId = tmpSeriesId
 		
 		brandName = try container.decode(String.self, forKey: .brandName)
 		shortBrandName = try container.decodeIfPresent(String.self, forKey: .shortBrandName) ?? ""

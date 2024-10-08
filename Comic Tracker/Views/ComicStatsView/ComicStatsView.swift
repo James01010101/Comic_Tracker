@@ -10,7 +10,7 @@ import SwiftUI
 import SwiftData
 
 /// The main view in my project.
-struct ContentView: View {
+struct ComicStatsView: View {
 	/// Controls all persistent data this view uses.
 	@StateObject private var persistenceController = PersistenceController.shared
 	/// Controls all global variables thie view uses.
@@ -31,6 +31,17 @@ struct ContentView: View {
 	///
 	/// This is sorted in decending order on the `comicId` to correctly be shown in  order in the list.
 	@Query(sort: \ComicData.comicId, order: .reverse) private var comics: [ComicData]
+	
+	/// needed so i can sort the comies how i like as the above comies is read only and cant be changed myself to sort it
+	@State private var sortedComics: [ComicData] = []
+	
+	// only define the options i want for sorting comics not all
+	let sortOptionsForComics: [SortOption] = [.id, .pagesRead]
+	
+	// how am i sorting my list of series
+	@State private var selectedSortOption: SortOption = .id
+	
+	
 	/// Stores an array of ``ComicSeries`` which contains all of the individual comic series, which are stored in the ``PersistenceController``.
 	@Query private var series: [ComicSeries]
 	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
@@ -54,6 +65,7 @@ struct ContentView: View {
 	var body: some View {
 		NavigationStack {
 			VStack() {
+				
 				// headings stack
 				VStack() {
 					HStack {
@@ -81,11 +93,33 @@ struct ContentView: View {
 						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
 				}
 				
+				// the sorting dropdown
+				VStack {
+					Menu {
+						Picker(selection: $selectedSortOption, label: Text("Sort Options")) {
+							ForEach(sortOptionsForComics) { option in
+								Text(option.rawValue).tag(option)
+							}
+						}
+					} label: {
+						Label("Sort by: \(selectedSortOption.rawValue)", systemImage: "arrow.up.arrow.down")
+							.padding()
+					}
+					.onChange(of: selectedSortOption) {
+						sortComics()
+					}
+					.onAppear {
+						sortComics() // Initial sorting on view load
+					}
+					.frame(height: 30)
+				}
+				
+				
 				// list of comics stack
 				VStack {
 					List {
 						// most recently read comics
-						ForEach(comics) { comic in
+						ForEach(sortedComics) { comic in
 							HStack {
 								Text(String(comic.comicId))
 									.frame(width: readIdWidth, alignment: .center)
@@ -95,11 +129,38 @@ struct ContentView: View {
 								
 								Divider()
 								
-								
-								Text(createDisplayedComicString(comic: comic))
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.modifier(MainDisplayTextStyle(globalState: globalState))
+								VStack {
+									// brand text
+									let brandText = createDisplayedComicBrandString(comic: comic);
+									if !brandText.isEmpty {
+										Text(brandText)
+											.frame(maxWidth: .infinity, alignment: .center)
+											.modifier(MainDisplayTextStyle(globalState: globalState))
+									}
 									
+									// series year and issue text
+									let seriesText = createDisplayedComicSeriesString(comic: comic)
+									if !seriesText.isEmpty {
+										Text(seriesText)
+											.frame(maxWidth: .infinity, alignment: .center)
+											.modifier(MainDisplayTextStyle(globalState: globalState))
+									}
+									
+									// comic name / book text
+									let comicNameText = createDisplayedComicNameString(comic: comic)
+									if !comicNameText.isEmpty {
+										Text(comicNameText)
+											.frame(maxWidth: .infinity, alignment: .center)
+											.modifier(MainDisplayTextStyle(globalState: globalState))
+									}
+									
+									// old formatting
+									/*
+									Text(createDisplayedComicString(comic: comic))
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.modifier(MainDisplayTextStyle(globalState: globalState))
+									 */
+								}
 
 								Divider()
 								
@@ -204,6 +265,61 @@ struct ContentView: View {
 	}
 	
 	
+	/// Sorts the Comics based on its enum chosen
+	private func sortComics() {
+		switch selectedSortOption {
+			case .id:
+				sortedComics = comics.sorted { $0.comicId > $1.comicId };
+				
+			case .pagesRead:
+				sortedComics = comics.sorted { $0.totalPages > $1.totalPages };
+			
+			// not all enums are included so this is required
+			default:
+				break
+		}
+	}
+	
+	
+	/// work out what i need to display as the brand for this comic
+	private func createDisplayedComicBrandString(comic: ComicData) -> String {
+		var brandNameString: String = comic.prioritizeShortBrandName ? comic.shortBrandName : comic.brandName
+		// if the brand and comic name is the same ill show the (year maybe if needed) and issue number on this line
+		if (comic.brandName == comic.seriesName) {
+			if let count = globalState.seriesNamesUsages[comic.seriesName] {
+				if (count > 1) {
+					brandNameString += " (" + String(comic.yearFirstPublished) + ")"
+				}
+			}
+			brandNameString += " #" + String(comic.issueNumber)
+		}
+		return brandNameString;
+	}
+	
+	/// work out what i need to display as the series for this comic
+	private func createDisplayedComicSeriesString(comic: ComicData) -> String {
+		var seriesNameString: String = ""
+		if (comic.brandName != comic.seriesName) {
+			seriesNameString = comic.prioritizeShortSeriesName ? comic.shortSeriesName : comic.seriesName
+			if let count = globalState.seriesNamesUsages[comic.seriesName] {
+				if (count > 1) {
+					seriesNameString += " (" + String(comic.yearFirstPublished) + ")"
+				}
+			}
+			seriesNameString += " #" + String(comic.issueNumber)
+		}
+		return seriesNameString
+	}
+	
+	/// work out what i need to display as the comic name for this comic
+	private func createDisplayedComicNameString(comic: ComicData) -> String {
+		if (!comic.comicName.isEmpty) {
+			return comic.comicName
+		}
+		return ""
+	}
+	
+	
 	/// Nicely formats a string containing important information to uniquely identify a comic.
 	///
 	/// Used in the recent comic list
@@ -217,6 +333,7 @@ struct ContentView: View {
 	///   - If the `seriesName` is the same as the `brand` then it will also be omitted, as to not have duplicated phrases.
 	///
 	/// > Important: Not all formatting cases are implemented yet.
+	/// > Important: This is not used anymore. there is seperate functions for the brand, series and book name so they can all be on seperate lines and still centered, they should visually look the same as this did.
 	///
 	/// - Parameter comic: An instance of ``ComicData`` that contains all the information about the comic.
 	/// - Returns: Nicely formatted `String` to be displayed to the user in the comic list.
@@ -259,14 +376,23 @@ struct ContentView: View {
 	private func deleteItems(offsets: IndexSet) {
 		withAnimation {
 			for index in offsets {
+				// get the comic to delete from the sortedCOmics as this is what is shown to the user so this order is what i need to find the comic from
+				let comic = sortedComics[index]
+				
+				print("Sorted comic to delete is \(comic.id) \(comic.seriesName)")
+				
+				// now delete this comic from everything
 				// find the comic series and decrease the number of read comics
-				removeComicFromSeries(comic: comics[index], allSeries: series)
+				removeComicFromSeries(comic: comic, allSeries: series)
 				
 				// find all events this comic was apart of and decrease the total number os issues read
-				removeComicFromEvents(comic: comics[index], allEvents: events)
+				removeComicFromEvents(comic: comic, allEvents: events)
 				
 				// delete the comic
-				persistenceController.context.delete(comics[index])
+				persistenceController.context.delete(comic)
+				
+				// remove the element from the sorted comics
+				sortedComics.remove(at: index)
 			}
 		}
 		
@@ -282,7 +408,7 @@ struct ContentView: View {
 
 
 /// Main view preview settings
-struct ContentView_Previews: PreviewProvider {
+struct ComicStatsView_Previews: PreviewProvider {
 	static var previews: some View {
 		
 		let persistenceController = PersistenceController.shared
@@ -299,12 +425,14 @@ struct ContentView_Previews: PreviewProvider {
 		let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 		var container: ModelContainer
 		var context: ModelContext
+		
 		do {
 			container = try ModelContainer(for: schema, configurations: [modelConfiguration])
 			context = ModelContext(container)
 		} catch {
 			fatalError("Could not create ModelContainer: \(error)")
 		}
+		
 		
 		// reset to 0 since the preview can be loaded multiple times and this will keep incrementing
 		ComicData.staticComicId = 0
@@ -324,7 +452,7 @@ struct ContentView_Previews: PreviewProvider {
 		// this way creating and deleting comics will work correctly
 		persistenceController.context = context
 		
-		return ContentView()
+		return ComicStatsView()
 			.environment(\.modelContext, context)
 	}
 }

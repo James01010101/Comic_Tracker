@@ -31,6 +31,17 @@ class GlobalState: ObservableObject {
 	/// The main string will still be used for all checks but the shortened string will be used to display
 	@Published var maxDisplayedStringLength: UInt8 = 30
 	
+	/// When displaying the series in the series view this is the max length the string will try to fit too
+	///
+	/// If brand and name combined are shorted than this then itll use both in full otherwise itll try different combinations of short to get it below this
+	/// otherwise ifll just use the fill string
+	/// This doesnt require any user input it is all done in the backend
+	/// This size should be slightly larger than `maxDisplayedStringLength` as it has more space on the screen
+	@Published var maxDisplayedSeriesViewStringLength: UInt8 = 35
+	
+	
+	
+	
 	/// Stores a dictionary of colliding series names to number of usages
 	///
 	/// On initial load of my series data, this is filled out and for every series it increases the number of usages.
@@ -81,7 +92,7 @@ class GlobalState: ObservableObject {
 		// Hardcoded Variables
 		self.brandRowColours = [
 			"Marvel": Color.red,
-			"Five Nights At Freddy's": Color.orange,
+			"Five Nights At Freddys": Color.orange,
 			"Invincible": Color.yellow,
 			"The Walking Dead": Color.green,
 			"Jujutsu Kaisen": Color.purple,
@@ -102,6 +113,7 @@ class GlobalState: ObservableObject {
 	
 	
 	public func getBrandColor(brandName: String) -> Color {
+		//print("Getting brand colour for: (\(brandName))");
 		return self.brandRowColours[brandName] ?? Color.gray;
 	}
 }

@@ -27,6 +27,7 @@ class PersistenceController: ObservableObject {
 	let container: ModelContainer
 	/// Contains all os the main data the project uses, data is loaded from files into this, and backed up from this into files
 	@Published var context: ModelContext
+
 	
 	/// Controls all global variables
 	var globalState = GlobalState.shared
@@ -95,7 +96,35 @@ class PersistenceController: ObservableObject {
 			let s = self.saveAllData();
 			print("Saving data to new folder: " + (s ? "successful" : "failed"));
 		}
-
+		
+		
+		// reorder ids
+		// comics
+		let fetchRequestComicData = FetchDescriptor<ComicData>();
+		do {
+			let comics = try context.fetch(fetchRequestComicData)
+			recalculateComicIds(comics: comics);
+		} catch {
+			print("Failed to recalculate comic's ids, unable to load ComicData from context: \(error)")
+		}
+		
+		// series
+		let fetchRequestComicSeries = FetchDescriptor<ComicSeries>();
+		do {
+			let series = try context.fetch(fetchRequestComicSeries)
+			recalculateSeriesIds(series: series);
+		} catch {
+			print("Failed to recalculate Series ids, unable to load ComicSeries from context: \(error)")
+		}
+		
+		// events
+		let fetchRequestComicEvents = FetchDescriptor<ComicEvent>();
+		do {
+			let events = try context.fetch(fetchRequestComicEvents)
+			recalculateEventsIds(events: events);
+		} catch {
+			print("Failed to recalculate Events's ids, unable to load ComicEvent from context: \(error)")
+		}
 	}
 	
 	/// This is used to save the context data although ModelContext only exists in memory so this isnt used,
@@ -174,6 +203,9 @@ class PersistenceController: ObservableObject {
 				self.context.insert(comic)
 			}
 			
+			// finally set the new static id, so new comics are added with the correct id (cant just use the last comic i read in as the order they are saved to and read from the file is not the order of ids)
+			ComicData.staticComicId = UInt32(comics.count);
+
 			
 			self.saveContext()
 			print("Successfully loaded " + String(comics.count) + " comics")
@@ -249,8 +281,9 @@ class PersistenceController: ObservableObject {
 				} else {
 					globalState.seriesNamesUsages[series.seriesName] = 1
 				}
-				
 			}
+			// finally set the new static id, so new comics are added with the correct id (cant just use the last comic i read in as the order they are saved to and read from the file is not the order of ids)
+			ComicSeries.staticSeriesId = UInt32(comicSeries.count);
 			
 			self.saveContext()
 			print("Successfully loaded " + String(comicSeries.count) + " series")
@@ -314,14 +347,18 @@ class PersistenceController: ObservableObject {
 				return nil
 			}
 			let decoder = JSONDecoder()
-			let comicEvent = try decoder.decode([ComicEvent].self, from: data)
+			let comicEvents = try decoder.decode([ComicEvent].self, from: data)
 			
-			for event in comicEvent {
+			for event in comicEvents {
 				self.context.insert(event)
 			}
 			
+			// finally set the new static id, so new comics are added with the correct id (cant just use the last comic i read in as the order they are saved to and read from the file is not the order of ids)
+			ComicEvent.staticEventId = UInt32(comicEvents.count);
+			
+			
 			self.saveContext()
-			print("Successfully loaded " + String(comicEvent.count) + " events")
+			print("Successfully loaded " + String(comicEvents.count) + " events")
 		} catch {
 			print("Failed to decode comic event data: \(error)")
 			return false

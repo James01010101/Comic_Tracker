@@ -19,7 +19,16 @@ struct EventsStatsView: View {
 	
 	
 	/// Stores an array of ``ComicEvent`` which contains all of the individual comic events, which are stored in the ``PersistenceController``.
-	@Query private var events: [ComicEvent]
+	@Query(sort: \ComicEvent.eventId, order: .reverse) private var events: [ComicEvent]
+	
+	/// needed so i can sort the events how i like as the above events is read only and cant be changed myself to sort it
+	@State private var sortedEvents: [ComicEvent] = []
+	
+	// only define the options i want for sorting events not all
+	let sortOptionsForEvents: [SortOption] = [.id, .pagesRead, .issuesRead]
+	
+	// how am i sorting my list of series
+	@State private var selectedSortOption: SortOption = .pagesRead
 	
 	/// Go to an edit view for the event, this is how you would add reading lists
 	@State private var showSheet: Bool = false
@@ -73,11 +82,32 @@ struct EventsStatsView: View {
 						.padding(.horizontal, 10) // insert the boarder line slightly from the edges of the screen
 				}
 				
+				// the sorting dropdown
+				VStack {
+					Menu {
+						Picker(selection: $selectedSortOption, label: Text("Sort Options")) {
+							ForEach(sortOptionsForEvents) { option in
+								Text(option.rawValue).tag(option)
+							}
+						}
+					} label: {
+						Label("Sort by: \(selectedSortOption.rawValue)", systemImage: "arrow.up.arrow.down")
+							.padding()
+					}
+					.onChange(of: selectedSortOption) {
+						sortEvents()
+					}
+					.onAppear {
+						sortEvents() // Initial sorting on view load
+					}
+					.frame(height: 30)
+				}
+				
 				// VStack list for all the series
 				// the series will take up to lines each
 				// one for the series, and one for stats
 				List {
-					ForEach(events) { event in
+					ForEach(sortedEvents) { event in
 						// this row
 						VStack {
 							// top row name
@@ -213,6 +243,21 @@ struct EventsStatsView: View {
 				}
 			}
 			.navigationTitle("Comic Events")
+		}
+	}
+	
+	
+	/// Sorts the events based on its enum chosen
+	private func sortEvents() {
+		switch selectedSortOption {
+			case .id:
+				sortedEvents = events.sorted { $0.eventId > $1.eventId };
+				
+			case .pagesRead:
+				sortedEvents = events.sorted { $0.pagesRead > $1.pagesRead };
+				
+			case .issuesRead:
+				sortedEvents = events.sorted { $0.issuesRead > $1.issuesRead };
 		}
 	}
 	
